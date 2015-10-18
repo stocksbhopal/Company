@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename package &apos;com.sanjoyghosh.stocks.database&apos; to &apos;com.sanjoyghosh.stocks.library&apos;&#x0A;- Original project: &apos;library&apos;&#x0A;- Original element: &apos;library/src/main/java/com.sanjoyghosh.stocks.database&apos;&#x0A;- Renamed element: &apos;library/src/main/java/com.sanjoyghosh.stocks.library&apos;&#x0A;- Update references to refactored element&#x0A;- Update textual occurrences in comments and strings" description="Rename package &apos;com.sanjoyghosh.stocks.database&apos;" flags="589830" hierarchical="false" id="org.eclipse.jdt.ui.rename.package" input="/src\/main\/java&lt;com.sanjoyghosh.stocks.database" name="com.sanjoyghosh.stocks.library" qualified="false" references="true" stamp="1444440304201" textual="false" version="1.0"/>
+</session>
