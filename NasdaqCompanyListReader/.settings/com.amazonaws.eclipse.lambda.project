@@ -1,0 +1,5 @@
+#Lambda Function Project Metadata
+#Wed Oct 14 14:53:24 PDT 2015
+lastDeploymentFunctionName=Nasdaq-Company-List-Reader
+lastDeploymentBucketName=lambda-function-bucket-us-west-2-1444676458386
+lastDeploymentEndpoint=https\://lambda.us-west-2.amazonaws.com/

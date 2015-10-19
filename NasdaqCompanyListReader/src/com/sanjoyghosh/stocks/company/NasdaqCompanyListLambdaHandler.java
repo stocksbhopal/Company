@@ -18,6 +18,7 @@ public class NasdaqCompanyListLambdaHandler implements RequestHandler<S3Event, O
         String s3Bucket = s3Record.getS3().getBucket().getName();
         String s3Key = s3Record.getS3().getObject().getKey();
         
+        AmazonS3Client s3Client = new AmazonS3Client(new BasicAWSCredentials("AKIAJILCPR67C4ZL4QDA", "y9KJGkXetAyvzpF9+J7rHIePQNLGiWT/NoH4yVa5"));
         S3Object s3Object = s3Client.getObject(s3Bucket, s3Key);
         Reader s3Reader = null;
         try {
