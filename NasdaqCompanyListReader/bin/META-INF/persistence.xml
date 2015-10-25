@@ -6,10 +6,11 @@
     <persistence-unit name="com.sanjoyghosh.stocks.library.model" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.ejb.HibernatePersistence</provider>
         <class>com.sanjoyghosh.stocks.library.model.Company</class>
- 
+        <class>com.sanjoyghosh.stocks.library.model.IndustrySector</class>
+        
         <properties>
             <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
-            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://stocks.cydgnjdxal7m.us-west-1.rds.amazonaws.com:3306/stocks" />
+            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://company.cttvyx1jig3h.us-west-1.rds.amazonaws.com:3306/Company" />
             <property name="javax.persistence.jdbc.user" value="sanjoy" />
             <property name="javax.persistence.jdbc.password" value="srinagar6598" />
  

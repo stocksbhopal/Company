@@ -1,24 +1,28 @@
 package com.sanjoyghosh.stocks.company;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
+
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.S3Event;
-import com.sanjoyghosh.stocks.library.db.JPAHelper;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.event.S3EventNotification.S3EventNotificationRecord;
+import com.amazonaws.services.s3.model.S3Object;
+import com.sanjoyghosh.stocks.library.nasdaqcompanylist.NasdaqCompanyListReader;
 
 public class NasdaqCompanyListLambdaHandler implements RequestHandler<S3Event, Object> {
 
     @Override
-    public Object handleRequest(S3Event s3event, Context context) {
-        context.getLogger().log("Input: " + "ENTER THE DRAGON AGAIN");
-    	JPAHelper.createEntityManager();
-    	return null;
-    	
-    	/*
+    public Object handleRequest(S3Event s3event, Context context) {    
         S3EventNotificationRecord s3Record = s3event.getRecords().get(0);
         String s3Bucket = s3Record.getS3().getBucket().getName();
         String s3Key = s3Record.getS3().getObject().getKey();
+        System.out.println("S3: " + s3Bucket + "  " + s3Key);
         
-        AmazonS3Client s3Client = new AmazonS3Client(new BasicAWSCredentials("AKIAJILCPR67C4ZL4QDA", "y9KJGkXetAyvzpF9+J7rHIePQNLGiWT/NoH4yVa5"));
+        AmazonS3Client s3Client = new AmazonS3Client();
         S3Object s3Object = s3Client.getObject(s3Bucket, s3Key);
         Reader s3Reader = null;
         try {
@@ -46,7 +50,6 @@ public class NasdaqCompanyListLambdaHandler implements RequestHandler<S3Event, O
         context.getLogger().log("Input: " + s3Bucket + "  " + s3Key);
         // TODO: implement your handler
         return null;
-        */
     }
 
 }

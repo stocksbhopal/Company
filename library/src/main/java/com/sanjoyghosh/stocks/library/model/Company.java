@@ -10,8 +10,8 @@ import javax.persistence.Id;
 public class Company {
 
 	@Id()
-	@GeneratedValue(strategy=GenerationType.AUTO)
-	private int companyId;
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	private int id;
 	@Column
 	private String symbol;
 	@Column
@@ -50,16 +50,16 @@ public class Company {
 	
 	@Override
 	public String toString() {
-		return "Company [companyId=" + companyId + ", symbol=" + symbol + ", name=" + name + ", marketCap=" + marketCap
+		return "Company [id=" + id + ", symbol=" + symbol + ", name=" + name + ", marketCap=" + marketCap
 				+ ", ipoYear=" + ipoYear + ", industrySectorId=" + industrySectorId + "]";
 	}
 
-	public int getCompanyId() {
-		return companyId;
+	public int getId() {
+		return id;
 	}
 
-	public void setCompanyId(int companyId) {
-		this.companyId = companyId;
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public String getSymbol() {
