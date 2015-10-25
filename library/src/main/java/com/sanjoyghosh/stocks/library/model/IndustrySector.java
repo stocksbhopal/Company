@@ -7,11 +7,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
-public class Sector {
+public class IndustrySector {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
-	private int sectorId;
+	private int id;
+	@Column
+	private String industry;
 	@Column
 	private String sector;
 	
@@ -19,6 +21,7 @@ public class Sector {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((industry == null) ? 0 : industry.hashCode());
 		result = prime * result + ((sector == null) ? 0 : sector.hashCode());
 		return result;
 	}
@@ -31,7 +34,12 @@ public class Sector {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Sector other = (Sector) obj;
+		IndustrySector other = (IndustrySector) obj;
+		if (industry == null) {
+			if (other.industry != null)
+				return false;
+		} else if (!industry.equals(other.industry))
+			return false;
 		if (sector == null) {
 			if (other.sector != null)
 				return false;
@@ -42,15 +50,23 @@ public class Sector {
 
 	@Override
 	public String toString() {
-		return "Sector [sectorId=" + sectorId + ", sector=" + sector + "]";
+		return "IndustrySector [id=" + id + ", industry=" + industry + ", sector=" + sector + "]";
 	}
 
-	public int getSectorId() {
-		return sectorId;
+	public int getId() {
+		return id;
 	}
 
-	public void setSectorId(int sectorId) {
-		this.sectorId = sectorId;
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getIndustry() {
+		return industry;
+	}
+
+	public void setIndustry(String industry) {
+		this.industry = industry;
 	}
 
 	public String getSector() {

@@ -21,13 +21,12 @@ public class Company {
 	@Column
 	private int ipoYear;
 	@Column
-	private int industryId;
+	private int industrySectorId;
 	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((symbol == null) ? 0 : symbol.hashCode());
 		return result;
 	}
@@ -41,11 +40,6 @@ public class Company {
 		if (getClass() != obj.getClass())
 			return false;
 		Company other = (Company) obj;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
 		if (symbol == null) {
 			if (other.symbol != null)
 				return false;
@@ -57,7 +51,7 @@ public class Company {
 	@Override
 	public String toString() {
 		return "Company [companyId=" + companyId + ", symbol=" + symbol + ", name=" + name + ", marketCap=" + marketCap
-				+ ", ipoYear=" + ipoYear + ", industryId=" + industryId + "]";
+				+ ", ipoYear=" + ipoYear + ", industrySectorId=" + industrySectorId + "]";
 	}
 
 	public int getCompanyId() {
@@ -100,11 +94,11 @@ public class Company {
 		this.ipoYear = ipoYear;
 	}
 
-	public int getIndustryId() {
-		return industryId;
+	public int getIndustrySectorId() {
+		return industrySectorId;
 	}
 
-	public void setIndustryId(int industryId) {
-		this.industryId = industryId;
+	public void setIndustrySectorId(int industrySectorId) {
+		this.industrySectorId = industrySectorId;
 	}
 }
