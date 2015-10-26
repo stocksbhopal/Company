@@ -2,9 +2,11 @@ package com.sanjoyghosh.stocks.library.nasdaqcompanylist;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
@@ -16,103 +18,84 @@ import com.sanjoyghosh.stocks.library.model.IndustrySector;
 public class NasdaqCompanyListReader {
 
 	private EntityManager entityManager;
+	private Map<String, IndustrySector> industrySectorMap = new HashMap<String, IndustrySector>();
+	private Map<String, Company> companyMap = new HashMap<String, Company>();
 	
-	public NasdaqCompanyListReader() {
-		JPAHelper.createEntityManager();
-		entityManager = JPAHelper.getEntityManager();
-	}
+	public NasdaqCompanyListReader() {}
 	
 	public void readCompanyList(Reader reader) throws IOException {
-		Iterable<CSVRecord> records = CSVFormat.EXCEL.withHeader().parse(reader);
-		for (CSVRecord record : records) {
-		    String symbol = record.get("Symbol");
-		    String name = record.get("Name");
-		    String ipoYearStr = record.get("IPOyear");
-		    String sector = record.get("Sector");
-		    String industry = record.get("industry");
-		    System.out.println(symbol + "   " + name);
-		    
-		    int ipoYear = -1;
-		    try {
-		    	ipoYear = Integer.parseInt(ipoYearStr);
-		    }
-		    catch (Exception e) { // Not a valid ipo year.
-		    }
-//		    System.out.println(symbol + "  " + name + "  " + ipoYear);
-		    
-		    if (entityManager != null) {
-			    Company company = fetchCompany(symbol);
-			    if (company == null) {
-				    IndustrySector industrySector = fetchIndustrySector(industry, sector);
-				    if (industrySector == null) {
-				    	industrySector = storeIndustrySector(industry, sector);
-				    }
-				    if (industrySector != null) {
-				    	company = storeCompany(symbol, name, ipoYear, industrySector.getId());
-				    }
+		JPAHelper.createEntityManager();
+		entityManager = JPAHelper.getEntityManager();
+			
+		entityManager.getTransaction().begin();
+		try {
+			fetchAllIndustrySector();
+//			fetchAllCompany();
+	
+			Iterable<CSVRecord> records = CSVFormat.EXCEL.withHeader().parse(reader);
+			for (CSVRecord record : records) {
+			    String symbol = record.get("Symbol");
+			    String name = record.get("Name");
+			    String ipoYearStr = record.get("IPOyear");
+			    String sector = record.get("Sector");
+			    String industry = record.get("industry");
+			    
+			    int ipoYear = -1;
+			    try {ipoYear = Integer.parseInt(ipoYearStr);}
+			    catch (Exception e) {}
+	
+			    String industrySectorKey = makeIndustrySectorKey(industry, sector);
+		    	IndustrySector industrySector = industrySectorMap.get(industrySectorKey);
+		    	if (industrySector == null) {
+		    		industrySector = new IndustrySector(industry, sector);
+		    		entityManager.persist(industrySector);
+		    		industrySectorMap.put(industrySectorKey, industrySector);
+		    	}
+	
+		    	Company companyRead = new Company(symbol, name, ipoYear, industrySector.getId());
+			    Company company = companyMap.get(symbol);
+			    if (company != null) {
+			    	if (!company.isIdenticalNonNull(companyRead)) {
+			    		entityManager.merge(companyRead);
+			    	}
 			    }
-		    }
-		}
-	}
-	
-	private Company fetchCompany(String symbol) {
-		try {
-			Company fetchedCompany =
-				entityManager.createQuery("SELECT c FROM Company AS c WHERE symbol = :symbol", Company.class)
-				.setParameter("symbol", symbol)
-				.getSingleResult();
-			return fetchedCompany;
-		}
-		catch (NoResultException e) {}
-		return null;
-	}
-	
-	private Company storeCompany(String symbol, String name, int ipoYear, int industrySectorId) {
-		try {
-			entityManager.getTransaction().begin();
-			Company company = new Company();
-			company.setSymbol(symbol);
-			company.setName(name);
-			company.setIpoYear(ipoYear);
-			company.setIndustrySectorId(industrySectorId);
-			entityManager.persist(company);
+			    else {
+			    	entityManager.persist(companyRead);
+			    }
+			    System.out.println(symbol + "   " + name);
+			}
 			entityManager.getTransaction().commit();
-			return company;
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 			entityManager.getTransaction().rollback();
-			return null;
 		}
 	}
 	
-	private IndustrySector fetchIndustrySector(String industry, String sector) {
-		try {
-			IndustrySector fetchedIndustrySector = 
-				entityManager.createQuery("SELECT i FROM IndustrySector AS i WHERE industry = :industry AND sector = :sector", IndustrySector.class)
-				.setParameter("industry", industry)
-				.setParameter("sector", sector)
-				.getSingleResult();
-			return fetchedIndustrySector;
+	@SuppressWarnings("unused")
+	private void fetchAllCompany() {
+		List<Company> companyList = 
+			entityManager.createQuery("SELECT c FROM Company AS c", Company.class)
+			.getResultList();
+		
+		companyMap = new HashMap<String, Company>();
+		for (Company company : companyList) {
+			companyMap.put(company.getSymbol(), company);
 		}
-		catch (NoResultException e) {}
-		return null;
 	}
 	
-	private IndustrySector storeIndustrySector(String industry, String sector) {
-		try {
-			entityManager.getTransaction().begin();
-			IndustrySector storedIndustrySector = new IndustrySector();
-			storedIndustrySector.setIndustry(industry);
-			storedIndustrySector.setSector(sector);
-			entityManager.persist(storedIndustrySector);
-			entityManager.getTransaction().commit();
-			return storedIndustrySector;
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			entityManager.getTransaction().rollback();
-			return null;
+	private String makeIndustrySectorKey(String industry, String sector) {
+		return industry + "_" + sector;
+	}
+	
+	private void fetchAllIndustrySector() {
+		List<IndustrySector> industrySectorList = 
+			entityManager.createQuery("SELECT i FROM IndustrySector AS i", IndustrySector.class)
+			.getResultList();
+
+		industrySectorMap = new HashMap<String, IndustrySector>();
+		for (IndustrySector is : industrySectorList) {
+			industrySectorMap.put(makeIndustrySectorKey(is.getIndustry(), is.getSector()), is);
 		}
 	}
 }

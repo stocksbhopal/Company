@@ -16,12 +16,21 @@ public class Company {
 	private String symbol;
 	@Column
 	private String name;
-	@Column
+	@Column(nullable=true)
 	private int marketCap;
 	@Column
 	private int ipoYear;
 	@Column
 	private int industrySectorId;
+	
+	public Company() {}
+	
+	public Company(String symbol, String name, int ipoYear, int industrySectorId) {
+		this.symbol = symbol;
+		this.name = name;
+		this.ipoYear = ipoYear;
+		this.industrySectorId = industrySectorId;
+	}
 	
 	@Override
 	public int hashCode() {
@@ -100,5 +109,21 @@ public class Company {
 
 	public void setIndustrySectorId(int industrySectorId) {
 		this.industrySectorId = industrySectorId;
+	}
+
+	public boolean isIdenticalNonNull(Company company) {
+		if (!this.symbol.equals(company.symbol)) {
+			return false;
+		}
+		if (!this.name.equals(company.name)) {
+			return false;
+		}
+		if (this.ipoYear != company.ipoYear) {
+			return false;
+		}
+		if (this.industrySectorId != company.industrySectorId) {
+			return false;
+		}
+		return true;
 	}
 }

@@ -17,6 +17,13 @@ public class IndustrySector {
 	@Column
 	private String sector;
 	
+	public IndustrySector() {}
+	
+	public IndustrySector(String industry, String sector) {
+		this.industry = industry;
+		this.sector = sector;
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
