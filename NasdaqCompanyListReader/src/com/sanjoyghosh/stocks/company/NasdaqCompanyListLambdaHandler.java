@@ -11,7 +11,7 @@ import com.amazonaws.services.lambda.runtime.events.S3Event;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.event.S3EventNotification.S3EventNotificationRecord;
 import com.amazonaws.services.s3.model.S3Object;
-import com.sanjoyghosh.stocks.library.nasdaqcompanylist.NasdaqCompanyListReader;
+import com.sanjoyghosh.company.nasdaqcompanylist.NasdaqCompanyListReader;
 
 public class NasdaqCompanyListLambdaHandler implements RequestHandler<S3Event, Object> {
 

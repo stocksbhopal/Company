@@ -1,4 +1,4 @@
-package com.sanjoyghosh.stocks.library.nasdaqcompanylist;
+package com.sanjoyghosh.company.nasdaqcompanylist;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -11,9 +11,9 @@ import javax.persistence.EntityManager;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 
-import com.sanjoyghosh.stocks.library.db.JPAHelper;
-import com.sanjoyghosh.stocks.library.model.Company;
-import com.sanjoyghosh.stocks.library.model.IndustrySector;
+import com.sanjoyghosh.company.db.JPAHelper;
+import com.sanjoyghosh.company.model.Company;
+import com.sanjoyghosh.company.model.IndustrySector;
 
 public class NasdaqCompanyListReader {
 
@@ -24,7 +24,6 @@ public class NasdaqCompanyListReader {
 	public NasdaqCompanyListReader() {}
 	
 	public void readCompanyList(Reader reader) throws IOException {
-		JPAHelper.createEntityManager();
 		entityManager = JPAHelper.getEntityManager();
 			
 		entityManager.getTransaction().begin();

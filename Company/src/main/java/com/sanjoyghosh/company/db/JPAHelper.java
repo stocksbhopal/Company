@@ -1,4 +1,4 @@
-package com.sanjoyghosh.stocks.library.db;
+package com.sanjoyghosh.company.db;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -11,7 +11,7 @@ public class JPAHelper {
 
 	private static EntityManager entityManager;
 	
-	public static void createEntityManager() {
+	private static void createEntityManager() {
 		Logger log = Logger.getLogger("org.hibernate.SQL");
 		log.setLevel(Level.SEVERE);
 		
@@ -21,6 +21,9 @@ public class JPAHelper {
 	}
 
 	public static EntityManager getEntityManager() {
+		if (entityManager == null) {
+			createEntityManager();
+		}
 		return entityManager;
 	}
 }

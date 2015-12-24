@@ -1,4 +1,4 @@
-package com.sanjoyghosh.stocks.library.model;
+package com.sanjoyghosh.company.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
