@@ -58,7 +58,7 @@ public class YahooEarningsCalendarReader {
 
 		String marketCapStr = elements.get(11).text();		
 		Long marketCap = StringUtils.parseLongWithBM(marketCapStr);
-		earningsDate.setMarketCap(marketCap);
+		earningsDate.setMarketCap(marketCap == null ? 0.0D : marketCap.longValue());
 	}
 
 	
@@ -125,11 +125,10 @@ public class YahooEarningsCalendarReader {
 	    		
 	    		readAnalystOpinionYahoo(earningsDate);
 	    		readSummaryYahoo(earningsDate);
-	    		entityManager.persist(earningsDate);
 	    		System.out.println(earningsDate);
+	    		entityManager.persist(earningsDate);
 	    	}
-	    }
-	    
+	    }   
     }
 
 	
