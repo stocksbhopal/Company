@@ -32,7 +32,7 @@ public class PriceHistory {
 	private int volume;
 	
 	
-	public PriceHistory () {}
+	public PriceHistory() {}
 
 
 	public int getId() {

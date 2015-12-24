@@ -34,7 +34,7 @@ public class Holding {
 	private String account;
 	
 	
-	public Holding () {}
+	public Holding() {}
 
 
 	public int getId() {

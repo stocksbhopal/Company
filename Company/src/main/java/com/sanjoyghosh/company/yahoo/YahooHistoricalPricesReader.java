@@ -1,4 +1,4 @@
-package com.sanjoyghosh.company.yahoohistorical;
+package com.sanjoyghosh.company.yahoo;
 
 import java.io.IOException;
 import java.io.StringReader;
