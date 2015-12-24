@@ -21,7 +21,7 @@ import com.sanjoyghosh.company.db.StringUtils;
 import com.sanjoyghosh.company.model.Company;
 import com.sanjoyghosh.company.model.Holding;
 
-public class FidelityPortfolioReader {
+public class FidelityHoldingsReader {
 	
 	private EntityManager entityManager;
 	
@@ -31,7 +31,7 @@ public class FidelityPortfolioReader {
 	private HashSet<Holding> updateHoldingSet = new HashSet<Holding>();
 	
 	
-	public FidelityPortfolioReader() {}
+	public FidelityHoldingsReader() {}
 	
 	
 	private void fetchAllFidelityHoldings() {
@@ -128,7 +128,7 @@ public class FidelityPortfolioReader {
 	
 	
 	public static void main(String[] args) {
-		FidelityPortfolioReader reader = new FidelityPortfolioReader();
+		FidelityHoldingsReader reader = new FidelityHoldingsReader();
 		reader.fetchAllFidelityHoldings();
 		File fidelityFile = reader.getFidelityHoldingsFile();
 		if (fidelityFile != null) {
