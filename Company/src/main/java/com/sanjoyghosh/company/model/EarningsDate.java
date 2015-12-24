@@ -27,7 +27,9 @@ public class EarningsDate {
 	@Column
 	private Integer numberBrokers;
 	@Column
-	private Integer marketCap;
+	private Long marketCap;
+	@Column
+	private Boolean isFactSet;
 	
 	
 	public EarningsDate() {}
@@ -103,12 +105,12 @@ public class EarningsDate {
 	}
 
 
-	public Integer getMarketCap() {
+	public Long getMarketCap() {
 		return marketCap;
 	}
 
 
-	public void setMarketCap(Integer marketCap) {
+	public void setMarketCap(Long marketCap) {
 		this.marketCap = marketCap;
 	}
 
@@ -146,10 +148,21 @@ public class EarningsDate {
 	}
 
 
+	public Boolean getIsFactSet() {
+		return isFactSet;
+	}
+
+
+	public void setIsFactSet(Boolean isFactSet) {
+		this.isFactSet = isFactSet;
+	}
+
+
 	@Override
 	public String toString() {
 		return "EarningsDate [id=" + id + ", symbol=" + symbol + ", companyId=" + companyId + ", earningsDate="
 				+ earningsDate + ", beforeMarketOrAfterMarket=" + beforeMarketOrAfterMarket + ", analystOpinion="
-				+ analystOpinion + ", numberBrokers=" + numberBrokers + ", marketCap=" + marketCap + "]";
+				+ analystOpinion + ", numberBrokers=" + numberBrokers + ", marketCap=" + marketCap + ", isFactSet="
+				+ isFactSet + "]";
 	}
 }

@@ -16,6 +16,7 @@ import org.jsoup.select.Elements;
 
 import com.sanjoyghosh.company.db.CompanyUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
+import com.sanjoyghosh.company.db.StringUtils;
 import com.sanjoyghosh.company.model.Company;
 import com.sanjoyghosh.company.model.EarningsDate;
 
@@ -42,6 +43,22 @@ public class YahooEarningsCalendarReader {
 			}
 		}
 		return null;
+	}
+
+	
+	private void readSummaryYahoo(EarningsDate earningsDate) throws IOException {
+		String aoyUrl = "http://finance.yahoo.com/q?s=" + earningsDate.getSymbol();
+		Document doc = fetchDocument(aoyUrl);
+		
+		Elements elements = doc.select("td.yfnc_tabledata1");
+		if (elements == null || elements.text() == null || elements.text().length() == 0) {
+			System.err.println("No ticker for url: " + aoyUrl);
+			return;
+		}
+
+		String marketCapStr = elements.get(11).text();		
+		Long marketCap = StringUtils.parseLongWithBM(marketCapStr);
+		earningsDate.setMarketCap(marketCap);
 	}
 
 	
@@ -81,20 +98,21 @@ public class YahooEarningsCalendarReader {
 	
 	private void readEarningsCalendarFor(Calendar date) throws IOException {   
     	String yepUrl = "http://biz.yahoo.com/research/earncal/" + dateFormatter.format(date.getTime()) + ".html";
+    	Timestamp timestamp = new Timestamp(date.getTime().getTime());
     	
 		Document doc = fetchDocument(yepUrl);		
 	    Elements trElements = doc.select("table[cellpadding=2").select("tr");
 	    for (int i = 0; i < trElements.size(); i++) {
 	    	Element trElement = trElements.get(i);
-	    	
-	    	Elements tdElements = trElement.select("td");
-	    	if (!tdElements.isEmpty()) {
-	    	}
-	    	
 	    	Elements aElements = trElement.select("a[href^=http://finance.yahoo.com/q?s]");
 	    	Elements smallElements = trElement.select("small");
 	    	if (!aElements.isEmpty()) {
 	    		String symbol = aElements.text();
+	    		EarningsDate currentEarningsDate = CompanyUtils.fetchEarningsDateForSymbolDate(entityManager, symbol, timestamp);
+	    		if (currentEarningsDate != null) {
+	    			continue;
+	    		}
+	    		
 	    		String releaseTime = smallElements.text();
 	    		Company company = companyBySymbolMap.get(symbol);
 	    		Integer companyId = company == null ? null : company.getId();
@@ -106,9 +124,12 @@ public class YahooEarningsCalendarReader {
 	    		earningsDate.setBeforeMarketOrAfterMarket((releaseTime != null && releaseTime.indexOf("After Market Close") >= 0) ? "AM" : "BM");
 	    		
 	    		readAnalystOpinionYahoo(earningsDate);
+	    		readSummaryYahoo(earningsDate);
+	    		entityManager.persist(earningsDate);
 	    		System.out.println(earningsDate);
 	    	}
 	    }
+	    
     }
 
 	
@@ -120,11 +141,14 @@ public class YahooEarningsCalendarReader {
 		calendar = new GregorianCalendar(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
 		for (int i = 0; i < 7; i++) {
 			try {
+		    	entityManager.getTransaction().begin();		    	
 				readEarningsCalendarFor(calendar);
+			    entityManager.getTransaction().commit();
 			} 
 			catch (IOException e) {
 				// TODO Auto-generated catch block
 				// e.printStackTrace();
+				entityManager.getTransaction().rollback();
 			}
 			calendar.add(Calendar.DATE, 1);
 		}		
@@ -133,55 +157,7 @@ public class YahooEarningsCalendarReader {
 	
 	public static void main(String[] args) {
 		YahooEarningsCalendarReader reader = new YahooEarningsCalendarReader();
-		reader.readEarningsCalendarforWeek();
-		
-		/*
-		List<Stock> allStocks = StocksLib.findAllStocks();
-		for (Stock stock : allStocks) {
-			int stockId = stock.getId();
-			String symbol = stock.getSymbol();
-			
-			try {
-	    		AnalystOpinionYahoo aoy = AnalystOpinionYahooFetcher.fetchAnalystOpinionYahoo(symbol);
-	    		if (aoy != null) {
-	    			aoy.setStockId(stockId);
-	    			aoy.setCreatedDate(todayInt);
-	    			AnalystOpinionYahoo aoyInDB = StocksLib.findAnalystOpinionYahooByStockIdCreatedDate(stockId, todayInt);
-	    			if (aoyInDB == null) {
-		    			StocksLib.addAnalystOpinionYahoo(aoy);
-	    			}
-	    			else {
-	    				aoy.setId(aoyInDB.getId());
-	    				StocksLib.updateAnalystOpinionYahoo(aoy);
-	    			}
-	    		}
-	    		
-	    		QuoteYahoo qy = QuoteYahooFetcher.fetchQuoteYahoo(symbol);
-	    		if (qy != null) {
-    				qy.setStockId(stockId);
-    				qy.setCreatedDate(todayInt);
-	    			QuoteYahoo qyInDB = StocksLib.findQuoteYahooByStockIdCreatedDate(stockId, todayInt);
-	    			if (qyInDB == null) {
-	    				StocksLib.addQuoteYahoo(qy);
-	    			}
-	    			else {
-	    				qy.setId(qyInDB.getId());
-	    				StocksLib.updateQuoteYahoo(qy);
-	    			}
-	    		}
-			}
-			catch (Exception e) {
-				logger.fatal("Exception in reading Yahoo Analyst Opinions and Quotes", e);
-				System.exit(-1);
-			}
-		}
-		
-	    StocksLib.transactionCommit();
-	    
-	    FactSetEarningsEmail.processFactSetEarningsEmail();
-	    */
-		
-		System.out.println("All Kosher, Good Night.");
+		reader.readEarningsCalendarforWeek();		
 		System.exit(0);
 	}
 

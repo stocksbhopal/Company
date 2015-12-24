@@ -1,5 +1,6 @@
 package com.sanjoyghosh.company.db;
 
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,6 +8,7 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 
 import com.sanjoyghosh.company.model.Company;
+import com.sanjoyghosh.company.model.EarningsDate;
 import com.sanjoyghosh.company.model.Holding;
 import com.sanjoyghosh.company.model.PriceHistory;
 
@@ -67,9 +69,19 @@ public class CompanyUtils {
 
 	public static PriceHistory fetchLastPriceHistoryForSymbol(EntityManager entityManager, String symbol) {
 		List<PriceHistory> priceHistoryList = 
-			entityManager.createQuery("SELECT ph FROM PriceHistory AS ph where ph.symbol = :symbol AND ph.dateOfPrice in (SELECT MAX(dateOfPrice) FROM PriceHistory WHERE symbol = :symbol)", PriceHistory.class)
+			entityManager.createQuery("SELECT ph FROM PriceHistory AS ph WHERE ph.symbol = :symbol AND ph.dateOfPrice IN (SELECT MAX(dateOfPrice) FROM PriceHistory WHERE symbol = :symbol)", PriceHistory.class)
 			.setParameter("symbol", symbol)
 			.getResultList();
 		return priceHistoryList == null || priceHistoryList.size() == 0 ? null : priceHistoryList.get(0);
+	}
+
+
+	public static EarningsDate fetchEarningsDateForSymbolDate(EntityManager entityManager, String symbol, Timestamp earningsDate) {
+		List<EarningsDate> earningsDateList = 
+			entityManager.createQuery("SELECT ed FROM EarningsDate AS ed WHERE ed.symbol = :symbol AND ed.earningsDate = :earningsDate", EarningsDate.class)
+			.setParameter("symbol", symbol)
+			.setParameter("earningsDate", earningsDate)
+			.getResultList();
+		return earningsDateList == null || earningsDateList.size() == 0 ? null : earningsDateList.get(0);
 	}
 }
