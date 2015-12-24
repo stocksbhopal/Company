@@ -5,7 +5,8 @@ import java.io.StringReader;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +14,7 @@ import javax.persistence.EntityManager;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
+import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 
 import com.sanjoyghosh.company.db.CompanyUtils;
@@ -85,21 +87,21 @@ public class YahooHistoricalPricesReader {
 	@SuppressWarnings("deprecation")
 	private void readHistoricalPrices(List<String> symbols) {
 		for (String symbol : symbols) {
-			int startDate = 01;
-			int startMonth = 00;
-			int startYear = 1995;
+			Calendar calendar = new GregorianCalendar(1995, 0, 1);
 			PriceHistory priceHistory = CompanyUtils.fetchLastPriceHistoryForSymbol(entityManager, symbol);
 			if (priceHistory != null) {
-				startDate = priceHistory.getDateOfPrice().getDate();
-				startMonth = priceHistory.getDateOfPrice().getMonth();
-				startYear = priceHistory.getDateOfPrice().getYear() + 1900;
+				calendar = new GregorianCalendar(priceHistory.getDateOfPrice().getYear() + 1900, priceHistory.getDateOfPrice().getMonth(), priceHistory.getDateOfPrice().getDate(), 0, 0);
+				calendar.add(Calendar.DAY_OF_MONTH, 1);
 			}
-			String url = "http://real-chart.finance.yahoo.com/table.csv?s=" + symbol + "&a=" + startMonth + "&b=" + startDate + "&c=" + startYear + "&d=11&e=31&f=2020&g=d&ignore=.csv";
+			String url = "http://real-chart.finance.yahoo.com/table.csv?s=" + symbol + "&a=" + calendar.get(Calendar.MONTH) + "&b=" + calendar.get(Calendar.DAY_OF_MONTH) + "&c=" + calendar.get(Calendar.YEAR) + "&d=11&e=31&f=2020&g=d&ignore=.csv";
 			System.out.println(url);
 			try {
 				String csvString = Jsoup.connect(url).execute().body();
 				readThePrices(csvString, symbol);
 			} 
+			catch (HttpStatusException e) {
+				System.out.println("No new prices for " + symbol);
+			}
 			catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
