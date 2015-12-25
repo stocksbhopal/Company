@@ -1,5 +1,7 @@
 package com.sanjoyghosh.company.db;
 
+import java.util.List;
+
 public class StringUtils {
 
 	public static String stripFirstChar(String str) {
@@ -9,6 +11,43 @@ public class StringUtils {
 		return str.substring(1, str.length());
 	}
 	
+	
+	public static String remainderWithInsidePrefix(String str, List<String> prefixList) {
+		if (str == null) {
+			return null;
+		}
+		
+		for (String prefix : prefixList) {
+			int pos = str.indexOf(prefix);
+			if (pos >= 0) {
+				pos += prefix.length();
+				if (str.length() > pos) {
+					str = str.substring(pos).trim();
+					return str;
+				}
+			}
+		}
+		return null;
+	}
+	
+
+	public static String remainderWithStartPrefix(String str, List<String> prefixList) {
+		if (str == null) {
+			return null;
+		}
+		
+		for (String prefix : prefixList) {
+			if (str.startsWith(prefix)) {
+				int pos = prefix.length();
+				if (str.length() > pos) {
+					str = str.substring(pos).trim();
+					return str;
+				}
+			}
+		}
+		return null;
+	}
+
 	
 	public static Double toDoubleStringWithDollar(String str) {
 		if (str == null || str.length() < 2) {
