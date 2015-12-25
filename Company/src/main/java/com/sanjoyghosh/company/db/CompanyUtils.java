@@ -14,13 +14,23 @@ import com.sanjoyghosh.company.model.PriceHistory;
 
 public class CompanyUtils {
 
+	public static Company fetchCompanyBySymbol(EntityManager entityManager, String symbol) {
+		try {
+			Company company = 
+				entityManager.createQuery("SELECT c FROM Company AS c WHERE c.symbol = :symbol", Company.class)
+				.setParameter("symbol", symbol)
+				.getSingleResult();
+				return company;
+		}
+		catch (Exception e) {return null;}
+	}
+
 	public static List<Company> fetchAllCompany(EntityManager entityManager) {
 		List<Company> companyList = 
 			entityManager.createQuery("SELECT c FROM Company AS c", Company.class)
 			.getResultList();
 		return companyList;
 	}
-	
 	
 	public static List<String> fetchAllCompanySymbols(EntityManager entityManager) {
 		List<String> symbols = 
@@ -29,7 +39,6 @@ public class CompanyUtils {
 		return symbols;
 	}
 
-	
 	public static Map<String, Company> fetchAllCompanyBySymbolMap(EntityManager entityManager) {
 		List<Company> companyList = 
 			entityManager.createQuery("SELECT c FROM Company AS c", Company.class)
@@ -42,13 +51,14 @@ public class CompanyUtils {
 	}
 
 	
+	
+	
 	public static List<Holding> fetchAllHolding(EntityManager entityManager) {
 		List<Holding> holdingList = 
 			entityManager.createQuery("SELECT h FROM Holding AS h", Holding.class)
 			.getResultList();
 		return holdingList;
 	}
-
 	
 	public static List<Holding> fetchAllHoldingAtBrokerage(EntityManager entityManager, String brokerage) {
 		List<Holding> holdingList = 
@@ -58,7 +68,6 @@ public class CompanyUtils {
 		return holdingList;
 	}
 
-
 	public static List<String> fetchAllHoldingSymbols(EntityManager entityManager) {
 		List<String> symbols = 
 			entityManager.createQuery("SELECT h.symbol FROM Holding AS h", String.class)
@@ -67,6 +76,8 @@ public class CompanyUtils {
 	}
 
 
+	
+	
 	public static PriceHistory fetchLastPriceHistoryForSymbol(EntityManager entityManager, String symbol) {
 		List<PriceHistory> priceHistoryList = 
 			entityManager.createQuery("SELECT ph FROM PriceHistory AS ph WHERE ph.symbol = :symbol AND ph.dateOfPrice IN (SELECT MAX(dateOfPrice) FROM PriceHistory WHERE symbol = :symbol)", PriceHistory.class)
@@ -75,6 +86,8 @@ public class CompanyUtils {
 		return priceHistoryList == null || priceHistoryList.size() == 0 ? null : priceHistoryList.get(0);
 	}
 
+	
+	
 
 	public static EarningsDate fetchEarningsDateForSymbolDate(EntityManager entityManager, String symbol, Timestamp earningsDate) {
 		List<EarningsDate> earningsDateList = 

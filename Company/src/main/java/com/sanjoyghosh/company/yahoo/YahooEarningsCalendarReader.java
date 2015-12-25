@@ -29,7 +29,7 @@ public class YahooEarningsCalendarReader {
 	private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyyMMdd");
 	
 	
-	private Document fetchDocument(String url) throws IOException {
+	private static Document fetchDocument(String url) throws IOException {
 		Document doc = null;
 		for (int i = 0; i < MAX_RETRIES; i++) {
 			try {
@@ -46,7 +46,8 @@ public class YahooEarningsCalendarReader {
 	}
 
 	
-	private void readSummaryYahoo(EarningsDate earningsDate) throws IOException {
+	// Static because JPMorganEarningsCalendar uses it to populate Yahoo information.
+	public static void readSummaryYahoo(EarningsDate earningsDate) throws IOException {
 		String aoyUrl = "http://finance.yahoo.com/q?s=" + earningsDate.getSymbol();
 		Document doc = fetchDocument(aoyUrl);
 		
@@ -62,7 +63,7 @@ public class YahooEarningsCalendarReader {
 	}
 
 	
-	private void readAnalystOpinionYahoo(EarningsDate earningsDate) throws IOException {
+	public static void readAnalystOpinionYahoo(EarningsDate earningsDate) throws IOException {
 		String aoyUrl = "http://finance.yahoo.com/q/ao?s=" + earningsDate.getSymbol() + "+Analyst+Opinion";
 		Document doc = fetchDocument(aoyUrl);
 		Elements elements = doc.select("td.yfnc_tabledata1");
@@ -125,7 +126,6 @@ public class YahooEarningsCalendarReader {
 	    		
 	    		readAnalystOpinionYahoo(earningsDate);
 	    		readSummaryYahoo(earningsDate);
-	    		System.out.println(earningsDate);
 	    		entityManager.persist(earningsDate);
 	    	}
 	    }   

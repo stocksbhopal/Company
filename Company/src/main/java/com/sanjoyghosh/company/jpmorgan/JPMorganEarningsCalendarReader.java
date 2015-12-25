@@ -23,7 +23,9 @@ import org.apache.pdfbox.util.PDFTextStripper;
 import com.sanjoyghosh.company.db.CompanyUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.StringUtils;
+import com.sanjoyghosh.company.model.Company;
 import com.sanjoyghosh.company.model.EarningsDate;
+import com.sanjoyghosh.company.yahoo.YahooEarningsCalendarReader;
 
 public class JPMorganEarningsCalendarReader {
 	
@@ -66,6 +68,23 @@ public class JPMorganEarningsCalendarReader {
 						earningsDateDB.setJpmAnalyst(analyst);
 						earningsDateDB.setJpmOpinion(opinion);
 						entityManager.persist(earningsDateDB);
+					}
+					else {
+						if (earningsDate.after(new Date())) {
+							Company company = CompanyUtils.fetchCompanyBySymbol(entityManager, symbol);
+							earningsDateDB = new EarningsDate();
+							earningsDateDB.setBeforeMarketOrAfterMarket("BM");
+							earningsDateDB.setCompanyId(company == null ? null : company.getId());
+							earningsDateDB.setEarningsDate(new Timestamp(earningsDate.getTime()));
+							earningsDateDB.setJpmAnalyst(analyst);
+							earningsDateDB.setJpmOpinion(opinion);
+							earningsDateDB.setSymbol(symbol);
+							
+							YahooEarningsCalendarReader.readAnalystOpinionYahoo(earningsDateDB);
+							YahooEarningsCalendarReader.readSummaryYahoo(earningsDateDB);
+							entityManager.persist(earningsDateDB);
+							System.out.println("MISSING: " + symbol + "  " + earningsDate);
+						}
 					}
 				}
 			}
