@@ -86,6 +86,8 @@ public class YahooHistoricalPricesReader {
 	
 	@SuppressWarnings("deprecation")
 	private void readHistoricalPrices(List<String> symbols) {
+		int totalSymbols = symbols.size();
+		int count = 0;
 		for (String symbol : symbols) {
 			Calendar calendar = new GregorianCalendar(1995, 0, 1);
 			PriceHistory priceHistory = CompanyUtils.fetchLastPriceHistoryForSymbol(entityManager, symbol);
@@ -98,6 +100,9 @@ public class YahooHistoricalPricesReader {
 			try {
 				String csvString = Jsoup.connect(url).execute().body();
 				readThePrices(csvString, symbol);
+				count++;
+				System.out.println("Done " + symbol + ", " + count + " of " + totalSymbols);
+				System.out.println();
 			} 
 			catch (HttpStatusException e) {
 				System.out.println("No new prices for " + symbol);
