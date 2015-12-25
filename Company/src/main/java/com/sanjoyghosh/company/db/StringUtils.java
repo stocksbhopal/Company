@@ -12,6 +12,31 @@ public class StringUtils {
 	}
 	
 	
+	public static String[] prefixAndSuffixWithEmbedded(String str, List<String> embeddedList) {
+		if (str == null) {
+			return null;
+		}
+		
+		for (String embedded : embeddedList) {
+			int startPos = str.indexOf(embedded);
+			if (startPos >= 0) {
+				
+				int endPos = startPos + embedded.length();
+				if (str.length() > endPos) {
+					String[] returnStrings = new String [3];
+					String prefix = str.substring(0, startPos).trim();
+					String suffix = str.substring(endPos).trim();
+					returnStrings[0] = prefix;
+					returnStrings[1] = embedded;
+ 					returnStrings[2] = suffix;
+					return returnStrings;
+				}
+			}
+		}
+		return null;
+	}
+
+	
 	public static String remainderWithInsidePrefix(String str, List<String> prefixList) {
 		if (str == null) {
 			return null;

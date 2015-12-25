@@ -30,6 +30,10 @@ public class EarningsDate {
 	private Double marketCap;
 	@Column
 	private Boolean isFactSet;
+	@Column
+	private String jpmOpinion;
+	@Column
+	private String jpmAnalyst;
 	
 	
 	public EarningsDate() {}
@@ -158,11 +162,31 @@ public class EarningsDate {
 	}
 
 
+	public String getJpmOpinion() {
+		return jpmOpinion;
+	}
+
+
+	public void setJpmOpinion(String jpmOpinion) {
+		this.jpmOpinion = jpmOpinion;
+	}
+
+
+	public String getJpmAnalyst() {
+		return jpmAnalyst;
+	}
+
+
+	public void setJpmAnalyst(String jpmAnalyst) {
+		this.jpmAnalyst = jpmAnalyst;
+	}
+
+
 	@Override
 	public String toString() {
 		return "EarningsDate [id=" + id + ", symbol=" + symbol + ", companyId=" + companyId + ", earningsDate="
 				+ earningsDate + ", beforeMarketOrAfterMarket=" + beforeMarketOrAfterMarket + ", analystOpinion="
 				+ analystOpinion + ", numberBrokers=" + numberBrokers + ", marketCap=" + marketCap + ", isFactSet="
-				+ isFactSet + "]";
+				+ isFactSet + ", jpmOpinion=" + jpmOpinion + ", jpmAnalyst=" + jpmAnalyst + "]";
 	}
 }
