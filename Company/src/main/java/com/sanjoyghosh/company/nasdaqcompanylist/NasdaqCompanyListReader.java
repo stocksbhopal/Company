@@ -1,9 +1,9 @@
 package com.sanjoyghosh.company.nasdaqcompanylist;
 
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
@@ -11,90 +11,101 @@ import javax.persistence.EntityManager;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 
+import com.sanjoyghosh.company.db.CompanyUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.model.Company;
-import com.sanjoyghosh.company.model.IndustrySector;
 
 public class NasdaqCompanyListReader {
 
 	private EntityManager entityManager;
-	private Map<String, IndustrySector> industrySectorMap = new HashMap<String, IndustrySector>();
-	private Map<String, Company> companyMap = new HashMap<String, Company>();
+	private Map<String, Company> companyBySymbolMap;
+	
 	
 	public NasdaqCompanyListReader() {}
+		
 	
-	public void readCompanyList(Reader reader) throws IOException {
-		entityManager = JPAHelper.getEntityManager();
-			
-		entityManager.getTransaction().begin();
+	private void readCompanyListFile(File companyListFile, String exchange) throws IOException {
+		Reader reader = null;
 		try {
-			fetchAllIndustrySector();
-//			fetchAllCompany();
-	
+			reader = new FileReader(companyListFile);
 			Iterable<CSVRecord> records = CSVFormat.EXCEL.withHeader().parse(reader);
 			for (CSVRecord record : records) {
-			    String symbol = record.get("Symbol");
-			    String name = record.get("Name");
-			    String ipoYearStr = record.get("IPOyear");
-			    String sector = record.get("Sector");
-			    String industry = record.get("industry");
-			    
-			    int ipoYear = -1;
-			    try {ipoYear = Integer.parseInt(ipoYearStr);}
-			    catch (Exception e) {}
-	
-			    String industrySectorKey = makeIndustrySectorKey(industry, sector);
-		    	IndustrySector industrySector = industrySectorMap.get(industrySectorKey);
-		    	if (industrySector == null) {
-		    		industrySector = new IndustrySector(industry, sector);
-		    		entityManager.persist(industrySector);
-		    		industrySectorMap.put(industrySectorKey, industrySector);
-		    	}
-	
-		    	Company companyRead = new Company(symbol, name, ipoYear, industrySector.getId());
-			    Company company = companyMap.get(symbol);
-			    if (company != null) {
-			    	if (!company.isIdenticalNonNull(companyRead)) {
-			    		entityManager.merge(companyRead);
-			    	}
-			    }
-			    else {
-			    	entityManager.persist(companyRead);
-			    }
-			    System.out.println(symbol + "   " + name);
+				String symbol = record.get("Symbol");
+				if (companyBySymbolMap.containsKey(symbol)) {
+					continue;
+				}
+				String sector = record.get("Sector");
+				if (sector.startsWith("n/a")) {
+					continue;
+				}
+				
+				String name = record.get("Name");
+				String ipoYearStr = record.get("IPOyear");
+				String industry = record.get("Industry");
+				
+				Company company = new Company();
+				company.setExchange(exchange);
+				company.setIndustry(industry);
+				company.setIpoYear(ipoYearStr.startsWith("n/a") ? null : Integer.parseInt(ipoYearStr));
+				company.setName(name);
+				company.setSector(sector);
+				company.setSymbol(symbol);
+				
+				entityManager.persist(company);
+				companyBySymbolMap.put(symbol, company);
 			}
-			entityManager.getTransaction().commit();
 		}
-		catch (Exception e) {
-			e.printStackTrace();
-			entityManager.getTransaction().rollback();
+		finally {
+			if (reader != null) {
+				try {
+					reader.close();
+				} 
+				catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 	
-	@SuppressWarnings("unused")
-	private void fetchAllCompany() {
-		List<Company> companyList = 
-			entityManager.createQuery("SELECT c FROM Company AS c", Company.class)
-			.getResultList();
+	
+	private void readAllCompanyListFiles() {
+		entityManager = JPAHelper.getEntityManager();
+		companyBySymbolMap = CompanyUtils.fetchAllCompanyBySymbolMap(entityManager);
 		
-		companyMap = new HashMap<String, Company>();
-		for (Company company : companyList) {
-			companyMap.put(company.getSymbol(), company);
+		File nasdaqCompanyListFile = new File("/Users/sanjoyghosh/Downloads/nasdaqcompanylist.csv");
+		if (nasdaqCompanyListFile.exists()) {
+			entityManager.getTransaction().begin();
+			try {
+				readCompanyListFile(nasdaqCompanyListFile, "nasdaq");
+				entityManager.getTransaction().commit();
+			} 
+			catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				entityManager.getTransaction().rollback();
+			}
 		}
-	}
-	
-	private String makeIndustrySectorKey(String industry, String sector) {
-		return industry + "_" + sector;
-	}
-	
-	private void fetchAllIndustrySector() {
-		List<IndustrySector> industrySectorList = 
-			entityManager.createQuery("SELECT i FROM IndustrySector AS i", IndustrySector.class)
-			.getResultList();
 
-		industrySectorMap = new HashMap<String, IndustrySector>();
-		for (IndustrySector is : industrySectorList) {
-			industrySectorMap.put(makeIndustrySectorKey(is.getIndustry(), is.getSector()), is);
+		File nyseCompanyListFile = new File("/Users/sanjoyghosh/Downloads/nysecompanylist.csv");
+		if (nyseCompanyListFile.exists()) {
+			entityManager.getTransaction().begin();
+			try {
+				readCompanyListFile(nyseCompanyListFile, "nyse");
+				entityManager.getTransaction().commit();
+			} 
+			catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				entityManager.getTransaction().rollback();
+			}
 		}
+	}
+	
+	
+	public static void main(String[] args) {
+		NasdaqCompanyListReader reader = new NasdaqCompanyListReader();
+		reader.readAllCompanyListFiles();
+		System.exit(0);
 	}
 }
