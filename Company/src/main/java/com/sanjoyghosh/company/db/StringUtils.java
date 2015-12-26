@@ -138,4 +138,37 @@ public class StringUtils {
 		Float floatVal = StringUtils.parseFloat(longStr);
 		return floatVal == null ? null : floatVal.longValue();
 	}
+	
+	
+	public static Integer parseInteger(String intStr) {
+		if (intStr == null) {
+			return null;
+		}
+		
+		intStr = intStr.replaceAll(",", "");
+		try {
+			Integer integer = Integer.parseInt(intStr);
+			return integer;
+		}
+		catch (NumberFormatException e) {
+			return null;
+		}
+	}
+
+	
+	public static Float[] parseFloatRange(String floatRangeStr) {
+		if (floatRangeStr == null) {
+			return null;
+		}
+		
+		String[] floatStrings = floatRangeStr.split("-");
+		if (floatStrings == null || floatStrings.length != 2) {
+			return null;
+		}
+		
+		Float[] floats = new Float [2];
+		floats[0] = StringUtils.parseFloat(floatStrings[0]);
+		floats[1] = StringUtils.parseFloat(floatStrings[1]);
+		return floats;
+	}
 }

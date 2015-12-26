@@ -25,7 +25,10 @@ import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.StringUtils;
 import com.sanjoyghosh.company.model.Company;
 import com.sanjoyghosh.company.model.EarningsDate;
-import com.sanjoyghosh.company.yahoo.YahooEarningsCalendarReader;
+import com.sanjoyghosh.company.yahoo.YahooAnalystOpinion;
+import com.sanjoyghosh.company.yahoo.YahooAnalystOpinionPage;
+import com.sanjoyghosh.company.yahoo.YahooStockSummary;
+import com.sanjoyghosh.company.yahoo.YahooStockSummaryPage;
 
 public class JPMorganEarningsCalendarReader {
 	
@@ -80,10 +83,16 @@ public class JPMorganEarningsCalendarReader {
 							earningsDateDB.setJpmOpinion(opinion);
 							earningsDateDB.setSymbol(symbol);
 							
-							YahooEarningsCalendarReader.readAnalystOpinionYahoo(earningsDateDB);
-							YahooEarningsCalendarReader.readSummaryYahoo(earningsDateDB);
+							YahooStockSummary summary = YahooStockSummaryPage.fetchYahooStockSummary(symbol);
+							earningsDateDB.setMarketCap(summary == null ? 0.0D : summary.getMarketCap());
+							
+							YahooAnalystOpinion yahooOpinion = YahooAnalystOpinionPage.fetchAnalystOpinionYahoo(symbol);
+							if (yahooOpinion != null) {
+								earningsDateDB.setAnalystOpinion(yahooOpinion.getMeanRecommendationThisWeek());
+								earningsDateDB.setNumberBrokers(yahooOpinion.getNumberOfBrokers());
+							}
+
 							entityManager.persist(earningsDateDB);
-							System.out.println("MISSING: " + symbol + "  " + earningsDate);
 						}
 					}
 				}
