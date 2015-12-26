@@ -2,82 +2,83 @@ package com.sanjoyghosh.company.yahoo;
 
 public class YahooStockSummary {
 
-	private Float price;
-	private Float previousClose;
-	private Float open;
-	private Float oneYearTarget;
-	private Float dayRangeLow;
-	private Float dayRangeHigh;
-	private Float fiftyTwoWeekRangeLow;
-	private Float fiftyTwoWeekRangeHigh;
+	private Double price;
+	private Double previousClose;
+	private Double open;
+	private Double oneYearTarget;
+	private Double dayRangeLow;
+	private Double dayRangeHigh;
+	private Double fiftyTwoWeekRangeLow;
+	private Double fiftyTwoWeekRangeHigh;
 	private Integer volume;
 	private Integer threeMonthAverageVolume;
 	private Long marketCap;
+	private String marketCapBM;
 	
 	
 	public YahooStockSummary() {}
 	
 	
-	public Float getPrice() {
+	public Double getPrice() {
 		return price;
 	}
-	public void setPrice(Float price) {
+	public void setPrice(Double price) {
 		this.price = price;
 	}
 	
 	
-	public Float getPreviousClose() {
+	public Double getPreviousClose() {
 		return previousClose;
 	}
-	public void setPreviousClose(Float previousClose) {
+	public void setPreviousClose(Double previousClose) {
 		this.previousClose = previousClose;
 	}
 	
 	
-	public Float getOpen() {
+	public Double getOpen() {
 		return open;
 	}
-	public void setOpen(Float open) {
+	public void setOpen(Double open) {
 		this.open = open;
 	}
 	
 	
-	public Float getOneYearTarget() {
+	public Double getOneYearTarget() {
 		return oneYearTarget;
 	}
-	public void setOneYearTarget(Float oneYearTarget) {
+	public void setOneYearTarget(Double oneYearTarget) {
 		this.oneYearTarget = oneYearTarget;
 	}
 	
 	
-	public Float getDayRangeLow() {
+	public Double getDayRangeLow() {
 		return dayRangeLow;
 	}
-	public void setDayRangeLow(Float dayRangeLow) {
+	public void setDayRangeLow(Double dayRangeLow) {
 		this.dayRangeLow = dayRangeLow;
 	}
 	
 	
-	public Float getDayRangeHigh() {
+	public Double getDayRangeHigh() {
 		return dayRangeHigh;
 	}
-	public void setDayRangeHigh(Float dayRangeHigh) {
+	public void setDayRangeHigh(Double dayRangeHigh) {
 		this.dayRangeHigh = dayRangeHigh;
 	}
 	
 	
-	public Float getFiftyTwoWeekRangeLow() {
+	public Double getFiftyTwoWeekRangeLow() {
 		return fiftyTwoWeekRangeLow;
 	}
-	public void setFiftyTwoWeekRangeLow(Float fiftyTwoWeekRangeLow) {
+	public void setFiftyTwoWeekRangeLow(Double fiftyTwoWeekRangeLow) {
 		this.fiftyTwoWeekRangeLow = fiftyTwoWeekRangeLow;
 	}
 	
 	
-	public Float getFiftyTwoWeekRangeHigh() {
+	public Double getFiftyTwoWeekRangeHigh() {
 		return fiftyTwoWeekRangeHigh;
 	}
-	public void setFiftyTwoWeekRangeHigh(Float fiftyTwoWeekRangeHigh) {
+	public void setFiftyTwoWeekRangeHigh(Double fiftyTwoWeekRangeHigh) {
 		this.fiftyTwoWeekRangeHigh = fiftyTwoWeekRangeHigh;
 	}
 	
@@ -113,5 +114,15 @@ public class YahooStockSummary {
 				+ ", fiftyTwoWeekRangeLow=" + fiftyTwoWeekRangeLow + ", fiftyTwoWeekRangeHigh=" + fiftyTwoWeekRangeHigh
 				+ ", volume=" + volume + ", threeMonthAverageVolume=" + threeMonthAverageVolume + ", marketCap="
 				+ marketCap + "]";
+	}
+
+
+	public String getMarketCapBM() {
+		return marketCapBM;
+	}
+
+
+	public void setMarketCapBM(String marketCapBM) {
+		this.marketCapBM = marketCapBM;
 	}
 }

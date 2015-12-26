@@ -70,10 +70,10 @@ public class MerrillLynchHoldingsReader {
 			Iterable<CSVRecord> records = CSVFormat.EXCEL.withHeader().parse(reader);
 			for (CSVRecord record : records) {
 				if (record.size() == 16) {
-					String account = StringUtils.onlyLast4Characters(record.get("Account #"));
-				    String symbol = record.get("Symbol");
-				    double quantity = Double.parseDouble(record.get("Quantity").replaceAll(",", ""));
-				    Double lastPrice = Double.parseDouble(record.get("Price ($)").replaceAll(",", ""));
+					String account = StringUtils.onlyLast4Characters(record.get("Account #").trim());
+				    String symbol = record.get("Symbol").trim();
+				    double quantity = Double.parseDouble(record.get("Quantity").replaceAll(",", "").trim());
+				    Double lastPrice = Double.parseDouble(record.get("Price ($)").replaceAll(",", "").trim());
 	
 				    Holding holding = new Holding();
 				    holding.setAccount(account);

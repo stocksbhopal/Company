@@ -24,6 +24,10 @@ public class Company {
 	private String industry;
 	@Column
 	private String exchange;
+	@Column 
+	private Long marketCap;
+	@Column
+	private String marketCapBM;
 	
 	
 	public Company() {}
@@ -126,9 +130,30 @@ public class Company {
 	}
 
 
+	public Long getMarketCap() {
+		return marketCap;
+	}
+
+
+	public void setMarketCap(Long marketCap) {
+		this.marketCap = marketCap;
+	}
+
+
+	public String getMarketCapBM() {
+		return marketCapBM;
+	}
+
+
+	public void setMarketCapBM(String marketCapBM) {
+		this.marketCapBM = marketCapBM;
+	}
+
+
 	@Override
 	public String toString() {
-		return "Company [id=" + id + ", symbol=" + symbol + ", name=" + name + ", ipoYear="
-				+ ipoYear + ", sector=" + sector + ", industry=" + industry + ", exchange=" + exchange + "]";
+		return "Company [id=" + id + ", symbol=" + symbol + ", name=" + name + ", ipoYear=" + ipoYear + ", sector="
+				+ sector + ", industry=" + industry + ", exchange=" + exchange + ", marketCap=" + marketCap
+				+ ", marketCapBM=" + marketCapBM + "]";
 	}	
 }

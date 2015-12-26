@@ -70,11 +70,11 @@ public class FidelityHoldingsReader {
 			Iterable<CSVRecord> records = CSVFormat.EXCEL.withHeader().parse(reader);
 			for (CSVRecord record : records) {
 				if (record.size() == 14) {
-					String account = StringUtils.onlyLast4Characters(record.get("Account Name/Number"));
-				    String symbol = record.get("Symbol");
-				    double quantity = Double.parseDouble(record.get("Quantity"));
-				    Double lastPrice = StringUtils.toDoubleStringWithDollar(record.get("Last Price"));
-				    Double boughtPrice = StringUtils.toDoubleStringWithDollar(record.get("Cost Basis Per Share"));
+					String account = StringUtils.onlyLast4Characters(record.get("Account Name/Number").trim());
+				    String symbol = record.get("Symbol").trim();
+				    double quantity = Double.parseDouble(record.get("Quantity").trim());
+				    Double lastPrice = StringUtils.toDoubleStringWithDollar(record.get("Last Price").trim());
+				    Double boughtPrice = StringUtils.toDoubleStringWithDollar(record.get("Cost Basis Per Share").trim());
 	
 				    Holding holding = new Holding();
 				    holding.setAccount(account);

@@ -55,12 +55,12 @@ public class YahooHistoricalPricesReader {
 		try {
 			Iterable<CSVRecord> records = CSVFormat.EXCEL.withHeader().parse(new StringReader(csvString));
 			for (CSVRecord record : records) {
-				Timestamp dateOfPrice = parseTimestamp(record.get("Date"));
-			    double openPrice = Double.parseDouble(record.get("Open"));
-			    double closePrice = Double.parseDouble(record.get("Close"));
-			    double lowPrice = Double.parseDouble(record.get("Low"));
-			    double highPrice = Double.parseDouble(record.get("High"));
-			    int volume = Integer.parseInt(record.get("Volume"));
+				Timestamp dateOfPrice = parseTimestamp(record.get("Date").trim());
+			    double openPrice = Double.parseDouble(record.get("Open").trim());
+			    double closePrice = Double.parseDouble(record.get("Close").trim());
+			    double lowPrice = Double.parseDouble(record.get("Low").trim());
+			    double highPrice = Double.parseDouble(record.get("High").trim());
+			    int volume = Integer.parseInt(record.get("Volume").trim());
 			    			    
 			    PriceHistory priceHistory = new PriceHistory();
 			    priceHistory.setClosePrice(closePrice);

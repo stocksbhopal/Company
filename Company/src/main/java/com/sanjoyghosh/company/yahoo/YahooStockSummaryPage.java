@@ -20,28 +20,28 @@ public class YahooStockSummaryPage {
 			return null;
 		}
 
-		float price = 0.0F;
-		try {price = StringUtils.parseFloat(elements.text());}
+		Double price = 0.0D;
+		try {price = StringUtils.parseDouble(elements.text());}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 		
 		elements = doc.select("td.yfnc_tabledata1");
-		Float previousClose = StringUtils.parseFloat(elements.get(0).text());
-		Float open = StringUtils.parseFloat(elements.get(1).text());
-		Float oneYearTarget = StringUtils.parseFloat(elements.get(4).text());
+		Double previousClose = StringUtils.parseDouble(elements.get(0).text());
+		Double open = StringUtils.parseDouble(elements.get(1).text());
+		Double oneYearTarget = StringUtils.parseDouble(elements.get(4).text());
 		
 		String daysRangeStr = elements.get(7).text();
-		Float[] dayRangeFloats = StringUtils.parseFloatRange(daysRangeStr);
+		Double[] dayRangeFloats = StringUtils.parseDoubleRange(daysRangeStr);
 		
 		String fiftyTwoWeekRangeStr = elements.get(8).text();
-		Float[] fiftyTwoWeekRangeFloats = StringUtils.parseFloatRange(fiftyTwoWeekRangeStr);
+		Double[] fiftyTwoWeekRangeFloats = StringUtils.parseDoubleRange(fiftyTwoWeekRangeStr);
 		
 		Integer volume = StringUtils.parseInteger(elements.get(9).text());
 		Integer threeMonthAverageVolume = StringUtils.parseInteger(elements.get(10).text());
 		
 		String marketCapStr = elements.get(11).text();		
-		Long marketCap = StringUtils.parseLongWithBM(marketCapStr);
+		Long marketCap = StringUtils.parseLongWithBMK(marketCapStr);
 		
 		YahooStockSummary yss = new YahooStockSummary();
 		yss.setPrice(price);
@@ -59,6 +59,7 @@ public class YahooStockSummaryPage {
 		yss.setVolume(volume);
 		yss.setThreeMonthAverageVolume(threeMonthAverageVolume);
 		yss.setMarketCap(marketCap);
+		yss.setMarketCapBM(marketCapStr);
 		
 		return yss;
 	}

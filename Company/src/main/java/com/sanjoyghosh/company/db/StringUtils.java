@@ -95,18 +95,18 @@ public class StringUtils {
 	}
 	
 	
-	public static Float parseFloat(String floatStr) {
-		if (floatStr == null) {
+	public static Double parseDouble(String doubleStr) {
+		if (doubleStr == null) {
 			return null;
 		}
-		floatStr = floatStr.trim();
-		if (floatStr.equals("N/A")) {
+		doubleStr = doubleStr.trim();
+		if (doubleStr.equals("N/A") || doubleStr.equals("NA")) {
 			return null;
 		}
 		
-		floatStr = floatStr.replaceAll(",", "");
+		doubleStr = doubleStr.replaceAll(",", "");
 		try {
-			Float flt = Float.parseFloat(floatStr);
+			Double flt = Double.parseDouble(doubleStr);
 			return flt;
 		}
 		catch (NumberFormatException e) {
@@ -116,7 +116,7 @@ public class StringUtils {
 	}
 
 	
-	public static Long parseLongWithBM(String longStr) {
+	public static Long parseLongWithBMK(String longStr) {
 		if (longStr == null) {
 			return null;
 		}
@@ -124,19 +124,22 @@ public class StringUtils {
 		longStr = longStr.trim();
 		if (longStr.endsWith("B")) {
 			longStr = longStr.substring(0, longStr.length() - 1);
-			Long longVal = StringUtils.parseFloat(longStr).longValue();
-			longVal = longVal * 1000000000;
+			Long longVal = (long) (StringUtils.parseDouble(longStr) * 1000000000);
 			return longVal;
 		}
 		if (longStr.endsWith("M")) {
 			longStr = longStr.substring(0, longStr.length() - 1);
-			Long longVal = StringUtils.parseFloat(longStr).longValue();
-			longVal = longVal * 1000000;
+			Long longVal = (long) (StringUtils.parseDouble(longStr) * 1000000D);
+			return longVal;
+		}
+		if (longStr.endsWith("K")) {
+			longStr = longStr.substring(0, longStr.length() - 1);
+			Long longVal = (long) (StringUtils.parseDouble(longStr) * 1000D);
 			return longVal;
 		}
 		
-		Float floatVal = StringUtils.parseFloat(longStr);
-		return floatVal == null ? null : floatVal.longValue();
+		Double doubleVal = StringUtils.parseDouble(longStr);
+		return doubleVal == null ? null : doubleVal.longValue();
 	}
 	
 	
@@ -156,19 +159,19 @@ public class StringUtils {
 	}
 
 	
-	public static Float[] parseFloatRange(String floatRangeStr) {
-		if (floatRangeStr == null) {
+	public static Double[] parseDoubleRange(String doubleRangeStr) {
+		if (doubleRangeStr == null) {
 			return null;
 		}
 		
-		String[] floatStrings = floatRangeStr.split("-");
-		if (floatStrings == null || floatStrings.length != 2) {
+		String[] doubleStrings = doubleRangeStr.split("-");
+		if (doubleStrings == null || doubleStrings.length != 2) {
 			return null;
 		}
 		
-		Float[] floats = new Float [2];
-		floats[0] = StringUtils.parseFloat(floatStrings[0]);
-		floats[1] = StringUtils.parseFloat(floatStrings[1]);
-		return floats;
+		Double[] doubles = new Double [2];
+		doubles[0] = StringUtils.parseDouble(doubleStrings[0]);
+		doubles[1] = StringUtils.parseDouble(doubleStrings[1]);
+		return doubles;
 	}
 }

@@ -14,6 +14,8 @@ import org.apache.commons.csv.CSVRecord;
 import com.sanjoyghosh.company.db.CompanyUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.model.Company;
+import com.sanjoyghosh.company.yahoo.YahooStockSummary;
+import com.sanjoyghosh.company.yahoo.YahooStockSummaryPage;
 
 public class NasdaqCompanyListReader {
 
@@ -30,18 +32,21 @@ public class NasdaqCompanyListReader {
 			reader = new FileReader(companyListFile);
 			Iterable<CSVRecord> records = CSVFormat.EXCEL.withHeader().parse(reader);
 			for (CSVRecord record : records) {
-				String symbol = record.get("Symbol");
+				String symbol = record.get("Symbol").trim();
+				if ((symbol.indexOf('^') >= 0) || (symbol.indexOf('.') >= 0)) {
+					continue;
+				}
 				if (companyBySymbolMap.containsKey(symbol)) {
 					continue;
 				}
-				String sector = record.get("Sector");
+				String sector = record.get("Sector").trim();
 				if (sector.startsWith("n/a")) {
 					continue;
 				}
 				
-				String name = record.get("Name");
-				String ipoYearStr = record.get("IPOyear");
-				String industry = record.get("Industry");
+				String name = record.get("Name").trim();
+				String ipoYearStr = record.get("IPOyear").trim();
+				String industry = record.get("Industry").trim();
 				
 				Company company = new Company();
 				company.setExchange(exchange);
@@ -51,8 +56,16 @@ public class NasdaqCompanyListReader {
 				company.setSector(sector);
 				company.setSymbol(symbol);
 				
-				entityManager.persist(company);
-				companyBySymbolMap.put(symbol, company);
+				YahooStockSummary summary = YahooStockSummaryPage.fetchYahooStockSummary(symbol);
+				if (summary != null) {
+					if (summary.getMarketCap() != null) {
+						company.setMarketCap(summary.getMarketCap());
+						company.setMarketCapBM(summary.getMarketCapBM());
+						
+						entityManager.persist(company);
+						companyBySymbolMap.put(symbol, company);
+					}
+				}
 			}
 		}
 		finally {
