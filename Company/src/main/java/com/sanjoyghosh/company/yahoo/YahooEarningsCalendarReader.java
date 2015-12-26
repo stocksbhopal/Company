@@ -38,6 +38,9 @@ public class YahooEarningsCalendarReader {
 	    	Elements smallElements = trElement.select("small");
 	    	if (!aElements.isEmpty()) {
 	    		String symbol = aElements.text();
+	    		if (symbol.indexOf('^') >= 0) {
+	    			continue;
+	    		}
 	    		EarningsDate currentEarningsDate = CompanyUtils.fetchEarningsDateForSymbolDate(entityManager, symbol, timestamp);
 	    		if (currentEarningsDate != null) {
 	    			continue;
