@@ -27,14 +27,14 @@ public class CompanyUtils {
 
 	public static List<Company> fetchAllCompany(EntityManager entityManager) {
 		List<Company> companyList = 
-			entityManager.createQuery("SELECT c FROM Company AS c", Company.class)
+			entityManager.createQuery("SELECT c FROM Company AS c ORDER BY c.symbol ASC", Company.class)
 			.getResultList();
 		return companyList;
 	}
 	
 	public static List<String> fetchAllCompanySymbols(EntityManager entityManager) {
 		List<String> symbols = 
-			entityManager.createQuery("SELECT c.symbol FROM Company AS c", String.class)
+			entityManager.createQuery("SELECT c.symbol FROM Company AS c ORDER BY c.symbol ASC", String.class)
 			.getResultList();
 		return symbols;
 	}
@@ -55,14 +55,14 @@ public class CompanyUtils {
 	
 	public static List<Holding> fetchAllHolding(EntityManager entityManager) {
 		List<Holding> holdingList = 
-			entityManager.createQuery("SELECT h FROM Holding AS h", Holding.class)
+			entityManager.createQuery("SELECT h FROM Holding AS h ORDER BY h.symbol ASC", Holding.class)
 			.getResultList();
 		return holdingList;
 	}
 	
 	public static List<Holding> fetchAllHoldingAtBrokerage(EntityManager entityManager, String brokerage) {
 		List<Holding> holdingList = 
-			entityManager.createQuery("SELECT h FROM Holding AS h WHERE h.brokerage = :brokerage", Holding.class)
+			entityManager.createQuery("SELECT h FROM Holding AS h WHERE h.brokerage = :brokerage ORDER BY h.symbol ASC", Holding.class)
 			.setParameter("brokerage", brokerage)
 			.getResultList();
 		return holdingList;
@@ -70,7 +70,7 @@ public class CompanyUtils {
 
 	public static List<String> fetchAllHoldingSymbols(EntityManager entityManager) {
 		List<String> symbols = 
-			entityManager.createQuery("SELECT h.symbol FROM Holding AS h", String.class)
+			entityManager.createQuery("SELECT h.symbol FROM Holding AS h ORDER BY h.symbol ASC", String.class)
 			.getResultList();
 		return symbols;
 	}

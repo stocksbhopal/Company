@@ -29,6 +29,7 @@ public class NasdaqCompanyListReader {
 	private void readCompanyListFile(File companyListFile, String exchange) throws IOException {
 		Reader reader = null;
 		try {
+			int count = 0;
 			reader = new FileReader(companyListFile);
 			Iterable<CSVRecord> records = CSVFormat.EXCEL.withHeader().parse(reader);
 			for (CSVRecord record : records) {
@@ -66,6 +67,9 @@ public class NasdaqCompanyListReader {
 						companyBySymbolMap.put(symbol, company);
 					}
 				}
+				
+				count++;
+				System.out.println("Done " + symbol + ", " + count + " of " + exchange);
 			}
 		}
 		finally {
