@@ -100,9 +100,6 @@ public class YahooHistoricalPricesReader {
 			try {
 				String csvString = Jsoup.connect(url).execute().body();
 				readThePrices(csvString, symbol);
-				count++;
-				System.out.println("Done " + symbol + ", " + count + " of " + totalSymbols);
-				System.out.println();
 			} 
 			catch (HttpStatusException e) {
 				System.out.println("No new prices for " + symbol);
@@ -110,6 +107,10 @@ public class YahooHistoricalPricesReader {
 			catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			}
+			finally {
+				count++;
+				System.out.println("Done " + symbol + ", " + count + " of " + totalSymbols);
 			}
 		}
 	}
