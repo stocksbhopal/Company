@@ -131,5 +131,6 @@ public class YahooHistoricalPricesReader {
 	public static void main(String[] args) {
 		YahooHistoricalPricesReader reader = new YahooHistoricalPricesReader();
 		reader.readAllHistoricalPrices();
+		System.exit(0);
 	}
 }
