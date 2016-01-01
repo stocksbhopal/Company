@@ -1,4 +1,4 @@
-package com.sanjoyghosh.company.factset;
+package com.sanjoyghosh.company.source.factset;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,7 +20,7 @@ import javax.persistence.EntityManager;
 import com.sanjoyghosh.company.db.CompanyUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.StringUtils;
-import com.sanjoyghosh.company.model.EarningsDate;
+import com.sanjoyghosh.company.db.model.EarningsDate;
 
 public class FactSetEarningsEmailReader {
 

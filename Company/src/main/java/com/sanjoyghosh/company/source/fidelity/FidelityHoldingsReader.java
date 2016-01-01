@@ -1,4 +1,4 @@
-package com.sanjoyghosh.company.merrilllynch;
+package com.sanjoyghosh.company.source.fidelity;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -18,10 +18,10 @@ import org.apache.commons.csv.CSVRecord;
 import com.sanjoyghosh.company.db.CompanyUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.StringUtils;
-import com.sanjoyghosh.company.model.Company;
-import com.sanjoyghosh.company.model.Holding;
+import com.sanjoyghosh.company.db.model.Company;
+import com.sanjoyghosh.company.db.model.Holding;
 
-public class MerrillLynchHoldingsReader {
+public class FidelityHoldingsReader {
 	
 	private EntityManager entityManager;
 	
@@ -31,56 +31,58 @@ public class MerrillLynchHoldingsReader {
 	private HashSet<Holding> updateHoldingSet = new HashSet<Holding>();
 	
 	
-	public MerrillLynchHoldingsReader() {}
+	public FidelityHoldingsReader() {}
 	
 	
-	private void fetchAllMerrillLynchHoldings() {
+	private void fetchAllFidelityHoldings() {
 		entityManager = JPAHelper.getEntityManager();
 		companyBySymbolMap = CompanyUtils.fetchAllCompanyBySymbolMap(entityManager);
-		List<Holding> currentHoldings = CompanyUtils.fetchAllHoldingAtBrokerage(entityManager, "L");
+		List<Holding> currentHoldings = CompanyUtils.fetchAllHoldingAtBrokerage(entityManager, "F");
 		for (Holding holding : currentHoldings) {
 			lastHoldingMap.put(holding, holding);
 		}
 	}
 	
 	
-	private File getMerrillLynchHoldingsFile() {
+	private File getFidelityHoldingsFile() {
 		File downloadsDir = new File("/Users/sanjoyghosh/Downloads");
-		File[] merrillLynchFiles = downloadsDir.listFiles(new FileFilter() {
+		File[] fidelityFiles = downloadsDir.listFiles(new FileFilter() {
 			
 			public boolean accept(File pathname) {
 				String fileName = pathname.getName();
-				boolean isMerrillLynch = fileName.matches("Holdings_\\d\\d\\d\\d\\d\\d\\d\\d\\.csv");
-				return isMerrillLynch;
+				boolean isFidelity = fileName.matches("Portfolio_Position_\\w\\w\\w-\\d\\d-\\d\\d\\d\\d\\.csv");
+				return isFidelity;
 			}
 		});
 		
-		if (merrillLynchFiles == null || merrillLynchFiles.length != 1) {
-			System.err.println("There should be exactly 1 Merrill Lynch Holdings file, got " + (merrillLynchFiles == null ? 0 : merrillLynchFiles.length));
+		if (fidelityFiles == null || fidelityFiles.length != 1) {
+			System.err.println("There should be exactly 1 Fidelity Holdings file, got " + (fidelityFiles == null ? 0 : fidelityFiles.length));
 			return null;
 		}
-		return merrillLynchFiles[0];
+		return fidelityFiles[0];
 	}
 	
 	
-	private void readMerrillLynchHoldingsFiles(File fidelityFile) {
+	private void readFidelityHoldingsFiles(File fidelityFile) {
 		Reader reader = null;
 		try {
 			reader = new FileReader(fidelityFile);
 			Iterable<CSVRecord> records = CSVFormat.EXCEL.withHeader().parse(reader);
 			for (CSVRecord record : records) {
-				if (record.size() == 16) {
-					String account = StringUtils.onlyLast4Characters(record.get("Account #").trim());
+				if (record.size() == 14) {
+					String account = StringUtils.onlyLast4Characters(record.get("Account Name/Number").trim());
 				    String symbol = record.get("Symbol").trim();
-				    double quantity = Double.parseDouble(record.get("Quantity").replaceAll(",", "").trim());
-				    Double lastPrice = Double.parseDouble(record.get("Price ($)").replaceAll(",", "").trim());
+				    double quantity = Double.parseDouble(record.get("Quantity").trim());
+				    Double lastPrice = StringUtils.toDoubleStringWithDollar(record.get("Last Price").trim());
+				    Double boughtPrice = StringUtils.toDoubleStringWithDollar(record.get("Cost Basis Per Share").trim());
 	
 				    Holding holding = new Holding();
 				    holding.setAccount(account);
 				    holding.setSymbol(symbol);
 				    holding.setQuantity(quantity);
 				    holding.setLastPrice(lastPrice);
-				    holding.setBrokerage("L");
+				    holding.setBoughtPrice(boughtPrice);
+				    holding.setBrokerage("F");
 				    
 				    Holding currentHolding = lastHoldingMap.remove(holding);
 				    if (currentHolding == null) {
@@ -126,11 +128,11 @@ public class MerrillLynchHoldingsReader {
 	
 	
 	public static void main(String[] args) {
-		MerrillLynchHoldingsReader reader = new MerrillLynchHoldingsReader();
-		reader.fetchAllMerrillLynchHoldings();
-		File merrillLynchFile = reader.getMerrillLynchHoldingsFile();
-		if (merrillLynchFile != null) {
-			reader.readMerrillLynchHoldingsFiles(merrillLynchFile);
+		FidelityHoldingsReader reader = new FidelityHoldingsReader();
+		reader.fetchAllFidelityHoldings();
+		File fidelityFile = reader.getFidelityHoldingsFile();
+		if (fidelityFile != null) {
+			reader.readFidelityHoldingsFiles(fidelityFile);
 			reader.updateDatabase();
 		}
 		System.exit(0);

@@ -1,4 +1,4 @@
-package com.sanjoyghosh.company.jpmorgan;
+package com.sanjoyghosh.company.source.jpmorgan;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,12 +23,12 @@ import org.apache.pdfbox.util.PDFTextStripper;
 import com.sanjoyghosh.company.db.CompanyUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.StringUtils;
-import com.sanjoyghosh.company.model.Company;
-import com.sanjoyghosh.company.model.EarningsDate;
-import com.sanjoyghosh.company.yahoo.YahooAnalystOpinion;
-import com.sanjoyghosh.company.yahoo.YahooAnalystOpinionPage;
-import com.sanjoyghosh.company.yahoo.YahooStockSummary;
-import com.sanjoyghosh.company.yahoo.YahooStockSummaryPage;
+import com.sanjoyghosh.company.db.model.Company;
+import com.sanjoyghosh.company.db.model.EarningsDate;
+import com.sanjoyghosh.company.source.yahoo.YahooAnalystOpinion;
+import com.sanjoyghosh.company.source.yahoo.YahooAnalystOpinionPage;
+import com.sanjoyghosh.company.source.yahoo.YahooStockSummary;
+import com.sanjoyghosh.company.source.yahoo.YahooStockSummaryPage;
 
 public class JPMorganEarningsCalendarReader {
 	

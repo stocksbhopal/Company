@@ -1,4 +1,4 @@
-package com.sanjoyghosh.company.yahoo;
+package com.sanjoyghosh.company.source.yahoo;
 
 import java.io.IOException;
 import java.util.List;
@@ -7,7 +7,7 @@ import javax.persistence.EntityManager;
 
 import com.sanjoyghosh.company.db.CompanyUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
-import com.sanjoyghosh.company.model.Company;
+import com.sanjoyghosh.company.db.model.Company;
 
 public class YahooCompanyUpdater {
 

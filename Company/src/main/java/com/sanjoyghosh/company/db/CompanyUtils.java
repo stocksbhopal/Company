@@ -7,10 +7,10 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 
-import com.sanjoyghosh.company.model.Company;
-import com.sanjoyghosh.company.model.EarningsDate;
-import com.sanjoyghosh.company.model.Holding;
-import com.sanjoyghosh.company.model.PriceHistory;
+import com.sanjoyghosh.company.db.model.Company;
+import com.sanjoyghosh.company.db.model.EarningsDate;
+import com.sanjoyghosh.company.db.model.Holding;
+import com.sanjoyghosh.company.db.model.PriceHistory;
 
 public class CompanyUtils {
 

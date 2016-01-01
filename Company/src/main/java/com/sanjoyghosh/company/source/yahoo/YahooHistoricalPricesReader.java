@@ -1,4 +1,4 @@
-package com.sanjoyghosh.company.yahoo;
+package com.sanjoyghosh.company.source.yahoo;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -19,8 +19,8 @@ import org.jsoup.Jsoup;
 
 import com.sanjoyghosh.company.db.CompanyUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
-import com.sanjoyghosh.company.model.Company;
-import com.sanjoyghosh.company.model.PriceHistory;
+import com.sanjoyghosh.company.db.model.Company;
+import com.sanjoyghosh.company.db.model.PriceHistory;
 
 public class YahooHistoricalPricesReader {
 

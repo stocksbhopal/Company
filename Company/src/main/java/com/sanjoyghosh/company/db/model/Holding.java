@@ -1,4 +1,4 @@
-package com.sanjoyghosh.company.model;
+package com.sanjoyghosh.company.db.model;
 
 import java.sql.Timestamp;
 

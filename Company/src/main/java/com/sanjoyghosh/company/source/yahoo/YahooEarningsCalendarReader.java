@@ -1,4 +1,4 @@
-package com.sanjoyghosh.company.yahoo;
+package com.sanjoyghosh.company.source.yahoo;
 
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -16,8 +16,8 @@ import org.jsoup.select.Elements;
 import com.sanjoyghosh.company.db.CompanyUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.JsoupUtils;
-import com.sanjoyghosh.company.model.Company;
-import com.sanjoyghosh.company.model.EarningsDate;
+import com.sanjoyghosh.company.db.model.Company;
+import com.sanjoyghosh.company.db.model.EarningsDate;
 
 public class YahooEarningsCalendarReader {
 

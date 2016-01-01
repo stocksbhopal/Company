@@ -1,4 +1,4 @@
-package com.sanjoyghosh.company.yahoo;
+package com.sanjoyghosh.company.source.yahoo;
 
 public class YahooStockSummary {
 
