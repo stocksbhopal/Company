@@ -12,3 +12,8 @@
 hs_err_pid*
 .metadata/
 .recommendations/
+*.original
+
+*.lst
+
+*.properties

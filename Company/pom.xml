@@ -70,4 +70,9 @@
 		</pluginRepository>
 	</pluginRepositories>
 
+	<properties>
+		<!-- The main class to start by executing java -jar -->
+		<start-class>com.sanjoyghosh.company.api.CompanyRestApplication</start-class>
+	</properties>
+
 </project>
