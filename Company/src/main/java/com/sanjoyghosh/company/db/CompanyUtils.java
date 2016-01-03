@@ -85,6 +85,16 @@ public class CompanyUtils {
 			.getResultList();
 		return priceHistoryList == null || priceHistoryList.size() == 0 ? null : priceHistoryList.get(0);
 	}
+	
+	public static List<PriceHistory> fetchPriceHistoryForSymbolDateStartEnd(EntityManager entityManager, String symbol, Timestamp priceDateStart, Timestamp priceDateEnd) {
+		List<PriceHistory> priceHistoryList = 
+			entityManager.createQuery("SELECT ph FROM PriceHistory AS ph WHERE ph.symbol = :symbol AND ph.dateOfPrice >= :priceDateStart AND ph.dateOfPrice <= :priceDateEnd", PriceHistory.class)
+			.setParameter("symbol", symbol)
+			.setParameter("priceDateStart", priceDateStart)
+			.setParameter("priceDateEnd", priceDateEnd)
+			.getResultList();
+		return priceHistoryList;
+	}
 
 	
 	
@@ -94,6 +104,15 @@ public class CompanyUtils {
 			entityManager.createQuery("SELECT ed FROM EarningsDate AS ed WHERE ed.symbol = :symbol AND ed.earningsDate = :earningsDate", EarningsDate.class)
 			.setParameter("symbol", symbol)
 			.setParameter("earningsDate", earningsDate)
+			.getResultList();
+		return earningsDateList == null || earningsDateList.size() == 0 ? null : earningsDateList.get(0);
+	}
+
+	public static EarningsDate fetchLastEarningsDateForSymbol(EntityManager entityManager, String symbol) {
+		List<EarningsDate> earningsDateList = 
+			entityManager.createQuery("SELECT ed FROM EarningsDate AS ed WHERE ed.symbol = :symbol ORDER BY ed.earningsDate DESC", EarningsDate.class)
+			.setParameter("symbol", symbol)
+			.setMaxResults(1)
 			.getResultList();
 		return earningsDateList == null || earningsDateList.size() == 0 ? null : earningsDateList.get(0);
 	}
