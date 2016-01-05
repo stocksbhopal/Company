@@ -116,7 +116,7 @@ public class YahooHistoricalPricesReader {
 	}
 	
 	
-	private void readAllHistoricalPrices() {
+	public void readAllHistoricalPrices() {
 		entityManager = JPAHelper.getEntityManager();
 		companyBySymbolMap = CompanyUtils.fetchAllCompanyBySymbolMap(entityManager);
 		

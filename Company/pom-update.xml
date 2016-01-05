@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.sanjoyghosh.stocks</groupId>
-	<artifactId>Company</artifactId>
+	<artifactId>CompanyDatabaseUpdater</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
 	<parent>
@@ -72,7 +72,7 @@
 
 	<properties>
 		<!-- The main class to start by executing java -jar -->
-		<start-class>com.sanjoyghosh.company.api.CompanyRestApplication</start-class>
+		<start-class>com.sanjoyghosh.company.db.CompanyDatabaseUpdater</start-class>
 	</properties>
 
 </project>

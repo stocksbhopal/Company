@@ -14,7 +14,7 @@ public class YahooCompanyUpdater {
 	private EntityManager entityManager;
 	
 	
-	private void updateMarketCapForAllCompanies() {
+	public void updateMarketCapForAllCompanies() {
 		entityManager = JPAHelper.getEntityManager();
 		List<Company> companyList = CompanyUtils.fetchAllCompany(entityManager);
 		

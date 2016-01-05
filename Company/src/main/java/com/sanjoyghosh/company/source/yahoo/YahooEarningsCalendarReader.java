@@ -71,7 +71,7 @@ public class YahooEarningsCalendarReader {
     }
 
 	
-	private void readEarningsCalendarforWeek() {
+	public void readEarningsCalendarforWeek() {
 		entityManager = JPAHelper.getEntityManager();
 		companyBySymbolMap = CompanyUtils.fetchAllCompanyBySymbolMap(entityManager);
 		
