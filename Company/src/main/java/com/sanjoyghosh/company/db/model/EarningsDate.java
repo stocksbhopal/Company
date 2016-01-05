@@ -27,7 +27,7 @@ public class EarningsDate {
 	@Column
 	private Integer numberBrokers;
 	@Column
-	private Double marketCap;
+	private Long marketCap;
 	@Column
 	private Boolean isFactSet;
 	@Column
@@ -109,12 +109,12 @@ public class EarningsDate {
 	}
 
 
-	public Double getMarketCap() {
+	public Long getMarketCap() {
 		return marketCap;
 	}
 
 
-	public void setMarketCap(Double marketCap) {
+	public void setMarketCap(Long marketCap) {
 		this.marketCap = marketCap;
 	}
 
