@@ -84,7 +84,7 @@ public class JPMorganEarningsCalendarReader {
 							earningsDateDB.setSymbol(symbol);
 							
 							YahooStockSummary summary = YahooStockSummaryPage.fetchYahooStockSummary(symbol);
-							earningsDateDB.setMarketCap(summary == null ? 0.0D : summary.getMarketCap());
+							earningsDateDB.setMarketCap(summary == null ? 0L : summary.getMarketCap());
 							
 							YahooAnalystOpinion yahooOpinion = YahooAnalystOpinionPage.fetchAnalystOpinionYahoo(symbol);
 							if (yahooOpinion != null) {
