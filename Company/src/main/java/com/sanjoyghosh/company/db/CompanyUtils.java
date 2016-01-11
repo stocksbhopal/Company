@@ -8,9 +8,11 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 
 import com.sanjoyghosh.company.db.model.Company;
+import com.sanjoyghosh.company.db.model.DividendHistory;
 import com.sanjoyghosh.company.db.model.EarningsDate;
 import com.sanjoyghosh.company.db.model.Holding;
 import com.sanjoyghosh.company.db.model.PriceHistory;
+import com.sanjoyghosh.company.db.model.StockSplitHistory;
 
 public class CompanyUtils {
 
@@ -76,7 +78,30 @@ public class CompanyUtils {
 	}
 
 
+
+
+	public static DividendHistory fetchDividendHistoryForSymbolDate(EntityManager entityManager, String symbol, Timestamp dividendDate) {
+		List<DividendHistory> dividendHistoryList = 
+			entityManager.createQuery("SELECT dh FROM DividendHistory AS dh WHERE dh.symbol = :symbol AND dh.dateOfDividend = :dividendDate", DividendHistory.class)
+			.setParameter("symbol", symbol)
+			.setParameter("dividendDate", dividendDate)
+			.getResultList();
+		return dividendHistoryList == null || dividendHistoryList.size() == 0 ? null : dividendHistoryList.get(0);
+	}
+
+
 	
+	public static StockSplitHistory fetchStockSplitHistoryForSymbolDate(EntityManager entityManager, String symbol, Timestamp stockSplitDate) {
+		List<StockSplitHistory> stockSplitHistoryList = 
+			entityManager.createQuery("SELECT sh FROM StockSplitHistory AS sh WHERE sh.symbol = :symbol AND sh.dateOfSplit = :stockSplitDate", StockSplitHistory.class)
+			.setParameter("symbol", symbol)
+			.setParameter("stockSplitDate", stockSplitDate)
+			.getResultList();
+		return stockSplitHistoryList == null || stockSplitHistoryList.size() == 0 ? null : stockSplitHistoryList.get(0);
+	}
+
+	
+
 	
 	public static PriceHistory fetchLastPriceHistoryForSymbol(EntityManager entityManager, String symbol) {
 		List<PriceHistory> priceHistoryList = 
