@@ -28,6 +28,8 @@ public class CompanyRestController {
 	@RequestMapping("/company")
 	public CompanyRest company(
 		@RequestParam(name="sym", required=true) String symbol,
+		@RequestParam(name="spl", required=false) boolean includeStockSplits,
+		@RequestParam(name="div", required=false) boolean includeDividends,
 		@RequestParam(name="psd", required=false) String priceStartDate,
 		@RequestParam(name="ped", required=false) String priceEndDate) {
 		
@@ -71,6 +73,14 @@ public class CompanyRestController {
 				
 		companyRest.setCompany(company);
 		companyRest.setLastEarningsDate(lastEarningsDate);
+		
+		if (includeStockSplits) {
+			companyRest.setStockSplitHistoryList(CompanyUtils.fetchStockSplitHistoryForSymbol(entityManager, symbol));
+		}
+		
+		if (includeDividends) {
+			companyRest.setDividendHistoryList(CompanyUtils.fetchDividendHistoryForSymbol(entityManager, symbol));
+		}
 		
 		if (priceStart != null) {
 			List<PriceHistory> priceHistoryList = CompanyUtils.fetchPriceHistoryForSymbolDateStartEnd(entityManager, symbol, new Timestamp(priceStart.getTime()), new Timestamp(priceEnd.getTime()));

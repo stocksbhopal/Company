@@ -89,6 +89,15 @@ public class CompanyUtils {
 		return dividendHistoryList == null || dividendHistoryList.size() == 0 ? null : dividendHistoryList.get(0);
 	}
 
+	public static List<DividendHistory> fetchDividendHistoryForSymbol(EntityManager entityManager, String symbol) {
+		List<DividendHistory> dividendHistoryList = 
+			entityManager.createQuery("SELECT dh FROM DividendHistory AS dh WHERE dh.symbol = :symbol", DividendHistory.class)
+			.setParameter("symbol", symbol)
+			.getResultList();
+		return dividendHistoryList;
+	}
+
+
 
 	
 	public static StockSplitHistory fetchStockSplitHistoryForSymbolDate(EntityManager entityManager, String symbol, Timestamp stockSplitDate) {
@@ -100,7 +109,15 @@ public class CompanyUtils {
 		return stockSplitHistoryList == null || stockSplitHistoryList.size() == 0 ? null : stockSplitHistoryList.get(0);
 	}
 
+	public static List<StockSplitHistory> fetchStockSplitHistoryForSymbol(EntityManager entityManager, String symbol) {
+		List<StockSplitHistory> stockSplitHistoryList = 
+			entityManager.createQuery("SELECT sh FROM StockSplitHistory AS sh WHERE sh.symbol = :symbol", StockSplitHistory.class)
+			.setParameter("symbol", symbol)
+			.getResultList();
+		return stockSplitHistoryList;
+	}
 	
+
 
 	
 	public static PriceHistory fetchLastPriceHistoryForSymbol(EntityManager entityManager, String symbol) {

@@ -4,15 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sanjoyghosh.company.db.model.Company;
+import com.sanjoyghosh.company.db.model.DividendHistory;
 import com.sanjoyghosh.company.db.model.EarningsDate;
 import com.sanjoyghosh.company.db.model.PriceHistory;
+import com.sanjoyghosh.company.db.model.StockSplitHistory;
 
 public class CompanyRest {
 
-	private Company 			company;
-	private EarningsDate 		lastEarningsDate;
-	private List<PriceHistory> 	priceHistoryList;
-	private List<String> 		errorList;
+	private Company 				company;
+	private EarningsDate 			lastEarningsDate;
+	private List<StockSplitHistory>	stockSplitHistoryList;
+	private List<DividendHistory>	dividendHistoryList;
+	private List<PriceHistory> 		priceHistoryList;
+	private List<String> 			errorList;
 	
 	
 	public Company getCompany() {
@@ -47,5 +51,21 @@ public class CompanyRest {
 	}
 	public void setPriceHistoryList(List<PriceHistory> priceHistoryList) {
 		this.priceHistoryList = priceHistoryList;
+	}
+	
+	
+	public List<StockSplitHistory> getStockSplitHistoryList() {
+		return stockSplitHistoryList;
+	}
+	public void setStockSplitHistoryList(List<StockSplitHistory> stockSplitHistoryList) {
+		this.stockSplitHistoryList = stockSplitHistoryList;
+	}
+	
+	
+	public List<DividendHistory> getDividendHistoryList() {
+		return dividendHistoryList;
+	}
+	public void setDividendHistoryList(List<DividendHistory> dividendHistoryList) {
+		this.dividendHistoryList = dividendHistoryList;
 	}
 }
