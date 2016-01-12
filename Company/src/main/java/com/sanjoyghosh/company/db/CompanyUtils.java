@@ -91,7 +91,7 @@ public class CompanyUtils {
 
 	public static List<DividendHistory> fetchDividendHistoryForSymbol(EntityManager entityManager, String symbol) {
 		List<DividendHistory> dividendHistoryList = 
-			entityManager.createQuery("SELECT dh FROM DividendHistory AS dh WHERE dh.symbol = :symbol", DividendHistory.class)
+			entityManager.createQuery("SELECT dh FROM DividendHistory AS dh WHERE dh.symbol = :symbol ORDER BY dh.dateOfDividend DESC", DividendHistory.class)
 			.setParameter("symbol", symbol)
 			.getResultList();
 		return dividendHistoryList;
@@ -111,7 +111,7 @@ public class CompanyUtils {
 
 	public static List<StockSplitHistory> fetchStockSplitHistoryForSymbol(EntityManager entityManager, String symbol) {
 		List<StockSplitHistory> stockSplitHistoryList = 
-			entityManager.createQuery("SELECT sh FROM StockSplitHistory AS sh WHERE sh.symbol = :symbol", StockSplitHistory.class)
+			entityManager.createQuery("SELECT sh FROM StockSplitHistory AS sh WHERE sh.symbol = :symbol ORDER BY sh.dateOfSplit DESC", StockSplitHistory.class)
 			.setParameter("symbol", symbol)
 			.getResultList();
 		return stockSplitHistoryList;

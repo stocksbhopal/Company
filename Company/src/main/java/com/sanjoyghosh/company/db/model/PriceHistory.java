@@ -8,6 +8,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 @Entity
 public class PriceHistory {
 
@@ -54,7 +56,8 @@ public class PriceHistory {
 		this.companyId = companyId;
 	}
 
-
+	
+	@JsonFormat(pattern="yyyy-MM-dd")
 	public Timestamp getDateOfPrice() {
 		return dateOfPrice;
 	}

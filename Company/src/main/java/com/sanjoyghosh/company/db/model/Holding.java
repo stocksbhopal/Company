@@ -8,6 +8,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 @Entity
 public class Holding {
 
@@ -67,6 +69,7 @@ public class Holding {
 	}
 
 
+	@JsonFormat(pattern="yyyy-MM-dd")
 	public Timestamp getBoughtDate() {
 		return boughtDate;
 	}
@@ -87,6 +90,7 @@ public class Holding {
 	}
 
 
+	@JsonFormat(pattern="yyyy-MM-dd")
 	public Timestamp getLastDate() {
 		return lastDate;
 	}

@@ -8,6 +8,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 @Entity
 public class DividendHistory {
 
@@ -57,6 +59,7 @@ public class DividendHistory {
 	}
 
 
+	@JsonFormat(pattern="yyyy-MM-dd")
 	public Timestamp getDateOfDividend() {
 		return dateOfDividend;
 	}
