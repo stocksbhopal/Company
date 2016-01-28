@@ -2,6 +2,7 @@ package com.sanjoyghosh.company.source.yahoo;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -60,7 +61,12 @@ public class YahooHistoricalPricesReader {
 			    double closePrice = Double.parseDouble(record.get("Close").trim());
 			    double lowPrice = Double.parseDouble(record.get("Low").trim());
 			    double highPrice = Double.parseDouble(record.get("High").trim());
-			    int volume = Integer.parseInt(record.get("Volume").trim());
+			    
+			    int volume = 0;
+			    try {
+			    	volume = Integer.parseInt(record.get("Volume").trim());
+			    }
+			    catch (NumberFormatException e) {System.err.println("Cannot parse as int volume: " + record.get("Volume") + " for symbol: " + symbol);}
 			    			    
 			    PriceHistory priceHistory = new PriceHistory();
 			    priceHistory.setClosePrice(closePrice);
@@ -95,7 +101,7 @@ public class YahooHistoricalPricesReader {
 				calendar = new GregorianCalendar(priceHistory.getDateOfPrice().getYear() + 1900, priceHistory.getDateOfPrice().getMonth(), priceHistory.getDateOfPrice().getDate(), 0, 0);
 				calendar.add(Calendar.DAY_OF_MONTH, 1);
 			}
-			String url = "http://real-chart.finance.yahoo.com/table.csv?s=" + symbol + "&a=" + calendar.get(Calendar.MONTH) + "&b=" + calendar.get(Calendar.DAY_OF_MONTH) + "&c=" + calendar.get(Calendar.YEAR) + "&d=11&e=31&f=2020&g=d&ignore=.csv";
+			String url = "http://real-chart.finance.yahoo.com/table.csv?s=" + URLEncoder.encode(symbol) + "&a=" + calendar.get(Calendar.MONTH) + "&b=" + calendar.get(Calendar.DAY_OF_MONTH) + "&c=" + calendar.get(Calendar.YEAR) + "&d=11&e=31&f=2020&g=d&ignore=.csv";
 			System.out.println(url);
 			try {
 				String csvString = Jsoup.connect(url).execute().body();
