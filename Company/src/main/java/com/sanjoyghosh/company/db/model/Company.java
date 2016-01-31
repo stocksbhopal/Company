@@ -28,6 +28,12 @@ public class Company {
 	private Long marketCap;
 	@Column
 	private String marketCapBM;
+	@Column
+	private String isSnP500;
+	@Column
+	private String isDJIA;
+	@Column
+	private String isNasdaq100;
 	
 	
 	public Company() {}
@@ -150,10 +156,41 @@ public class Company {
 	}
 
 
+	public String getIsSnP500() {
+		return isSnP500;
+	}
+
+
+	public void setIsSnP500(String isSnP500) {
+		this.isSnP500 = isSnP500;
+	}
+
+
+	public String getIsDJIA() {
+		return isDJIA;
+	}
+
+
+	public void setIsDJIA(String isDJIA) {
+		this.isDJIA = isDJIA;
+	}
+
+
+	public String getIsNasdaq100() {
+		return isNasdaq100;
+	}
+
+
+	public void setIsNasdaq100(String isNasdaq100) {
+		this.isNasdaq100 = isNasdaq100;
+	}
+
+
 	@Override
 	public String toString() {
 		return "Company [id=" + id + ", symbol=" + symbol + ", name=" + name + ", ipoYear=" + ipoYear + ", sector="
 				+ sector + ", industry=" + industry + ", exchange=" + exchange + ", marketCap=" + marketCap
-				+ ", marketCapBM=" + marketCapBM + "]";
+				+ ", marketCapBM=" + marketCapBM + ", isSnP500=" + isSnP500 + ", isDJIA=" + isDJIA + ", isNasdaq100="
+				+ isNasdaq100 + "]";
 	}	
 }
