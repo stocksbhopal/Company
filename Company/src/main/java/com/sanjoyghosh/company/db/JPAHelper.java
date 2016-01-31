@@ -1,16 +1,8 @@
 package com.sanjoyghosh.company.db;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-
-import org.apache.commons.logging.impl.SLF4JLogFactory;
-import org.springframework.boot.logging.Slf4JLoggingSystem;
-
-import com.mysql.jdbc.log.Slf4JLogger;
 
 public class JPAHelper {
 

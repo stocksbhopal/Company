@@ -1,4 +1,4 @@
-package com.sanjoyghosh.company.db;
+package com.sanjoyghosh.company.utils;
 
 import java.sql.Timestamp;
 import java.util.HashMap;

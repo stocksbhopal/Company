@@ -20,15 +20,15 @@ import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFTextStripper;
 
-import com.sanjoyghosh.company.db.CompanyUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
-import com.sanjoyghosh.company.db.StringUtils;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.db.model.EarningsDate;
 import com.sanjoyghosh.company.source.yahoo.YahooAnalystOpinion;
 import com.sanjoyghosh.company.source.yahoo.YahooAnalystOpinionPage;
 import com.sanjoyghosh.company.source.yahoo.YahooStockSummary;
 import com.sanjoyghosh.company.source.yahoo.YahooStockSummaryPage;
+import com.sanjoyghosh.company.utils.CompanyUtils;
+import com.sanjoyghosh.company.utils.StringUtils;
 
 public class JPMorganEarningsCalendarReader {
 	

@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sanjoyghosh.company.db.CompanyUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.db.model.EarningsDate;
 import com.sanjoyghosh.company.db.model.PriceHistory;
+import com.sanjoyghosh.company.utils.CompanyUtils;
 
 
 @RestController

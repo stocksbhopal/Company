@@ -5,8 +5,8 @@ import java.io.IOException;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
-import com.sanjoyghosh.company.db.JsoupUtils;
-import com.sanjoyghosh.company.db.StringUtils;
+import com.sanjoyghosh.company.utils.JsoupUtils;
+import com.sanjoyghosh.company.utils.StringUtils;
 
 public class YahooStockSummaryPage {
 
