@@ -82,6 +82,11 @@ public class WikipediaCompanyListReader {
 		try {
 			entityManager = JPAHelper.getEntityManager();
 			companyBySymbolMap = CompanyUtils.fetchAllCompanyBySymbolMap(entityManager);
+			for (Company company : companyBySymbolMap.values()) {
+				company.setIsDJIA("N");
+				company.setIsNasdaq100("N");
+				company.setIsSnP500("N");
+			}
 
 			readListOfCompaniesPage("https://en.wikipedia.org/wiki/Dow_Jones_Industrial_Average", LIST_DJIA);
 			readNasdaq100List("https://en.wikipedia.org/wiki/NASDAQ-100");
