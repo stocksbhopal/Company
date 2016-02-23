@@ -11,6 +11,7 @@ import com.sanjoyghosh.company.utils.StringUtils;
 public class YahooStockSummaryPage {
 
 	public static YahooStockSummary fetchYahooStockSummary(String symbol) throws IOException {
+		boolean isIndex = symbol.startsWith("^");
 		String aoyUrl = "http://finance.yahoo.com/q?s=" + symbol;
 		Document doc = JsoupUtils.fetchDocument(aoyUrl);
 		
@@ -26,41 +27,48 @@ public class YahooStockSummaryPage {
 			e.printStackTrace();
 		}
 		
-		elements = doc.select("td.yfnc_tabledata1");
-		Double previousClose = StringUtils.parseDouble(elements.get(0).text());
-		Double open = StringUtils.parseDouble(elements.get(1).text());
-		Double oneYearTarget = StringUtils.parseDouble(elements.get(4).text());
+		try {
+			elements = doc.select("td.yfnc_tabledata1");
+			Double previousClose = StringUtils.parseDouble(elements.get(0).text());
+			Double open = StringUtils.parseDouble(elements.get(1).text());
+			
+			String daysRangeStr = elements.get(isIndex ? 2 : 7).text();
+			Double[] dayRangeFloats = StringUtils.parseDoubleRange(daysRangeStr);
+			
+			String fiftyTwoWeekRangeStr = elements.get(isIndex ? 3 : 8).text();
+			Double[] fiftyTwoWeekRangeFloats = StringUtils.parseDoubleRange(fiftyTwoWeekRangeStr);
+
+			Double oneYearTarget = isIndex ? null : StringUtils.parseDouble(elements.get(4).text());
+			Integer volume = isIndex ? null : StringUtils.parseInteger(elements.get(9).text());
+			Integer threeMonthAverageVolume = isIndex ? null : StringUtils.parseInteger(elements.get(10).text());
+			
+			String marketCapStr = isIndex ? null : elements.get(11).text();		
+			Long marketCap = isIndex ? null : StringUtils.parseLongWithBMK(marketCapStr);
+			
+			YahooStockSummary yss = new YahooStockSummary();
+			yss.setPrice(price);
+			yss.setPreviousClose(previousClose);
+			yss.setOpen(open);
+			yss.setOneYearTarget(oneYearTarget);
+			if (dayRangeFloats != null) {
+				yss.setDayRangeLow(dayRangeFloats[0]);
+				yss.setDayRangeHigh(dayRangeFloats[1]);
+			}
+			if (fiftyTwoWeekRangeFloats != null) {
+				yss.setFiftyTwoWeekRangeLow(fiftyTwoWeekRangeFloats[0]);
+				yss.setFiftyTwoWeekRangeHigh(fiftyTwoWeekRangeFloats[1]);
+			}
+			yss.setVolume(volume);
+			yss.setThreeMonthAverageVolume(threeMonthAverageVolume);
+			yss.setMarketCap(marketCap);
+			yss.setMarketCapBM(marketCapStr);
 		
-		String daysRangeStr = elements.get(7).text();
-		Double[] dayRangeFloats = StringUtils.parseDoubleRange(daysRangeStr);
-		
-		String fiftyTwoWeekRangeStr = elements.get(8).text();
-		Double[] fiftyTwoWeekRangeFloats = StringUtils.parseDoubleRange(fiftyTwoWeekRangeStr);
-		
-		Integer volume = StringUtils.parseInteger(elements.get(9).text());
-		Integer threeMonthAverageVolume = StringUtils.parseInteger(elements.get(10).text());
-		
-		String marketCapStr = elements.get(11).text();		
-		Long marketCap = StringUtils.parseLongWithBMK(marketCapStr);
-		
-		YahooStockSummary yss = new YahooStockSummary();
-		yss.setPrice(price);
-		yss.setPreviousClose(previousClose);
-		yss.setOpen(open);
-		yss.setOneYearTarget(oneYearTarget);
-		if (dayRangeFloats != null) {
-			yss.setDayRangeLow(dayRangeFloats[0]);
-			yss.setDayRangeHigh(dayRangeFloats[1]);
+			return yss;
 		}
-		if (fiftyTwoWeekRangeFloats != null) {
-			yss.setFiftyTwoWeekRangeLow(fiftyTwoWeekRangeFloats[0]);
-			yss.setFiftyTwoWeekRangeHigh(fiftyTwoWeekRangeFloats[1]);
+		catch (IndexOutOfBoundsException e) {
+			System.err.println("Cannot get Stock Summary for: " + aoyUrl);
+			e.printStackTrace();
 		}
-		yss.setVolume(volume);
-		yss.setThreeMonthAverageVolume(threeMonthAverageVolume);
-		yss.setMarketCap(marketCap);
-		yss.setMarketCapBM(marketCapStr);
-		
-		return yss;
+		return null;
 	}
 }
