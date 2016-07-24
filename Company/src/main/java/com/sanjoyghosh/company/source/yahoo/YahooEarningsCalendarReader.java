@@ -41,16 +41,18 @@ public class YahooEarningsCalendarReader {
 	    		if ((symbol.indexOf('^') >= 0) || (symbol.indexOf('.') >= 0)) {
 	    			continue;
 	    		}
+	    		
+	    		boolean updateEarningsDate = false;
 	    		EarningsDate currentEarningsDate = CompanyUtils.fetchEarningsDateForSymbolDate(entityManager, symbol, timestamp);
 	    		if (currentEarningsDate != null) {
-	    			continue;
+	    			updateEarningsDate = true;
 	    		}
 	    		
 	    		String releaseTime = smallElements.text();
 	    		Company company = companyBySymbolMap.get(symbol);
 	    		Integer companyId = company == null ? null : company.getId();
 	    		
-	    		EarningsDate earningsDate = new EarningsDate();
+	    		EarningsDate earningsDate = updateEarningsDate ? currentEarningsDate : new EarningsDate();
 	    		earningsDate.setCompanyId(companyId);
 	    		earningsDate.setSymbol(symbol);
 	    		earningsDate.setEarningsDate(new Timestamp(date.getTime().getTime()));
@@ -65,7 +67,12 @@ public class YahooEarningsCalendarReader {
 	    			earningsDate.setNumberBrokers(opinion.getNumberOfBrokers());
 	    		}
 
-	    		entityManager.persist(earningsDate);
+	    		if (!updateEarningsDate) {
+	    			entityManager.persist(earningsDate);
+	    		}
+	    		else {
+	    			entityManager.merge(earningsDate);
+	    		}
 	    	}
 	    }   
     }
@@ -98,5 +105,4 @@ public class YahooEarningsCalendarReader {
 		reader.readEarningsCalendarforWeek();		
 		System.exit(0);
 	}
-
 }
