@@ -2,6 +2,8 @@ package com.sanjoyghosh.company.utils;
 
 import java.util.List;
 
+import org.apache.logging.log4j.core.appender.rolling.action.IfFileName;
+
 public class StringUtils {
 
 	public static String stripFirstChar(String str) {
@@ -173,5 +175,26 @@ public class StringUtils {
 		doubles[0] = StringUtils.parseDouble(doubleStrings[0]);
 		doubles[1] = StringUtils.parseDouble(doubleStrings[1]);
 		return doubles;
+	}
+	
+	
+	public static Double parseDoubleWithBrackets(String doubleStr) {
+		if (doubleStr == null) {
+			return null;
+		}
+		doubleStr = doubleStr.trim();
+		// Merrill Lynch returns these for N/A.
+		if (doubleStr.equals("--")) {
+			return null;
+		}
+		
+		boolean isNegative = false;
+		if (doubleStr.startsWith("(") && doubleStr.endsWith(")")) {
+			isNegative = true;
+			doubleStr = doubleStr.substring(1, doubleStr.length() - 1);
+		}
+		double value = Double.parseDouble(doubleStr);
+		value = isNegative ? -value : value;
+		return value;
 	}
 }

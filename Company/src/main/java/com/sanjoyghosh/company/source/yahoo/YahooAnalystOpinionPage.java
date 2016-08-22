@@ -21,7 +21,9 @@ public class YahooAnalystOpinionPage {
 			Element element = elements.get(0).parent().nextElementSibling();
 			String text = element.text().trim();
 			try {
-				yao.setMeanRecommendationThisWeek(Double.parseDouble(text));
+				if (text.length() > 0) {
+					yao.setMeanRecommendationThisWeek(Double.parseDouble(text));
+				}
 			}
 			catch (NumberFormatException e) {
 				e.printStackTrace();

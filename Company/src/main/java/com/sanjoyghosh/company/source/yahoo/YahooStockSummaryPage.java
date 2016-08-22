@@ -3,6 +3,7 @@ package com.sanjoyghosh.company.source.yahoo;
 import java.io.IOException;
 
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.sanjoyghosh.company.utils.JsoupUtils;
@@ -11,64 +12,84 @@ import com.sanjoyghosh.company.utils.StringUtils;
 public class YahooStockSummaryPage {
 
 	public static YahooStockSummary fetchYahooStockSummary(String symbol) throws IOException {
-		boolean isIndex = symbol.startsWith("^");
-		String aoyUrl = "http://finance.yahoo.com/q?s=" + symbol;
+		String aoyUrl = "http://www.nasdaq.com/symbol/" + symbol;
 		Document doc = JsoupUtils.fetchDocument(aoyUrl);
 		
-		Elements elements = doc.select("span.time_rtq_ticker");
-		if (elements == null || elements.text() == null || elements.text().length() == 0) {
+		Elements tables = doc.select("table[id=quotes_content_left_InfoQuotesResults]");
+		if (tables == null) {
 			System.err.println("No ticker for url: " + aoyUrl);
 			return null;
 		}
-
-		Double price = 0.0D;
-		try {price = StringUtils.parseDouble(elements.text());}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
 		
 		try {
-			elements = doc.select("td.yfnc_tabledata1");
-			Double previousClose = StringUtils.parseDouble(elements.get(0).text());
-			Double open = StringUtils.parseDouble(elements.get(1).text());
-			
-			String daysRangeStr = elements.get(isIndex ? 2 : 7).text();
-			Double[] dayRangeFloats = StringUtils.parseDoubleRange(daysRangeStr);
-			
-			String fiftyTwoWeekRangeStr = elements.get(isIndex ? 3 : 8).text();
-			Double[] fiftyTwoWeekRangeFloats = StringUtils.parseDoubleRange(fiftyTwoWeekRangeStr);
-
-			Double oneYearTarget = isIndex ? null : StringUtils.parseDouble(elements.get(4).text());
-			Integer volume = isIndex ? null : StringUtils.parseInteger(elements.get(9).text());
-			Integer threeMonthAverageVolume = isIndex ? null : StringUtils.parseInteger(elements.get(10).text());
-			
-			String marketCapStr = isIndex ? null : elements.get(11).text();		
-			Long marketCap = isIndex ? null : StringUtils.parseLongWithBMK(marketCapStr);
+			Element table = tables.get(0).select("table").get(0);
+			Elements trs = table.select("tr");
 			
 			YahooStockSummary yss = new YahooStockSummary();
-			yss.setPrice(price);
-			yss.setPreviousClose(previousClose);
-			yss.setOpen(open);
-			yss.setOneYearTarget(oneYearTarget);
-			if (dayRangeFloats != null) {
-				yss.setDayRangeLow(dayRangeFloats[0]);
-				yss.setDayRangeHigh(dayRangeFloats[1]);
+			for (int i = 1; i < trs.size(); i++) {
+				Elements tds = trs.get(i).select("td");
+				String td1Text = tds.get(0).text().trim();
+				
+				if (td1Text.startsWith("Today's High /Low")) {
+					Elements labels = tds.get(1).select("label");
+					String highText = labels.get(0).text().substring(2);
+					String lowText = labels.get(1).text().substring(2);
+					// This happens for http://www.nasdaq.com/symbol/fraf
+					// where the high low is "N/A / N/A"
+					// We skip symbols like this.
+					if (highText.equals("A")) {
+						System.err.println("Today's High / Low bad for: " + symbol);
+						break;
+					}
+					else {
+						Double high = Double.parseDouble(highText);
+						Double low = Double.parseDouble(lowText);
+						yss.setDayRangeLow(low);
+						yss.setDayRangeHigh(high);
+					}
+				}
+				else if (td1Text.startsWith("Share Volume")) {
+					String volumeText = tds.get(1).text().trim().replace(",", "");
+					Integer volume = Integer.parseInt(volumeText);
+					yss.setVolume(volume);
+				}
+				else if (td1Text.startsWith("Previous Close")) {
+					String previousCloseText = tds.get(1).text().trim().substring(2);
+					Double previousClose = Double.parseDouble(previousCloseText);
+					yss.setPreviousClose(previousClose);
+				}
+				else if (td1Text.startsWith("52 Week High/Low")) {
+					String td2Text = tds.get(1).text().trim();
+					// Happens for http://www.nasdaq.com/symbol/bncc.
+					if (td2Text.indexOf("N/A") >= 0) {
+						System.err.println("52 Week High / Low bad for: " + symbol);
+						continue;
+					}
+					String[] prices = td2Text.split("/");
+					String highText = prices[0];
+					highText = highText.substring(2, highText.length() - 1);
+					String lowText = prices[1];
+					lowText = lowText.substring(3);
+					Double high = Double.parseDouble(highText);
+					Double low = Double.parseDouble(lowText);
+					yss.setFiftyTwoWeekRangeLow(low);
+					yss.setFiftyTwoWeekRangeHigh(high);
+				}
+				else if (td1Text.startsWith("Market cap")) {
+					String marketCapText = tds.get(1).text().substring(1).trim().replace(",", "");
+					Long marketCap = Long.parseLong(marketCapText);
+					yss.setMarketCap(marketCap);
+				}
+				else {
+					continue;
+				}
 			}
-			if (fiftyTwoWeekRangeFloats != null) {
-				yss.setFiftyTwoWeekRangeLow(fiftyTwoWeekRangeFloats[0]);
-				yss.setFiftyTwoWeekRangeHigh(fiftyTwoWeekRangeFloats[1]);
-			}
-			yss.setVolume(volume);
-			yss.setThreeMonthAverageVolume(threeMonthAverageVolume);
-			yss.setMarketCap(marketCap);
-			yss.setMarketCapBM(marketCapStr);
-		
 			return yss;
 		}
-		catch (IndexOutOfBoundsException e) {
-			System.err.println("Cannot get Stock Summary for: " + aoyUrl);
+		catch (Exception e) {
+			System.err.println("Exception for stock: " + symbol);
 			e.printStackTrace();
+			return null;
 		}
-		return null;
 	}
 }

@@ -17,24 +17,30 @@ public class Holding {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
 	@Column
-	private String symbol;
-	@Column
 	private int companyId;
 	@Column
 	private Double boughtPrice;
 	@Column
 	private Timestamp boughtDate;
 	@Column
-	private Double lastPrice;
+	private Double cobPrice;
 	@Column
-	private Timestamp lastDate;
+	private Timestamp cobDate;
 	@Column
-	private double quantity;
+	private Double quantity;
 	@Column
 	private String brokerage;
 	@Column
+	private String symbol;
+	@Column
 	private String account;
-	
+	@Column
+	private Double value;
+	@Column
+	private Double gain;
+	@Column
+	private Double gainPercent;
+
 	
 	public Holding() {}
 
@@ -80,24 +86,24 @@ public class Holding {
 	}
 
 
-	public Double getLastPrice() {
-		return lastPrice;
+	public Double getCobPrice() {
+		return cobPrice;
 	}
 
 
-	public void setLastPrice(Double lastPrice) {
-		this.lastPrice = lastPrice;
+	public void setCobPrice(Double cobPrice) {
+		this.cobPrice = cobPrice;
 	}
 
 
 	@JsonFormat(pattern="yyyy-MM-dd")
-	public Timestamp getLastDate() {
-		return lastDate;
+	public Timestamp getCobDate() {
+		return cobDate;
 	}
 
 
-	public void setLastDate(Timestamp lastDate) {
-		this.lastDate = lastDate;
+	public void setCobDate(Timestamp cobDate) {
+		this.cobDate = cobDate;
 	}
 
 
@@ -141,54 +147,40 @@ public class Holding {
 	}
 
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((account == null) ? 0 : account.hashCode());
-		result = prime * result + ((brokerage == null) ? 0 : brokerage.hashCode());
-		long temp;
-		temp = Double.doubleToLongBits(quantity);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
-		result = prime * result + ((symbol == null) ? 0 : symbol.hashCode());
-		return result;
+	public Double getValue() {
+		return value;
 	}
 
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Holding other = (Holding) obj;
-		if (account == null) {
-			if (other.account != null)
-				return false;
-		} else if (!account.equals(other.account))
-			return false;
-		if (brokerage == null) {
-			if (other.brokerage != null)
-				return false;
-		} else if (!brokerage.equals(other.brokerage))
-			return false;
-		if (Double.doubleToLongBits(quantity) != Double.doubleToLongBits(other.quantity))
-			return false;
-		if (symbol == null) {
-			if (other.symbol != null)
-				return false;
-		} else if (!symbol.equals(other.symbol))
-			return false;
-		return true;
+	public void setValue(Double value) {
+		this.value = value;
+	}
+
+
+	public Double getGain() {
+		return gain;
+	}
+
+
+	public void setGain(Double gain) {
+		this.gain = gain;
+	}
+
+
+	public Double getGainPercent() {
+		return gainPercent;
+	}
+
+
+	public void setGainPercent(Double gainPercent) {
+		this.gainPercent = gainPercent;
 	}
 
 
 	@Override
 	public String toString() {
-		return "Holding [id=" + id + ", symbol=" + symbol + ", companyId=" + companyId + ", boughtPrice=" + boughtPrice
-				+ ", boughtDate=" + boughtDate + ", lastPrice=" + lastPrice + ", lastDate=" + lastDate + ", quantity="
-				+ quantity + ", brokerage=" + brokerage + ", account=" + account + "]";
+		return "Holding [id=" + id + ", companyId=" + companyId + ", cobPrice=" + cobPrice + ", cobDate=" + cobDate
+				+ ", quantity=" + quantity + ", brokerage=" + brokerage + ", symbol=" + symbol + ", account=" + account
+				+ ", value=" + value + ", gain=" + gain + ", gainPercent=" + gainPercent + "]";
 	}
 }

@@ -1,6 +1,7 @@
 package com.sanjoyghosh.company.utils;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,14 +56,7 @@ public class CompanyUtils {
 	
 	
 	
-	public static List<Holding> fetchAllHolding(EntityManager entityManager) {
-		List<Holding> holdingList = 
-			entityManager.createQuery("SELECT h FROM Holding AS h ORDER BY h.symbol ASC", Holding.class)
-			.getResultList();
-		return holdingList;
-	}
-	
-	public static List<Holding> fetchAllHoldingAtBrokerage(EntityManager entityManager, String brokerage) {
+	public static List<Holding> fetchAllHoldingsAtBrokerage(EntityManager entityManager, String brokerage) {
 		List<Holding> holdingList = 
 			entityManager.createQuery("SELECT h FROM Holding AS h WHERE h.brokerage = :brokerage ORDER BY h.symbol ASC", Holding.class)
 			.setParameter("brokerage", brokerage)
@@ -70,13 +64,21 @@ public class CompanyUtils {
 		return holdingList;
 	}
 
-	public static List<String> fetchAllHoldingSymbols(EntityManager entityManager) {
+	public static List<String> fetchAllHoldingsSymbols(EntityManager entityManager) {
 		List<String> symbols = 
 			entityManager.createQuery("SELECT h.symbol FROM Holding AS h ORDER BY h.symbol ASC", String.class)
 			.getResultList();
 		return symbols;
 	}
 
+	public static int deleteAllHoldingsByDateBrokerage(EntityManager entityManager, Date cobDate, String brokerage) {
+		int numHoldingsDeleted = 
+			entityManager.createQuery("DELETE FROM Holding AS h WHERE h.cobDate = :cobDate AND h.brokerage = :brokerage")
+			.setParameter("cobDate", cobDate)
+			.setParameter("brokerage", brokerage)
+			.executeUpdate();
+		return numHoldingsDeleted;
+	}
 
 
 

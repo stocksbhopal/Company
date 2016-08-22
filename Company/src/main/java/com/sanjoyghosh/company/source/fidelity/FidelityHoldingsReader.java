@@ -37,7 +37,7 @@ public class FidelityHoldingsReader {
 	private void fetchAllFidelityHoldings() {
 		entityManager = JPAHelper.getEntityManager();
 		companyBySymbolMap = CompanyUtils.fetchAllCompanyBySymbolMap(entityManager);
-		List<Holding> currentHoldings = CompanyUtils.fetchAllHoldingAtBrokerage(entityManager, "F");
+		List<Holding> currentHoldings = CompanyUtils.fetchAllHoldingsAtBrokerage(entityManager, "F");
 		for (Holding holding : currentHoldings) {
 			lastHoldingMap.put(holding, holding);
 		}
@@ -73,14 +73,14 @@ public class FidelityHoldingsReader {
 					String account = StringUtils.onlyLast4Characters(record.get("Account Name/Number").trim());
 				    String symbol = record.get("Symbol").trim();
 				    double quantity = Double.parseDouble(record.get("Quantity").trim());
-				    Double lastPrice = StringUtils.toDoubleStringWithDollar(record.get("Last Price").trim());
+				    Double cobPrice = StringUtils.toDoubleStringWithDollar(record.get("Last Price").trim());
 				    Double boughtPrice = StringUtils.toDoubleStringWithDollar(record.get("Cost Basis Per Share").trim());
 	
 				    Holding holding = new Holding();
 				    holding.setAccount(account);
 				    holding.setSymbol(symbol);
 				    holding.setQuantity(quantity);
-				    holding.setLastPrice(lastPrice);
+				    holding.setCobPrice(cobPrice);
 				    holding.setBoughtPrice(boughtPrice);
 				    holding.setBrokerage("F");
 				    
