@@ -19,7 +19,6 @@ public class JPAHelper {
 		
 		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("com.sanjoyghosh.stocks.library.model");
 		entityManager = entityManagerFactory.createEntityManager();
-		System.out.println("ENTITY MANAGER DONE");
 	}
 
 	public static EntityManager getEntityManager() {

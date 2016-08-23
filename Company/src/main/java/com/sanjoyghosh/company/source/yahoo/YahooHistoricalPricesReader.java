@@ -18,10 +18,10 @@ import org.apache.commons.csv.CSVRecord;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 
+import com.sanjoyghosh.company.db.CompanyUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.db.model.PriceHistory;
-import com.sanjoyghosh.company.utils.CompanyUtils;
 
 public class YahooHistoricalPricesReader {
 

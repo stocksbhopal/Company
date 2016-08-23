@@ -11,11 +11,11 @@ import javax.persistence.EntityManager;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 
+import com.sanjoyghosh.company.db.CompanyUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.source.yahoo.YahooStockSummary;
 import com.sanjoyghosh.company.source.yahoo.YahooStockSummaryPage;
-import com.sanjoyghosh.company.utils.CompanyUtils;
 
 public class NasdaqCompanyListReader {
 

@@ -9,9 +9,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.sanjoyghosh.company.db.CompanyUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.model.Company;
-import com.sanjoyghosh.company.utils.CompanyUtils;
 import com.sanjoyghosh.company.utils.JsoupUtils;
 
 public class WikipediaCompanyListReader {

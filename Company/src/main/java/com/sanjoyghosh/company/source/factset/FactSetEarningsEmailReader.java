@@ -17,9 +17,9 @@ import java.util.StringTokenizer;
 
 import javax.persistence.EntityManager;
 
+import com.sanjoyghosh.company.db.CompanyUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.model.EarningsDate;
-import com.sanjoyghosh.company.utils.CompanyUtils;
 import com.sanjoyghosh.company.utils.StringUtils;
 
 public class FactSetEarningsEmailReader {

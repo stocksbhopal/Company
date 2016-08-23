@@ -1,13 +1,16 @@
-package com.sanjoyghosh.company.utils;
+package com.sanjoyghosh.company.db;
 
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 
+import com.sanjoyghosh.company.db.model.Activity;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.db.model.DividendHistory;
 import com.sanjoyghosh.company.db.model.EarningsDate;
@@ -51,6 +54,22 @@ public class CompanyUtils {
 			companyBySymbolMap.put(company.getSymbol().toUpperCase(), company);
 		}
 		return companyBySymbolMap;
+	}
+
+	
+	
+	/**
+	 * settledDate is a Non Null column in Activity table.
+	 */
+	public static Set<Activity> fetchAllActivityAtBrokerageForSettledDate(EntityManager entityManager, String brokerage, Timestamp settledDate) {
+		List<Activity> activityList = 
+			entityManager.createQuery("SELECT a FROM Activity AS a WHERE a.brokerage = :brokerage AND a.settledDate = :settledDate", Activity.class)
+			.setParameter("brokerage", brokerage)
+			.setParameter("settledDate", settledDate)
+			.getResultList();
+		Set<Activity> activitySet = new HashSet<Activity>();
+		activitySet.addAll(activityList);
+		return activitySet;
 	}
 
 	

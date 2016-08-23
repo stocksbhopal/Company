@@ -15,20 +15,16 @@ import javax.persistence.EntityManager;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 
+import com.sanjoyghosh.company.db.CompanyUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.db.model.Holding;
-import com.sanjoyghosh.company.utils.CompanyUtils;
+import com.sanjoyghosh.company.utils.Constants;
 import com.sanjoyghosh.company.utils.DateUtils;
 import com.sanjoyghosh.company.utils.StringUtils;
 
 public class MerrillLynchHoldingsReader {
-	
-	public static final String MerrillLynchHoldingsFileName = "Holdings_([0-9]{8}).csv";
-	public static final String MerrillLynchBrokerage = "L";
-	
-	private static final File DownloadsFolder = new File("/Users/sanjoyghosh/Downloads");
-	
+		
 	private EntityManager entityManager;
 		
 	
@@ -38,11 +34,9 @@ public class MerrillLynchHoldingsReader {
 	
 	
 	private File[] getMerrillLynchHoldingsFiles() {
-		File[] merrillLynchFiles = DownloadsFolder.listFiles(new FileFilter() {
+		File[] merrillLynchFiles = Constants.DownloadsFolder.listFiles(new FileFilter() {
 			public boolean accept(File pathname) {
-				String fileName = pathname.getName();
-				boolean isMerrillLynch = fileName.matches(MerrillLynchHoldingsFileName);
-				return isMerrillLynch;
+				return pathname.getName().matches(Constants.MerrillLynchHoldingsFileName);
 			}
 		});
 		return merrillLynchFiles;
@@ -56,7 +50,7 @@ public class MerrillLynchHoldingsReader {
 		try {
 			String fileName = merrillLynchFile.getName();
 			Date cobDate = DateUtils.getDateFromMLHoldingsFileName(fileName);
-			int numHoldingsDeleted = CompanyUtils.deleteAllHoldingsByDateBrokerage(entityManager, cobDate, MerrillLynchBrokerage);
+			int numHoldingsDeleted = CompanyUtils.deleteAllHoldingsByDateBrokerage(entityManager, cobDate, Constants.MerrillLynchBrokerage);
 			System.out.println("Deleted " + numHoldingsDeleted + " for Merrill Lynch on: " + DateFormat.getDateInstance().format(cobDate));
 			
 			reader = new FileReader(merrillLynchFile);
@@ -79,7 +73,7 @@ public class MerrillLynchHoldingsReader {
 				    holding.setCobPrice(cobPrice);
 				    holding.setCobDate(new Timestamp(cobDate.getTime()));
 				    holding.setQuantity(quantity);
-				    holding.setBrokerage(MerrillLynchBrokerage);
+				    holding.setBrokerage(Constants.MerrillLynchBrokerage);
 				    holding.setSymbol(symbol);
 				    holding.setAccount(account);
 				    holding.setValue(value);
