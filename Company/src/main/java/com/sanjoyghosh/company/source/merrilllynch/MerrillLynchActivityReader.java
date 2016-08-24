@@ -43,7 +43,8 @@ public class MerrillLynchActivityReader {
 	private File[] getMerrillLynchActivityFiles() {
 		File[] merrillLynchFiles = Constants.DownloadsFolder.listFiles(new FileFilter() {
 			public boolean accept(File pathname) {
-				return pathname.getName().matches(Constants.MerrillLynchActivityFileName);
+				return (pathname.getName().matches(Constants.MerrillLynchSettledActivityFileName) ||
+						pathname.getName().matches(Constants.MerrillLynchPendingAndSettledActivityFileName));
 			}
 		});
 		return merrillLynchFiles;
@@ -122,7 +123,7 @@ public class MerrillLynchActivityReader {
 		}
 		
 		entityManager.getTransaction().commit();
-//		merrillLynchFile.delete();
+		merrillLynchFile.delete();
 	}
 
 	

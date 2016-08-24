@@ -8,7 +8,8 @@ public class Constants {
 	public static final String MerrillLynchBrokerage = "L";
 	
 	
-	public static final String MerrillLynchActivityFileName = "SettledActivity_([0-9]{6})_([0-9]{6}).csv";
+	public static final String MerrillLynchSettledActivityFileName = "SettledActivity_([0-9]{6})_([0-9]{6}).csv";
+	public static final String MerrillLynchPendingAndSettledActivityFileName = "PendingAndSettledActivity_([0-9]{6})_([0-9]{6}).csv";
 	public static final String MerrillLynchHoldingsFileName = "Holdings_([0-9]{8}).csv";
 
 	

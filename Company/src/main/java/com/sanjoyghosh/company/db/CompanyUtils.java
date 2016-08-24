@@ -59,7 +59,7 @@ public class CompanyUtils {
 	
 	
 	/**
-	 * settledDate is a Non Null column in Activity table.
+	 * For Merrill Lynch, settledDate is Non Null.
 	 */
 	public static Set<Activity> fetchAllActivityAtBrokerageForSettledDate(EntityManager entityManager, String brokerage, Timestamp settledDate) {
 		List<Activity> activityList = 
@@ -72,6 +72,19 @@ public class CompanyUtils {
 		return activitySet;
 	}
 
+	/**
+	 * For Fidelity, tradeDate is Non Null.
+	 */
+	public static Set<Activity> fetchAllActivityAtBrokerageForTradeDate(EntityManager entityManager, String brokerage, Timestamp tradeDate) {
+		List<Activity> activityList = 
+			entityManager.createQuery("SELECT a FROM Activity AS a WHERE a.brokerage = :brokerage AND a.tradeDate = :tradeDate", Activity.class)
+			.setParameter("brokerage", brokerage)
+			.setParameter("tradeDate", tradeDate)
+			.getResultList();
+		Set<Activity> activitySet = new HashSet<Activity>();
+		activitySet.addAll(activityList);
+		return activitySet;
+	}
 	
 	
 	

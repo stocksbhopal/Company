@@ -2,8 +2,6 @@ package com.sanjoyghosh.company.utils;
 
 import java.util.List;
 
-import org.apache.logging.log4j.core.appender.rolling.action.IfFileName;
-
 public class StringUtils {
 
 	public static String stripFirstChar(String str) {
