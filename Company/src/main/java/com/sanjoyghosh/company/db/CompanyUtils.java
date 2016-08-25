@@ -103,11 +103,11 @@ public class CompanyUtils {
 		return symbols;
 	}
 
-	public static int deleteAllHoldingsByDateBrokerage(EntityManager entityManager, Date cobDate, String brokerage) {
+	public static int deleteAllHoldingsByDateBrokerage(EntityManager entityManager, String brokerage, Date cobDate) {
 		int numHoldingsDeleted = 
-			entityManager.createQuery("DELETE FROM Holding AS h WHERE h.cobDate = :cobDate AND h.brokerage = :brokerage")
-			.setParameter("cobDate", cobDate)
+			entityManager.createQuery("DELETE FROM Holding AS h WHERE h.brokerage = :brokerage AND h.cobDate = :cobDate")
 			.setParameter("brokerage", brokerage)
+			.setParameter("cobDate", cobDate)
 			.executeUpdate();
 		return numHoldingsDeleted;
 	}

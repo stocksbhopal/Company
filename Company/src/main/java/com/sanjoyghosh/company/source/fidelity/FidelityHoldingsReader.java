@@ -5,6 +5,10 @@ import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -19,88 +23,77 @@ import com.sanjoyghosh.company.db.CompanyUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.db.model.Holding;
+import com.sanjoyghosh.company.utils.Constants;
+import com.sanjoyghosh.company.utils.DateUtils;
 import com.sanjoyghosh.company.utils.StringUtils;
 
 public class FidelityHoldingsReader {
 	
-	private EntityManager entityManager;
-	
-	private Map<String, Company> companyBySymbolMap;
-	private HashMap<Holding, Holding> lastHoldingMap = new HashMap<Holding, Holding>();
-	private HashSet<Holding> insertHoldingSet = new HashSet<Holding>();
-	private HashSet<Holding> updateHoldingSet = new HashSet<Holding>();
+	private EntityManager entityManager;	
 	
 	
-	public FidelityHoldingsReader() {}
-	
-	
-	private void fetchAllFidelityHoldings() {
+	public FidelityHoldingsReader() {
 		entityManager = JPAHelper.getEntityManager();
-		companyBySymbolMap = CompanyUtils.fetchAllCompanyBySymbolMap(entityManager);
-		List<Holding> currentHoldings = CompanyUtils.fetchAllHoldingsAtBrokerage(entityManager, "F");
-		for (Holding holding : currentHoldings) {
-			lastHoldingMap.put(holding, holding);
-		}
 	}
 	
 	
-	private File getFidelityHoldingsFile() {
-		File downloadsDir = new File("/Users/sanjoyghosh/Downloads");
-		File[] fidelityFiles = downloadsDir.listFiles(new FileFilter() {
-			
+	private File[] getFidelityHoldingsFiles() {
+		File[] fidelityFiles = Constants.DownloadsFolder.listFiles(new FileFilter() {
 			public boolean accept(File pathname) {
-				String fileName = pathname.getName();
-				boolean isFidelity = fileName.matches("Portfolio_Position_\\w\\w\\w-\\d\\d-\\d\\d\\d\\d\\.csv");
-				return isFidelity;
+				return pathname.getName().matches(Constants.FidelityHoldingsFileName);
 			}
 		});
-		
-		if (fidelityFiles == null || fidelityFiles.length != 1) {
-			System.err.println("There should be exactly 1 Fidelity Holdings file, got " + (fidelityFiles == null ? 0 : fidelityFiles.length));
-			return null;
-		}
-		return fidelityFiles[0];
+		return fidelityFiles;
 	}
-	
+
 	
 	private void readFidelityHoldingsFiles(File fidelityFile) {
+		entityManager.getTransaction().begin();
+		
 		Reader reader = null;
 		try {
+			String fileName = fidelityFile.getName();
+			Date cobDate = DateUtils.getDateFromFidelityHoldingsFileName(fileName);
+			int numHoldingsDeleted = CompanyUtils.deleteAllHoldingsByDateBrokerage(entityManager, Constants.FidelityBrokerage, cobDate);
+			System.out.println("Deleted " + numHoldingsDeleted + " for Fidelity on: " + DateFormat.getDateInstance().format(cobDate));
+
 			reader = new FileReader(fidelityFile);
 			Iterable<CSVRecord> records = CSVFormat.EXCEL.withHeader().parse(reader);
 			for (CSVRecord record : records) {
 				if (record.size() == 14) {
 					String account = StringUtils.onlyLast4Characters(record.get("Account Name/Number").trim());
 				    String symbol = record.get("Symbol").trim();
-				    double quantity = Double.parseDouble(record.get("Quantity").trim());
+				    Company company = CompanyUtils.fetchCompanyBySymbol(entityManager, symbol);
+				    Double quantity = Double.parseDouble(record.get("Quantity").trim());
 				    Double cobPrice = StringUtils.toDoubleStringWithDollar(record.get("Last Price").trim());
 				    Double boughtPrice = StringUtils.toDoubleStringWithDollar(record.get("Cost Basis Per Share").trim());
+				    Double value = StringUtils.toDoubleStringWithDollar(record.get("Current Value").replaceAll(",", "").trim());
+				    Double gain = StringUtils.parseDoubleWithSignAndDollar(record.get("Total Gain/Loss Dollar").replaceAll(",", "").trim());
+				    Double gainPercent = StringUtils.parseDoubleWithSignAndPercent(record.get("Total Gain/Loss Percent").replaceAll(",", "").trim());
 	
 				    Holding holding = new Holding();
-				    holding.setAccount(account);
-				    holding.setSymbol(symbol);
-				    holding.setQuantity(quantity);
-				    holding.setCobPrice(cobPrice);
+				    holding.setCompanyId(company == null ? 0 : company.getId());
 				    holding.setBoughtPrice(boughtPrice);
-				    holding.setBrokerage("F");
+				    holding.setBoughtDate(null);
+				    holding.setCobPrice(cobPrice);
+				    holding.setCobDate(new Timestamp(cobDate.getTime()));
+				    holding.setQuantity(quantity);
+				    holding.setBrokerage(Constants.FidelityBrokerage);
+				    holding.setSymbol(symbol);
+				    holding.setAccount(account);
+				    holding.setValue(value);
+				    holding.setGain(gain);
+				    holding.setGainPercent(gainPercent);
 				    
-				    Holding currentHolding = lastHoldingMap.remove(holding);
-				    if (currentHolding == null) {
-				    	Company company = companyBySymbolMap.get(holding.getSymbol());
-				    	if (company != null) {
-				    		holding.setCompanyId(company.getId());
-				    	}
-				    	insertHoldingSet.add(holding);
-				    }
-				    else {
-				    	updateHoldingSet.add(currentHolding);
-				    }
+				    entityManager.persist(holding);
 				    System.out.println(holding);
 				}
 			}
 		} 
 		catch (IOException e) {
-			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return;
+		} catch (ParseException e) {
 			e.printStackTrace();
 			return;
 		}
@@ -110,30 +103,27 @@ public class FidelityHoldingsReader {
 					reader.close();
 				} 
 				catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
+					return;
 				}
 			}
 		}
-	}
-	
-	
-	private void updateDatabase() {
-		entityManager.getTransaction().begin();
-		for (Holding holding : insertHoldingSet) {
-			entityManager.persist(holding);
-		}
+		
 		entityManager.getTransaction().commit();
+		fidelityFile.delete();
 	}
 	
 	
 	public static void main(String[] args) {
 		FidelityHoldingsReader reader = new FidelityHoldingsReader();
-		reader.fetchAllFidelityHoldings();
-		File fidelityFile = reader.getFidelityHoldingsFile();
-		if (fidelityFile != null) {
-			reader.readFidelityHoldingsFiles(fidelityFile);
-			reader.updateDatabase();
+		File[] fidelityFiles = reader.getFidelityHoldingsFiles();
+		for (File fidelityFile : fidelityFiles) {
+			try {
+				reader.readFidelityHoldingsFiles(fidelityFile);
+			}
+			catch (Throwable e) {
+				e.printStackTrace();
+			}
 		}
 		System.exit(0);
 	}

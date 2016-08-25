@@ -182,7 +182,7 @@ public class StringUtils {
 		}
 		doubleStr = doubleStr.trim();
 		// Merrill Lynch returns these for N/A.
-		if (doubleStr.equals("--")) {
+		if (doubleStr.equals("--") || doubleStr.equals("n/a")) {
 			return null;
 		}
 		
@@ -191,6 +191,42 @@ public class StringUtils {
 			isNegative = true;
 			doubleStr = doubleStr.substring(1, doubleStr.length() - 1);
 		}
+		double value = Double.parseDouble(doubleStr);
+		value = isNegative ? -value : value;
+		return value;
+	}
+
+
+	public static Double parseDoubleWithSignAndDollar(String doubleStr) {
+		if (doubleStr == null) {
+			return null;
+		}
+		doubleStr = doubleStr.trim();
+		// Merrill Lynch returns these for N/A.
+		if (doubleStr.equals("--") || doubleStr.equals("n/a")) {
+			return null;
+		}
+		
+		boolean isNegative = doubleStr.charAt(0) == '-';
+		doubleStr = doubleStr.substring(2);
+		double value = Double.parseDouble(doubleStr);
+		value = isNegative ? -value : value;
+		return value;
+	}
+
+
+	public static Double parseDoubleWithSignAndPercent(String doubleStr) {
+		if (doubleStr == null) {
+			return null;
+		}
+		doubleStr = doubleStr.trim();
+		// Merrill Lynch returns these for N/A.
+		if (doubleStr.equals("--") || doubleStr.equals("n/a")) {
+			return null;
+		}
+		
+		boolean isNegative = doubleStr.charAt(0) == '-';
+		doubleStr = doubleStr.substring(1, doubleStr.length() - 1);
 		double value = Double.parseDouble(doubleStr);
 		value = isNegative ? -value : value;
 		return value;

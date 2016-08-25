@@ -49,8 +49,8 @@ public class MerrillLynchHoldingsReader {
 		Reader reader = null;
 		try {
 			String fileName = merrillLynchFile.getName();
-			Date cobDate = DateUtils.getDateFromMLHoldingsFileName(fileName);
-			int numHoldingsDeleted = CompanyUtils.deleteAllHoldingsByDateBrokerage(entityManager, cobDate, Constants.MerrillLynchBrokerage);
+			Date cobDate = DateUtils.getDateFromMerrillLynchHoldingsFileName(fileName);
+			int numHoldingsDeleted = CompanyUtils.deleteAllHoldingsByDateBrokerage(entityManager, Constants.MerrillLynchBrokerage, cobDate);
 			System.out.println("Deleted " + numHoldingsDeleted + " for Merrill Lynch on: " + DateFormat.getDateInstance().format(cobDate));
 			
 			reader = new FileReader(merrillLynchFile);
