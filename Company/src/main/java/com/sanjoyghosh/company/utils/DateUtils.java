@@ -45,7 +45,7 @@ public class DateUtils {
 	 * Assumes that the date is of the form: "8/27/2015"
 	 */
 	public static Date getDate(String dateStr) throws ParseException {
-		if (dateStr.equals("--")) {
+		if (dateStr.equals("--") || dateStr.equals("")) {
 			return null;
 		}
 		Date day = dateFormatter.parse(dateStr);

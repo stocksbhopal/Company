@@ -7,6 +7,7 @@ public class Constants {
 	public static final String FidelityBrokerage = "F";
 	public static final String MerrillLynchBrokerage = "L";
 	
+	public static final String FidelityActivityFileName = "Accounts_History.csv";
 	public static final String FidelityHoldingsFileName = "Portfolio_Position_([a-zA-Z]{3}-[0-9]{2}-[0-9]{4}).csv";
 	
 	public static final String MerrillLynchSettledActivityFileName = "SettledActivity_([0-9]{6})_([0-9]{6}).csv";

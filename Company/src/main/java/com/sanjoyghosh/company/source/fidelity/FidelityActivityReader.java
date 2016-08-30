@@ -1,4 +1,4 @@
-package com.sanjoyghosh.company.source.merrilllynch;
+package com.sanjoyghosh.company.source.fidelity;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -26,52 +26,65 @@ import com.sanjoyghosh.company.utils.Constants;
 import com.sanjoyghosh.company.utils.DateUtils;
 import com.sanjoyghosh.company.utils.StringUtils;
 
-public class MerrillLynchActivityReader {
+public class FidelityActivityReader {
 		
 	private EntityManager entityManager;
 	private Set<String> transactionTypeSet;
 	private Map<Date, Set<Activity>> activityByDateMap;
 	
 	
-	public MerrillLynchActivityReader() {
+	public FidelityActivityReader() {
 		entityManager = JPAHelper.getEntityManager();
 		transactionTypeSet = new HashSet<String>();
 		activityByDateMap = new HashMap<Date, Set<Activity>>();
 	}
 	
 	
-	private File[] getMerrillLynchActivityFiles() {
-		File[] merrillLynchFiles = Constants.DownloadsFolder.listFiles(new FileFilter() {
+	private File[] getFidelityActivityFiles() {
+		File[] fidelityFiles = Constants.DownloadsFolder.listFiles(new FileFilter() {
 			public boolean accept(File pathname) {
-				return (pathname.getName().matches(Constants.MerrillLynchSettledActivityFileName) ||
-						pathname.getName().matches(Constants.MerrillLynchPendingAndSettledActivityFileName));
+				return pathname.getName().matches(Constants.FidelityActivityFileName);
 			}
 		});
-		return merrillLynchFiles;
+		return fidelityFiles;
 	}
 	
 	
-	private void readMerrillLynchActivityFile(File merrillLynchFile) {
+	private void readFidelityActivityFile(File fidelityFile) {
 		entityManager.getTransaction().begin();
 
 		Reader reader = null;
 		try {
-			reader = new FileReader(merrillLynchFile);
-			Iterable<CSVRecord> records = CSVFormat.EXCEL.withHeader().parse(reader);
+			boolean gotRecords = false;
+			reader = new FileReader(fidelityFile);
+			Iterable<CSVRecord> records = CSVFormat.EXCEL.withIgnoreEmptyLines().withHeader().parse(reader);
 			for (CSVRecord record : records) {
 				if (record.size() == 13) {
-					Date tradeDate = DateUtils.getDate(record.get("Trade Date").trim());
+					Date tradeDate = null;
+					try {
+						tradeDate = DateUtils.getDate(record.get("Run Date").trim());
+						if (tradeDate == null) {
+							continue;
+						}
+					}
+					catch (ParseException e) {
+						continue;
+					}
+					
 					Date settledDate = DateUtils.getDate(record.get("Settlement Date").trim());
-					tradeDate = tradeDate == null ? settledDate : tradeDate;
-					String account = StringUtils.onlyLast4Characters(record.get("Account #").trim());
-					String transactionType = record.get("Description 1 ").trim();
-				    String symbol = record.get("Symbol/CUSIP #").trim();
+					settledDate = settledDate == null ? tradeDate : settledDate;
+					String account = StringUtils.onlyLast4Characters(record.get("Account").trim());
+					String transactionType = record.get("Action").trim();
+					transactionType = transactionType.toLowerCase();
+					transactionType = transactionType.startsWith("you ") ? transactionType.substring(4) : transactionType;
+				    String symbol = record.get("Symbol").trim();
 				    String quantityStr = record.get("Quantity");
-				    Double quantity = quantityStr.equals("--") ? null : Double.parseDouble(quantityStr.replaceAll(",", "").trim());
+				    Double quantity = (quantityStr.equals("--") || quantityStr.equals("")) ? null : Double.parseDouble(quantityStr.replaceAll(",", "").trim());
 				    String priceStr = record.get("Price ($)");
-				    Double price = priceStr.equals("--") ? null : Double.parseDouble(priceStr.replaceAll(",", "").trim());
+				    Double price = (priceStr.equals("--") || priceStr.equals("")) ? null : Double.parseDouble(priceStr.replaceAll(",", "").trim());
 				    Company company = CompanyUtils.fetchCompanyBySymbol(entityManager, symbol);
-				    Double amount = StringUtils.parseDoubleWithBrackets(record.get("Amount ($)").replaceAll(",", "").trim());
+				    String amountStr = record.get("Amount ($)");
+				    Double amount = (amountStr.equals("--") || amountStr.equals("")) ? null : StringUtils.parseDoubleWithBrackets(amountStr.replaceAll(",", "").trim());
 	
 				    Activity activity = new Activity();
 				    activity.setCompanyId(company == null ? 0 : company.getId());
@@ -85,6 +98,7 @@ public class MerrillLynchActivityReader {
 				    activity.setPrice(price);
 				    activity.setAmount(amount);
 
+				    gotRecords = true;
 				    if (company != null) {
 				    	Set<Activity> activitySet = activityByDateMap.get(settledDate);
 				    	if (activitySet == null) {
@@ -100,7 +114,14 @@ public class MerrillLynchActivityReader {
 				    	System.out.println(activity);
 				    }
 
+				    System.out.println(activity);
 				    transactionTypeSet.add(transactionType);
+				}
+				else {
+					// If got records return to skip the disclaimer text.
+					if (gotRecords) {
+						return;
+					}
 				}
 			}
 		} 
@@ -124,7 +145,7 @@ public class MerrillLynchActivityReader {
 		}
 		
 		entityManager.getTransaction().commit();
-		merrillLynchFile.delete();
+//		fidelityFile.delete();
 	}
 
 	
@@ -136,11 +157,11 @@ public class MerrillLynchActivityReader {
 
 	
 	public static void main(String[] args) {
-		MerrillLynchActivityReader reader = new MerrillLynchActivityReader();
+		FidelityActivityReader reader = new FidelityActivityReader();
 		try {
-			File[] merrillLynchFiles = reader.getMerrillLynchActivityFiles();
-			for (File merrillLynchFile : merrillLynchFiles) {
-				reader.readMerrillLynchActivityFile(merrillLynchFile);
+			File[] fidelityFiles = reader.getFidelityActivityFiles();
+			for (File fidelityFile : fidelityFiles) {
+				reader.readFidelityActivityFile(fidelityFile);
 			}
 		}
 		catch (Throwable e) {
