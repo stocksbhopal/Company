@@ -43,7 +43,8 @@ public class FidelityActivityReader {
 	private File[] getFidelityActivityFiles() {
 		File[] fidelityFiles = Constants.DownloadsFolder.listFiles(new FileFilter() {
 			public boolean accept(File pathname) {
-				return pathname.getName().matches(Constants.FidelityActivityFileName);
+				return pathname.getName().startsWith(Constants.FidelityActivityFileNameStart) &&
+					   pathname.getName().endsWith(Constants.CSVFileExtension);
 			}
 		});
 		return fidelityFiles;
@@ -77,6 +78,11 @@ public class FidelityActivityReader {
 					String transactionType = record.get("Action").trim();
 					transactionType = transactionType.toLowerCase();
 					transactionType = transactionType.startsWith("you ") ? transactionType.substring(4) : transactionType;
+					transactionType = transactionType.startsWith("merger") ? "merger" : transactionType;
+					if (transactionType.length() >= 24) {
+						System.err.println(transactionType + "   " + fidelityFile.getName());
+						transactionType = transactionType.substring(0, 24);
+					}
 				    String symbol = record.get("Symbol").trim();
 				    String quantityStr = record.get("Quantity");
 				    Double quantity = (quantityStr.equals("--") || quantityStr.equals("")) ? null : Double.parseDouble(quantityStr.replaceAll(",", "").trim());
@@ -86,12 +92,17 @@ public class FidelityActivityReader {
 				    String amountStr = record.get("Amount ($)");
 				    Double amount = (amountStr.equals("--") || amountStr.equals("")) ? null : StringUtils.parseDoubleWithBrackets(amountStr.replaceAll(",", "").trim());
 	
+				    if (amount == null) {
+				    	System.err.println("Amount null for Symbol: " + symbol + ", Transaction Type: " + transactionType + " in file: " + fidelityFile.getName());
+				    	continue;
+				    }
+				    
 				    Activity activity = new Activity();
 				    activity.setCompanyId(company == null ? 0 : company.getId());
 				    activity.setTradeDate(new Timestamp(tradeDate.getTime()));
 				    activity.setSettledDate(new Timestamp(settledDate.getTime()));
 				    activity.setAccount(account);
-				    activity.setBrokerage(Constants.MerrillLynchBrokerage);
+				    activity.setBrokerage(Constants.FidelityBrokerage);
 				    activity.setSymbol(symbol);
 				    activity.setTransactionType(transactionType);
 				    activity.setQuantity(quantity);
@@ -102,7 +113,7 @@ public class FidelityActivityReader {
 				    if (company != null) {
 				    	Set<Activity> activitySet = activityByDateMap.get(settledDate);
 				    	if (activitySet == null) {
-				    		activitySet = CompanyUtils.fetchAllActivityAtBrokerageForSettledDate(entityManager, Constants.MerrillLynchBrokerage, new Timestamp(settledDate.getTime()));
+				    		activitySet = CompanyUtils.fetchAllActivityAtBrokerageForSettledDate(entityManager, Constants.FidelityBrokerage, new Timestamp(settledDate.getTime()));
 				    		activityByDateMap.put(settledDate, activitySet);
 				    	}
 				    	if (!activitySet.contains(activity)) {
@@ -118,9 +129,9 @@ public class FidelityActivityReader {
 				    transactionTypeSet.add(transactionType);
 				}
 				else {
-					// If got records return to skip the disclaimer text.
+					// If got records break to skip the disclaimer text.
 					if (gotRecords) {
-						return;
+						break;
 					}
 				}
 			}
@@ -128,7 +139,8 @@ public class FidelityActivityReader {
 		catch (IOException e) {
 			e.printStackTrace();
 			return;
-		} catch (ParseException e) {
+		} 
+		catch (ParseException e) {
 			e.printStackTrace();
 			return;
 		}
@@ -145,7 +157,7 @@ public class FidelityActivityReader {
 		}
 		
 		entityManager.getTransaction().commit();
-//		fidelityFile.delete();
+		fidelityFile.delete();
 	}
 
 	
