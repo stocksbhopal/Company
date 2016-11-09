@@ -17,7 +17,7 @@ public class JPAHelper {
 	    java.util.logging.Logger.getLogger("org.hibernate").setLevel(java.util.logging.Level.SEVERE); //or whatever level you need
 	    */
 		
-		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("com.sanjoyghosh.stocks.library.model");
+		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("com.sanjoyghosh.company.db.model");
 		entityManager = entityManagerFactory.createEntityManager();
 	}
 

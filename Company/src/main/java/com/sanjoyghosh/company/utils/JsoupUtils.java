@@ -14,7 +14,7 @@ public class JsoupUtils {
 		Document doc = null;
 		for (int i = 0; i < MAX_RETRIES; i++) {
 			try {
-				doc = Jsoup.connect(url).get();
+				doc = Jsoup.connect(url).userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:5.0) Gecko/20100101 Firefox/5.0").get();
 				return doc;
 			}
 			catch (IOException e) {

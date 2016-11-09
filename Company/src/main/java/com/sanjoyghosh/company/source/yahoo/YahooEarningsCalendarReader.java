@@ -31,11 +31,13 @@ public class YahooEarningsCalendarReader {
     	Timestamp timestamp = new Timestamp(date.getTime().getTime());
     	
 		Document doc = JsoupUtils.fetchDocument(yepUrl);		
+		System.out.println("Fetch: " + yepUrl);
 	    Elements trElements = doc.select("table[cellpadding=2").select("tr");
 	    for (int i = 0; i < trElements.size(); i++) {
 	    	Element trElement = trElements.get(i);
 	    	Elements aElements = trElement.select("a[href^=http://finance.yahoo.com/q?s]");
 	    	Elements smallElements = trElement.select("small");
+	    	System.out.println(aElements);
 	    	if (!aElements.isEmpty()) {
 	    		String symbol = aElements.text();
 	    		if ((symbol.indexOf('^') >= 0) || (symbol.indexOf('.') >= 0)) {
@@ -66,6 +68,7 @@ public class YahooEarningsCalendarReader {
 	    			earningsDate.setAnalystOpinion(opinion.getMeanRecommendationThisWeek());
 	    			earningsDate.setNumberBrokers(opinion.getNumberOfBrokers());
 	    		}
+	    		System.out.println("Earnings Cal: " + earningsDate);
 
 	    		if (!updateEarningsDate) {
 	    			entityManager.persist(earningsDate);
