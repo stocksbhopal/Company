@@ -56,6 +56,18 @@ public class CompanyUtils {
 		return companyBySymbolMap;
 	}
 
+	public static Map<Integer, Company> fetchAllCompanyByIdMap(EntityManager entityManager) {
+		List<Company> companyList = 
+			entityManager.createQuery("SELECT c FROM Company AS c", Company.class)
+			.getResultList();
+		Map<Integer, Company> companyByIdMap = new HashMap<Integer, Company>();
+		for (Company company : companyList) {
+			companyByIdMap.put(company.getId(), company);
+		}
+		return companyByIdMap;
+	}
+
+	
 	
 	
 	/**
@@ -174,6 +186,15 @@ public class CompanyUtils {
 
 	
 	
+
+	public static List<EarningsDate> fetchAllEarningsDateForDateRange(EntityManager entityManager, Timestamp earningsDateStart, Timestamp earningsDateEnd) {
+		List<EarningsDate> earningsDateList = 
+			entityManager.createQuery("SELECT ed FROM EarningsDate AS ed WHERE ed.earningsDate >= :earningsDateStart AND ed.earningsDate <= :earningsDateEnd", EarningsDate.class)
+			.setParameter("earningsDateStart", earningsDateStart)
+			.setParameter("earningsDateEnd", earningsDateEnd)
+			.getResultList();
+		return earningsDateList;
+	}
 
 	public static EarningsDate fetchEarningsDateForSymbolDate(EntityManager entityManager, String symbol, Timestamp earningsDate) {
 		List<EarningsDate> earningsDateList = 
