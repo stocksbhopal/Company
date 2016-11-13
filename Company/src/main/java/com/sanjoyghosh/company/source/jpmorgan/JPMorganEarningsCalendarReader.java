@@ -59,6 +59,9 @@ public class JPMorganEarningsCalendarReader {
 					
 					int pos = prefix.lastIndexOf(' ');
 					String symbol = prefix.substring(pos, prefix.length()).trim();
+					if (symbol.equals("BTUUQ")) {
+						continue;
+					}
 					
 					pos = embedded.indexOf(' ');
 					String opinion = embedded.substring(pos, embedded.length()).trim();
