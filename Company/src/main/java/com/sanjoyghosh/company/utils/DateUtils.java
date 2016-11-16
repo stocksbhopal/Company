@@ -53,6 +53,11 @@ public class DateUtils {
 	}
 	
 	
+	public static String toDateString(Date date) {
+		return dateFormatter.format(date);
+	}
+	
+	
 	public static void main(String[] args) {
 		try {
 			Date date = getDateFromFidelityHoldingsFileName("Portfolio_Position_Aug-24-2016.csv");

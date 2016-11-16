@@ -54,43 +54,24 @@ public class AppWindow {
 		frame.setBounds(0, 0, 1200, 800);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		JPanel contentPanel = new JPanel();
-		frame.getContentPane().add(contentPanel, BorderLayout.CENTER);
-		contentPanel.setLayout(new GridLayout(1, 1, 0, 0));
-		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		contentPanel.add(tabbedPane);
-		
-		JPanel upcomingEarningsPanel = new JPanel();
-		tabbedPane.addTab("Upcoming Earnings", null, upcomingEarningsPanel, null);
 
 		Object[][] data = AppAdapter.getAllCompanyEarnings();
 		Object[] columns = { "Symbol", "Name", "Earnings Date"};
 		upcomingEarningsTable = new JTable(data, columns);
-		upcomingEarningsTable.setPreferredSize(new Dimension(1000, 500));
 
 		JScrollPane upcomingEarningsScrollPane = new JScrollPane(upcomingEarningsTable);
-		upcomingEarningsPanel.add(upcomingEarningsScrollPane);
-		
-		
-//		upcomingEarningsTable = new JTable();
-		
-//		upcomingEarningsPanel.setPreferredSize(new Dimension(800, 600));
-//		upcomingEarningsScrollPane.setPreferredSize(new Dimension(800, 600));
-//		upcomingEarningsTable.setPreferredSize(new Dimension(800,  600));
-				
-		upcomingEarningsTable.setPreferredScrollableViewportSize(upcomingEarningsTable.getPreferredSize());
+
+		tabbedPane.addTab("Upcoming Earnings", null, upcomingEarningsScrollPane, null);
 		upcomingEarningsTable.setFillsViewportHeight(true);
 
-		System.out.println(upcomingEarningsTable.getPreferredSize());
-		System.out.println(upcomingEarningsTable.getPreferredScrollableViewportSize());
-		
 		JPanel panel_2 = new JPanel();
 		tabbedPane.addTab("New tab", null, panel_2, null);
 		
 		JPanel panel_3 = new JPanel();
 		tabbedPane.addTab("New tab", null, panel_3, null);
 		
+		frame.getContentPane().add(tabbedPane);
 		frame.pack();
 	}
 }

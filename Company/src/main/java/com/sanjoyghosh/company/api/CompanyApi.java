@@ -31,11 +31,11 @@ public class CompanyApi {
 		CompanyEarnings ce = null;
 		if (company != null) {
 			ce = new CompanyEarnings(company.getSymbol(), company.getName(), earningsDate.getEarningsDate(), 
-				earningsDate.getCompanyId(), earningsDate.getId());
+				earningsDate.getBeforeMarketOrAfterMarket(), earningsDate.getCompanyId(), earningsDate.getId());
 		}
 		else {
 			ce = new CompanyEarnings("NOSY", "No Company", earningsDate.getEarningsDate(), 
-				earningsDate.getCompanyId() == null ? -1 : earningsDate.getCompanyId(), earningsDate.getId());
+				earningsDate.getBeforeMarketOrAfterMarket(), earningsDate.getCompanyId() == null ? -1 : earningsDate.getCompanyId(), earningsDate.getId());
 		}
 		return ce;
 	}

@@ -17,7 +17,7 @@ public class AppAdapter {
 			Object[] earnings = new Object[3];
 			earnings[0] = ce.getSymbol();
 			earnings[1] = ce.getName();
-			earnings[2] = ce.getEarningsDate();
+			earnings[2] = ce.getData(0);
 			data[i] = earnings;
 		}
 		return data;
