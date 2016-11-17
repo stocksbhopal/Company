@@ -33,7 +33,7 @@ public class UpcomingEarningsPanel extends JPanel {
 		numberOfDays = 7;
 
 		List<ITableItem> earningsList = CompanyApi.getCompanyEarnings(startDate, numberOfDays);
-		earningsTable = new EarningsTable(CompanyEarnings.getColumnNames(), earningsList, new Dimension(500, 500));
+		earningsTable = new EarningsTable(CompanyEarnings.getColumnNames(), earningsList, new Dimension(1000, 1000));
 		add(earningsTable.getScrollPane());
 	}
 }
