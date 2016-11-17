@@ -41,13 +41,13 @@ public class CompanyApi {
 	}
 	
 	
-	public static List<CompanyEarnings> getCompanyEarnings(GregorianCalendar startDate, int numberOfDaysForward) {
+	public static List<ITableItem> getCompanyEarnings(GregorianCalendar startDate, int numberOfDaysForward) {
 		Timestamp start = new Timestamp(startDate.getTimeInMillis());
 		startDate.add(Calendar.DAY_OF_MONTH, numberOfDaysForward);
 		Timestamp end = new Timestamp(startDate.getTimeInMillis());
 		
 		List<EarningsDate> earningsDateList = CompanyUtils.fetchAllEarningsDateForDateRange(entityManager, start, end);
-		List<CompanyEarnings> companyEarningsList = new ArrayList<CompanyEarnings>(earningsDateList.size());
+		List<ITableItem> companyEarningsList = new ArrayList<ITableItem>(earningsDateList.size());
 		for (EarningsDate ed : earningsDateList) {
 			CompanyEarnings ce = toCompanyEarnings(ed);
 			companyEarningsList.add(ce);

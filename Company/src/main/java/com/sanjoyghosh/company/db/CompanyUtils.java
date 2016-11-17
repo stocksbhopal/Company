@@ -189,7 +189,7 @@ public class CompanyUtils {
 
 	public static List<EarningsDate> fetchAllEarningsDateForDateRange(EntityManager entityManager, Timestamp earningsDateStart, Timestamp earningsDateEnd) {
 		List<EarningsDate> earningsDateList = 
-			entityManager.createQuery("SELECT ed FROM EarningsDate AS ed WHERE ed.earningsDate >= :earningsDateStart AND ed.earningsDate <= :earningsDateEnd", EarningsDate.class)
+			entityManager.createQuery("SELECT ed FROM EarningsDate AS ed WHERE ed.earningsDate >= :earningsDateStart AND ed.earningsDate <= :earningsDateEnd ORDER BY ed.earningsDate ASC, ed.beforeMarketOrAfterMarket DESC", EarningsDate.class)
 			.setParameter("earningsDateStart", earningsDateStart)
 			.setParameter("earningsDateEnd", earningsDateEnd)
 			.getResultList();

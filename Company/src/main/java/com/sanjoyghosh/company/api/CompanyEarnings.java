@@ -15,7 +15,7 @@ public class CompanyEarnings implements ITableItem {
 	
 	private int		companyId;
 	private int		earningsDateId;
-	
+		
 	
 	public CompanyEarnings(String symbol, String name, Date earningsDate, String bmOrAm, 
 		int companyId, int earningsDateId) {
@@ -29,7 +29,7 @@ public class CompanyEarnings implements ITableItem {
 	}
 
 
-	public String[] getColumnNames() {
+	public static String[] getColumnNames() {
 		return columnNames;
 	}
 	

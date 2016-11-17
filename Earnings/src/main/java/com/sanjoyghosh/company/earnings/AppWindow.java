@@ -3,23 +3,14 @@ package com.sanjoyghosh.company.earnings;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
-import javax.swing.JTabbedPane;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-
-import javax.swing.JSplitPane;
 import javax.swing.JPanel;
-import java.awt.GridLayout;
-import javax.swing.JScrollPane;
-import javax.swing.JList;
-import javax.swing.JTable;
+import javax.swing.JTabbedPane;
 
 import com.sanjoyghosh.company.api.CompanyApi;
 
 public class AppWindow {
 
 	private JFrame frame;
-	private JTable upcomingEarningsTable;
 
 	/**
 	 * Launch the application.
@@ -56,14 +47,8 @@ public class AppWindow {
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 
-		Object[][] data = AppAdapter.getAllCompanyEarnings();
-		Object[] columns = { "Symbol", "Name", "Earnings Date"};
-		upcomingEarningsTable = new JTable(data, columns);
-
-		JScrollPane upcomingEarningsScrollPane = new JScrollPane(upcomingEarningsTable);
-
-		tabbedPane.addTab("Upcoming Earnings", null, upcomingEarningsScrollPane, null);
-		upcomingEarningsTable.setFillsViewportHeight(true);
+		UpcomingEarningsPanel upcomingEarningsPanel = new UpcomingEarningsPanel();
+		tabbedPane.addTab("Upcoming Earnings", null, upcomingEarningsPanel, null);
 
 		JPanel panel_2 = new JPanel();
 		tabbedPane.addTab("New tab", null, panel_2, null);
