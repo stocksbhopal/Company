@@ -7,7 +7,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.sanjoyghosh.company.utils.JsoupUtils;
-import com.sanjoyghosh.company.utils.StringUtils;
 
 public class YahooStockSummaryPage {
 

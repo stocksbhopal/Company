@@ -10,6 +10,7 @@ import java.util.Set;
 
 import javax.persistence.EntityManager;
 
+import com.sanjoyghosh.company.api.CompanyEarnings;
 import com.sanjoyghosh.company.db.model.Activity;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.db.model.DividendHistory;
@@ -187,9 +188,9 @@ public class CompanyUtils {
 	
 	
 
-	public static List<EarningsDate> fetchAllEarningsDateForDateRange(EntityManager entityManager, Timestamp earningsDateStart, Timestamp earningsDateEnd) {
-		List<EarningsDate> earningsDateList = 
-			entityManager.createQuery("SELECT ed FROM EarningsDate AS ed WHERE ed.earningsDate >= :earningsDateStart AND ed.earningsDate <= :earningsDateEnd ORDER BY ed.earningsDate ASC, ed.beforeMarketOrAfterMarket DESC", EarningsDate.class)
+	public static List<CompanyEarnings> fetchAllEarningsDateForDateRange(EntityManager entityManager, Timestamp earningsDateStart, Timestamp earningsDateEnd) {
+		List<CompanyEarnings> earningsDateList = 
+			entityManager.createQuery("SELECT new com.sanjoyghosh.company.api.CompanyEarnings(ed.symbol, ed.earningsDate) FROM EarningsDate AS ed WHERE ed.earningsDate >= :earningsDateStart AND ed.earningsDate <= :earningsDateEnd ORDER BY ed.earningsDate ASC, ed.beforeMarketOrAfterMarket DESC", CompanyEarnings.class)
 			.setParameter("earningsDateStart", earningsDateStart)
 			.setParameter("earningsDateEnd", earningsDateEnd)
 			.getResultList();

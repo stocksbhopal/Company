@@ -18,6 +18,12 @@ public class CompanyEarnings implements ITableItem {
 	private int		earningsDateId;
 		
 	
+	public CompanyEarnings(String symbol, Date earningsDate) {
+		this.symbol = symbol;
+		this.earningsDate = earningsDate;
+	}
+	
+	
 	public CompanyEarnings(int serialNum, String symbol, String name, Date earningsDate, String bmOrAm, 
 		int companyId, int earningsDateId) {
 		
@@ -80,5 +86,40 @@ public class CompanyEarnings implements ITableItem {
 
 	public int getEarningsDateId() {
 		return earningsDateId;
+	}
+
+
+	public void setSerialNum(int serialNum) {
+		this.serialNum = serialNum;
+	}
+
+
+	public void setSymbol(String symbol) {
+		this.symbol = symbol;
+	}
+
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+
+	public void setEarningsDate(Date earningsDate) {
+		this.earningsDate = earningsDate;
+	}
+
+
+	public void setBmOrAm(String bmOrAm) {
+		this.bmOrAm = bmOrAm;
+	}
+
+
+	public void setCompanyId(int companyId) {
+		this.companyId = companyId;
+	}
+
+
+	public void setEarningsDateId(int earningsDateId) {
+		this.earningsDateId = earningsDateId;
 	}
 }

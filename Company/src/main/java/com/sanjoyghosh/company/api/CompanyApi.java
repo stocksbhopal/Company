@@ -50,7 +50,8 @@ public class CompanyApi {
 		endDate.add(Calendar.DAY_OF_MONTH, numberOfDaysForward);
 		Timestamp end = new Timestamp(endDate.getTimeInMillis());
 		
-		List<EarningsDate> earningsDateList = CompanyUtils.fetchAllEarningsDateForDateRange(entityManager, start, end);
+		List<CompanyEarnings> earningsDateList = CompanyUtils.fetchAllEarningsDateForDateRange(entityManager, start, end);
+		/*
 		earningsDateList.sort(new Comparator<EarningsDate>() {
 			@Override
 			public int compare(EarningsDate o1, EarningsDate o2) {
@@ -65,12 +66,13 @@ public class CompanyApi {
 				return ce1.getName().compareToIgnoreCase(ce2.getName());
 			}
 		});
-
+		*/
+		
 		int serialNum = 1;
 		List<ITableItem> companyEarningsList = new ArrayList<ITableItem>(earningsDateList.size());
-		for (EarningsDate ed : earningsDateList) {
-			CompanyEarnings ce = toCompanyEarnings(serialNum++, ed);
-			companyEarningsList.add(ce);
+		for (CompanyEarnings ed : earningsDateList) {
+//			CompanyEarnings ce = toCompanyEarnings(serialNum++, ed);
+			companyEarningsList.add(ed);
 		}
 				
 		return companyEarningsList;
