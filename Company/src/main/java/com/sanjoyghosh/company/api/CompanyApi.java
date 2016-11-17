@@ -27,15 +27,15 @@ public class CompanyApi {
 	}
 	
 	
-	private static CompanyEarnings toCompanyEarnings(EarningsDate earningsDate) {
+	private static CompanyEarnings toCompanyEarnings(int serialNum, EarningsDate earningsDate) {
 		Company company = companyByIdMap.get(earningsDate.getCompanyId());
 		CompanyEarnings ce = null;
 		if (company != null) {
-			ce = new CompanyEarnings(company.getSymbol(), company.getName(), earningsDate.getEarningsDate(), 
+			ce = new CompanyEarnings(serialNum, company.getSymbol(), company.getName(), earningsDate.getEarningsDate(), 
 				earningsDate.getBeforeMarketOrAfterMarket(), earningsDate.getCompanyId(), earningsDate.getId());
 		}
 		else {
-			ce = new CompanyEarnings("NOSY", "No Company", earningsDate.getEarningsDate(), 
+			ce = new CompanyEarnings(serialNum, "NOSY", "No Company", earningsDate.getEarningsDate(), 
 				earningsDate.getBeforeMarketOrAfterMarket(), earningsDate.getCompanyId() == null ? -1 : earningsDate.getCompanyId(), earningsDate.getId());
 		}
 		return ce;
@@ -60,15 +60,16 @@ public class CompanyApi {
 				if (o1.getBeforeMarketOrAfterMarket() != o2.getBeforeMarketOrAfterMarket()) {
 					return o1.getBeforeMarketOrAfterMarket().compareTo(o2.getBeforeMarketOrAfterMarket());
 				}
-				CompanyEarnings ce1 = toCompanyEarnings(o1);
-				CompanyEarnings ce2 = toCompanyEarnings(o2);
+				CompanyEarnings ce1 = toCompanyEarnings(-1, o1);
+				CompanyEarnings ce2 = toCompanyEarnings(-1, o2);
 				return ce1.getName().compareToIgnoreCase(ce2.getName());
 			}
 		});
 
+		int serialNum = 1;
 		List<ITableItem> companyEarningsList = new ArrayList<ITableItem>(earningsDateList.size());
 		for (EarningsDate ed : earningsDateList) {
-			CompanyEarnings ce = toCompanyEarnings(ed);
+			CompanyEarnings ce = toCompanyEarnings(serialNum++, ed);
 			companyEarningsList.add(ce);
 		}
 				

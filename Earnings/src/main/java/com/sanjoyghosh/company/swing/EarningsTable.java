@@ -1,6 +1,5 @@
 package com.sanjoyghosh.company.swing;
 
-import java.awt.Dimension;
 import java.util.List;
 
 import javax.swing.JScrollPane;
@@ -15,11 +14,10 @@ public class EarningsTable {
 	private JScrollPane			scrollPane;
 	
 	
-	public EarningsTable(String[] tableColumnNames, List<ITableItem> tableItems, Dimension tablePreferredSize) {
+	public EarningsTable(String[] tableColumnNames, List<ITableItem> tableItems) {
 		tableModel = new EarningsTableModel(tableColumnNames, tableItems);
 		
 		table = new JTable(tableModel);
-		table.setPreferredSize(tablePreferredSize);
 		table.setFillsViewportHeight(true);
 		
 		scrollPane = new JScrollPane(table);
