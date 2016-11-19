@@ -1,0 +1,6 @@
+#Lambda Function Project Metadata
+#Fri Nov 18 16:29:54 PST 2016
+lastInvokeShowLiveLog=false
+lastDeploymentFunctionName=EarningsLambdaFunction
+lastDeploymentBucketName=lambda-function-bucket-us-east-1-1479515352038
+lastDeploymentEndpoint=https\://lambda.us-east-1.amazonaws.com/
