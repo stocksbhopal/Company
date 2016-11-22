@@ -91,4 +91,14 @@ public class YahooStockSummaryPage {
 			return null;
 		}
 	}
+	
+	public static void main(String[] args) {
+		try {
+			YahooStockSummary summary = YahooStockSummaryPage.fetchYahooStockSummary("YHOO");
+			System.out.println("YAHOO IS: " + summary.getPrice());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }
