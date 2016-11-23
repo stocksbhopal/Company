@@ -3,6 +3,7 @@ package com.sanjoyghosh.company.source.nasdaq;
 import java.io.IOException;
 
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.sanjoyghosh.company.utils.JsoupUtils;
@@ -13,13 +14,24 @@ public class NasdaqRealtimeQuoteReader {
 		String url = "http://www.nasdaq.com/symbol/" + symbol + "/real-time";
 		Document doc = JsoupUtils.fetchDocument(url);
 		
-		System.out.println(doc);
-		Elements tables = doc.select("table[id=quotes_content_left_InfoQuotesResults]");
-		if (tables == null) {
-			System.err.println("No ticker for url: " + url);
+		Elements spans = doc.select("span[id=quotes_content_left__LastSale]");
+		if (spans == null) {
+			System.err.println("No quote for url: " + url);
 			return null;
 		}
+		Element span = spans.first();
+		System.out.println(span.text());
 		
+		span = span.nextElementSibling();
+		System.out.println(span.text());
+
+		span = span.nextElementSibling();
+		System.out.println(span.text());
+		System.out.println(span.text().equals("▲"));
+
+		span = span.nextElementSibling();
+		System.out.println(span.text());
+
 		return null;
 		/*
 		try {
@@ -98,7 +110,7 @@ public class NasdaqRealtimeQuoteReader {
 	
 	public static void main(String[] args) {
 		try {
-			NasdaqRealtimeQuote nrq = NasdaqRealtimeQuoteReader.fetchNasdaqStockSummary("amzn");
+			NasdaqRealtimeQuote nrq = NasdaqRealtimeQuoteReader.fetchNasdaqStockSummary("veev");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
