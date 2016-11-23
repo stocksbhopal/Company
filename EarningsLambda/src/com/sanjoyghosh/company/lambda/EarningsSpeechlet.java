@@ -27,7 +27,7 @@ public class EarningsSpeechlet implements Speechlet {
 	@Override
 	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
-		outputSpeech.setText("You will have great earnings soon like tomorrow.");
+		outputSpeech.setText("Yes Yes Yes You will have great earnings soon like tomorrow.");
 		return SpeechletResponse.newTellResponse(outputSpeech);
 	}
 
