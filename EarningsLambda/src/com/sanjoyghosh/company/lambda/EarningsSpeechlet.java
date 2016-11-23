@@ -48,7 +48,7 @@ public class EarningsSpeechlet implements Speechlet {
 		
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 		log.error(request.toString());
-		outputSpeech.setText("Yes Yes Yes You will have great earnings soon like tomorrow.");
+		outputSpeech.setText("Really this is Yes You will have great earnings soon like tomorrow.");
 		return SpeechletResponse.newTellResponse(outputSpeech);
 	}
 

@@ -10,7 +10,7 @@ import com.sanjoyghosh.company.utils.JsoupUtils;
 
 public class YahooStockSummaryPage {
 
-	public static YahooStockSummary fetchNasdaqStockSummary(String symbol) throws IOException {
+	public static YahooStockSummary fetchYahooStockSummary(String symbol) throws IOException {
 		String url = "https://finance.yahoo.com/quote/" + symbol;
 		Document doc = JsoupUtils.fetchDocument(url);
 		

@@ -60,7 +60,7 @@ public class YahooEarningsCalendarReader {
 	    		earningsDate.setEarningsDate(new Timestamp(date.getTime().getTime()));
 	    		earningsDate.setBeforeMarketOrAfterMarket((releaseTime != null && releaseTime.indexOf("After Market Close") >= 0) ? "AM" : "BM");
 	    		
-	    		YahooStockSummary summary = YahooStockSummaryPage.fetchNasdaqStockSummary(symbol);
+	    		YahooStockSummary summary = YahooStockSummaryPage.fetchYahooStockSummary(symbol);
 	    		earningsDate.setMarketCap(summary == null ? null : summary.getMarketCap());
 
 	    		YahooAnalystOpinion opinion = YahooAnalystOpinionPage.fetchAnalystOpinionYahoo(symbol);
