@@ -57,7 +57,7 @@ public class NasdaqCompanyListReader {
 				company.setSector(sector);
 				company.setSymbol(symbol);
 				
-				YahooStockSummary summary = YahooStockSummaryPage.fetchYahooStockSummary(symbol);
+				YahooStockSummary summary = YahooStockSummaryPage.fetchNasdaqStockSummary(symbol);
 				if (summary != null) {
 					if (summary.getMarketCap() != null) {
 						company.setMarketCap(summary.getMarketCap());

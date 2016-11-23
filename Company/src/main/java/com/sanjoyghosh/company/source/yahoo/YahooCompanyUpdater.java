@@ -24,7 +24,7 @@ public class YahooCompanyUpdater {
 		entityManager.getTransaction().begin();
 		for (Company company : companyList) {
 			try {
-				YahooStockSummary summary = YahooStockSummaryPage.fetchYahooStockSummary(company.getSymbol());
+				YahooStockSummary summary = YahooStockSummaryPage.fetchNasdaqStockSummary(company.getSymbol());
 				if (summary != null) {
 					company.setMarketCap(summary.getMarketCap());
 					company.setMarketCapBM(summary.getMarketCapBM());
