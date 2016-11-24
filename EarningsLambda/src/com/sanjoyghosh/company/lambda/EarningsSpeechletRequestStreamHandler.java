@@ -3,6 +3,8 @@ package com.sanjoyghosh.company.lambda;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.log4j.BasicConfigurator;
+
 import com.amazon.speech.speechlet.lambda.SpeechletRequestStreamHandler;
 
 public class EarningsSpeechletRequestStreamHandler extends SpeechletRequestStreamHandler {
@@ -18,5 +20,6 @@ public class EarningsSpeechletRequestStreamHandler extends SpeechletRequestStrea
 
     public EarningsSpeechletRequestStreamHandler() {
         super(new EarningsSpeechlet(), supportedApplicationIds);
+        BasicConfigurator.configure();
     }
 }

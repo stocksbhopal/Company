@@ -83,4 +83,13 @@ public class NasdaqRealtimeQuote {
 	public void setHigh52Week(Double high52Week) {
 		this.high52Week = high52Week;
 	}
+	
+	
+	@Override
+	public String toString() {
+		return "NasdaqRealtimeQuote [price=" + price + ", priceChange=" + priceChange + ", priceChangePercent="
+				+ priceChangePercent + ", previousClose=" + previousClose + ", volumeToday=" + volumeToday
+				+ ", lowToday=" + lowToday + ", highToday=" + highToday + ", low52Week=" + low52Week + ", high52Week="
+				+ high52Week + "]";
+	}
 }
