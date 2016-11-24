@@ -1,4 +1,4 @@
-package com.sanjoyghosh.company.lambda;
+package com.sanjoyghosh.company.earnings.lambda;
 
 import java.util.HashSet;
 import java.util.Set;
