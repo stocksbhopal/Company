@@ -12,6 +12,7 @@ import com.amazon.speech.speechlet.Speechlet;
 import com.amazon.speech.speechlet.SpeechletException;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
+import com.sanjoyghosh.company.earnings.intent.IntentAddCompany;
 import com.sanjoyghosh.company.earnings.intent.IntentGetStockPrice;
 
 public class EarningsSpeechlet implements Speechlet {
@@ -36,8 +37,12 @@ public class EarningsSpeechlet implements Speechlet {
 	@Override
 	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
 		String intentName = request.getIntent().getName();
+		log.info("Intent: " + intentName);
 		if (intentName.equals("GetStockPrice")) {
 			return new IntentGetStockPrice().onIntent(request, session);
+		}		
+		if (intentName.equals("AddCompany")) {
+			return new IntentAddCompany().onIntent(request, session);
 		}		
 		
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
