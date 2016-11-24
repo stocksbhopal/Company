@@ -44,18 +44,18 @@ public class EarningsSpeechlet implements Speechlet {
 			
 			String symbol = "amzn";
 			if (company.equals("agilent")) symbol = "a";
-			else if (company.equals("adobe")) symbol = "adbe";
-			else if (company.equals("amazon")) symbol = "amzn";
-			else if (company.equals("ambarella")) symbol = "amba";		// Doesn't work
-			else if (company.equals("american towers")) symbol = "amt";
-			else if (company.equals("analog devices")) symbol = "adi";
-			else if (company.equals("apple")) symbol = "aapl";
-			else if (company.equals("applied materials")) symbol = "amat";
-			else if (company.equals("arm holdings")) symbol = "armh";
-			else if (company.equals("google")) symbol = "goog";
-			else if (company.equals("netflix")) symbol = "nflx";
-			else if (company.equals("nvidia")) symbol = "nvda";  // Doesn't ASR well.
-			else if (company.equals("yahoo")) symbol = "yhoo";
+			else if (company.equalsIgnoreCase("adobe")) symbol = "adbe";
+			else if (company.equalsIgnoreCase("amazon")) symbol = "amzn";
+			else if (company.equalsIgnoreCase("ambarella")) symbol = "amba";		// Doesn't work
+			else if (company.equalsIgnoreCase("american towers")) symbol = "amt";
+			else if (company.equalsIgnoreCase("analog devices")) symbol = "adi";
+			else if (company.equalsIgnoreCase("apple")) symbol = "aapl";
+			else if (company.equalsIgnoreCase("applied materials")) symbol = "amat";
+			else if (company.equalsIgnoreCase("arm holdings")) symbol = "armh";
+			else if (company.equalsIgnoreCase("google")) symbol = "goog";
+			else if (company.equalsIgnoreCase("netflix")) symbol = "nflx";
+			else if (company.equalsIgnoreCase("nvidia")) symbol = "nvda";  // Doesn't ASR well.
+			else if (company.equalsIgnoreCase("yahoo")) symbol = "yhoo";
 			else company = "amazon";
 			
 			NasdaqRealtimeQuote quote = NasdaqRealtimeQuoteReader.fetchNasdaqStockSummary(symbol);
