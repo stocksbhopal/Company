@@ -8,10 +8,10 @@ import com.amazon.speech.speechlet.Session;
 import com.amazon.speech.speechlet.SpeechletException;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
+import com.sanjoyghosh.company.earnings.nasdaq.NasdaqRealtimeQuote;
+import com.sanjoyghosh.company.earnings.nasdaq.NasdaqRealtimeQuoteReader;
 import com.sanjoyghosh.company.earnings.utils.CompanyFacts;
 import com.sanjoyghosh.company.earnings.utils.CompanyFactsUtils;
-import com.sanjoyghosh.company.source.nasdaq.NasdaqRealtimeQuote;
-import com.sanjoyghosh.company.source.nasdaq.NasdaqRealtimeQuoteReader;
 
 public class IntentGetStockPrice implements InterfaceIntent {
 

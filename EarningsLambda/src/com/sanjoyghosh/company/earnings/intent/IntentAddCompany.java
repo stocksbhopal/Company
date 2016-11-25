@@ -54,6 +54,7 @@ public class IntentAddCompany implements InterfaceIntent {
 		String company = intentName.equals("AddCompany") ?
 			request.getIntent().getSlot("company").getValue() :
 			(String) session.getAttribute(ATTR_COMPANY);
+		company = company.toLowerCase();
 		log.info("AddCompany invoked for company: " + company + ", with Intent: " + intentName);
 		
 		if (intentName.equals("AddCompany")) {
