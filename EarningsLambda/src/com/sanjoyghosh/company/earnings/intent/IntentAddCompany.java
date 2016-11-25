@@ -1,5 +1,7 @@
 package com.sanjoyghosh.company.earnings.intent;
 
+import javax.persistence.EntityManager;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,6 +15,11 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.Table;
+import com.sanjoyghosh.company.db.CompanyUtils;
+import com.sanjoyghosh.company.db.JPAHelper;
+import com.sanjoyghosh.company.db.model.Company;
+import com.sanjoyghosh.company.earnings.utils.CompanyFacts;
+import com.sanjoyghosh.company.earnings.utils.CompanyFactsUtils;
 
 public class IntentAddCompany implements InterfaceIntent {
 
@@ -37,13 +44,17 @@ public class IntentAddCompany implements InterfaceIntent {
     
     private SpeechletResponse addCompany(String company, Session session) {
     	String userId = session.getUser().getUserId();
+    	CompanyFacts cf = CompanyFactsUtils.getCompanyFactsForName(company);
+    	
+    	EntityManager em = JPAHelper.getEntityManager();
+    	Company comp = CompanyUtils.fetchCompanyBySymbol(em, cf.getSymbol().toUpperCase());
     	
 		DynamoDB db = new DynamoDB(new AmazonDynamoDBClient());
 		Table myStocks = db.getTable("MyStocks");
 		myStocks.putItem(new Item().withPrimaryKey("userId", userId, "company", company));
 
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
-		outputSpeech.setText("Added " + company);
+		outputSpeech.setText("Added " + company + " and " + comp.getName());
 		return SpeechletResponse.newTellResponse(outputSpeech);		    	
     }
     
@@ -55,6 +66,7 @@ public class IntentAddCompany implements InterfaceIntent {
 			request.getIntent().getSlot("company").getValue() :
 			(String) session.getAttribute(ATTR_COMPANY);
 		company = company.toLowerCase();
+		
 		log.info("AddCompany invoked for company: " + company + ", with Intent: " + intentName);
 		
 		if (intentName.equals("AddCompany")) {
