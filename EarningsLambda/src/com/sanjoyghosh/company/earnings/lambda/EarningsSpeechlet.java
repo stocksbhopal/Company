@@ -14,11 +14,12 @@ import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.sanjoyghosh.company.earnings.intent.IntentAddCompany;
 import com.sanjoyghosh.company.earnings.intent.IntentGetStockPrice;
+import com.sanjoyghosh.company.earnings.intent.InterfaceIntent;
 
-public class EarningsSpeechlet implements Speechlet {
+public class EarningsSpeechlet implements Speechlet  {
 
     private static final Logger log = LoggerFactory.getLogger(EarningsSpeechlet.class);
-    
+        
 	
     @Override
 	public void onSessionStarted(SessionStartedRequest request, Session session) throws SpeechletException {
@@ -44,7 +45,13 @@ public class EarningsSpeechlet implements Speechlet {
 		if (intentName.equals("AddCompany")) {
 			return new IntentAddCompany().onIntent(request, session);
 		}		
-		
+		if (intentName.equals("AMAZON.YesIntent")) {
+			String lastIntentName = (String) session.getAttribute(InterfaceIntent.ATTR_LAST_INTENT);
+			if (lastIntentName.equals(InterfaceIntent.INTENT_ADD_COMPANY)) {
+				return new IntentAddCompany().onIntent(request, session);
+			}
+		}
+
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 		log.error(request.toString());
 		System.err.println(request.toString());
