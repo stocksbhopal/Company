@@ -9,6 +9,10 @@ import com.amazon.speech.speechlet.SpeechletException;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.amazon.speech.ui.Reprompt;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+import com.amazonaws.services.dynamodbv2.document.Item;
+import com.amazonaws.services.dynamodbv2.document.Table;
 
 public class IntentAddCompany implements InterfaceIntent {
 
@@ -32,6 +36,12 @@ public class IntentAddCompany implements InterfaceIntent {
     
     
     private SpeechletResponse addCompany(String company, Session session) {
+    	String userId = session.getUser().getUserId();
+    	
+		DynamoDB db = new DynamoDB(new AmazonDynamoDBClient());
+		Table myStocks = db.getTable("MyStocks");
+		myStocks.putItem(new Item().withPrimaryKey("userId", userId, "company", company));
+
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 		outputSpeech.setText("Added " + company);
 		return SpeechletResponse.newTellResponse(outputSpeech);		    	
