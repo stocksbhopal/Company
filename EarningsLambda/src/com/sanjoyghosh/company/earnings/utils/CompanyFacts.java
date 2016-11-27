@@ -5,11 +5,13 @@ public class CompanyFacts {
 	// All Strings should be lower case
 	private String	name;		
 	private String	symbol;
+	private String 	fullName;
 	
 	
-	public CompanyFacts(String name, String symbol) {
+	public CompanyFacts(String name, String symbol, String fullName) {
 		this.name = name.toLowerCase();
 		this.symbol = symbol.toLowerCase();
+		this.fullName = fullName;
 	}
 
 
@@ -20,5 +22,10 @@ public class CompanyFacts {
 
 	public String getSymbol() {
 		return symbol;
+	}
+
+
+	public String getFullName() {
+		return fullName;
 	}
 }

@@ -29,11 +29,11 @@ public class IntentGetStockPrice implements InterfaceIntent {
 				NasdaqRealtimeQuote quote = NasdaqRealtimeQuoteReader.fetchNasdaqStockSummary(cf.getSymbol());
 				if (quote != null) {
 					PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
-					outputSpeech.setText("Price of " + company + " is " + quote.getPrice());
+					outputSpeech.setText("Price of " + cf.getFullName() + " is " + quote.getPrice());
 					return SpeechletResponse.newTellResponse(outputSpeech);
 				}
 				else {
-					error = INTENT_GET_STOCK_PRICE + " found no quote for company named " + company;
+					error = INTENT_GET_STOCK_PRICE + " found no quote for company named " + cf.getFullName();
 				}
 			}
 			else {
