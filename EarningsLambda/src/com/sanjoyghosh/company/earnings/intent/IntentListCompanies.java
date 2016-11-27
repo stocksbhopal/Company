@@ -27,7 +27,7 @@ public class IntentListCompanies implements InterfaceIntent {
 	@Override
 	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
 		DynamoDB db = new DynamoDB(new AmazonDynamoDBClient());
-		Table myStocks = db.getTable(DYNDB_TABLE);
+		Table myStocks = db.getTable(DYNDB_TABLE_MY_STOCKS);
 
 		String userId = session.getUser().getUserId();
 		
@@ -44,7 +44,7 @@ public class IntentListCompanies implements InterfaceIntent {
             iterator = items.iterator();
             while (iterator.hasNext()) {
                 item = iterator.next();
-                String company = item.getString(DYNDB_COL_COMPANY);
+                String company = item.getString(DYNDB_COL_FULL_NAME);
                 log.info(INTENT_LIST_COMPANIES + " got company: " + company);
                 companyListStr += company + ", ";
             }

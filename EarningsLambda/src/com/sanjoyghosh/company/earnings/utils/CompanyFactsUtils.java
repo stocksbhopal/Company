@@ -5,6 +5,7 @@ import java.util.HashMap;
 public class CompanyFactsUtils {
 
 	private static final HashMap<String, CompanyFacts> companyFactsByNameMap = new HashMap<>();
+	private static final HashMap<String, CompanyFacts> companyFactsBySymbolMap = new HashMap<>();
 	static {
 		addCompany("acacia", "acia", "Acacia Communications");
 		addCompany("adobe", "adbe", "Adobe Systems");
@@ -99,11 +100,18 @@ public class CompanyFactsUtils {
 	
 
 	private static void addCompany(String name, String symbol, String fullName) {
-		companyFactsByNameMap.put(name, new CompanyFacts(name, symbol, fullName));
+		CompanyFacts cf = new CompanyFacts(name, symbol, fullName);
+		companyFactsByNameMap.put(name, cf);
+		companyFactsBySymbolMap.put(symbol, cf);
 	}
 	
 	
 	public static CompanyFacts getCompanyFactsForName(String name) {
 		return companyFactsByNameMap.get(name.toLowerCase());
+	}
+
+
+	public static CompanyFacts getCompanyFactsForSymbol(String symbol) {
+		return companyFactsBySymbolMap.get(symbol.toLowerCase());
 	}
 }
