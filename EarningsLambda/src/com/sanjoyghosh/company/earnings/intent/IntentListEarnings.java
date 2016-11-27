@@ -31,21 +31,12 @@ public class IntentListEarnings implements InterfaceIntent {
 	@Override
 	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
 		String intentName = request.getIntent().getName();
+
+		Date endDate = null;
 		String dateStr = request.getIntent().getSlot(SLOT_DATE).getValue();
 		log.info("Date: " + dateStr);
-		
-		List<String> symbols = new LinkedList<>();
-		String userId = session.getUser().getUserId();
-		Iterator<Item> items = DynamoDBUtils.queryMyStocksByUserId(userId);
-		while (items.hasNext()) {
-			symbols.add(items.next().getString("symbol"));
-		}
-		
-		EntityManager entityManager = JPAHelper.getEntityManager();
-		List<CompanyEarnings> earnings = null;
 		try {
-			earnings = CompanyUtils.fetchAllEarningsDateForDateRangeAndSymbols(entityManager, new Timestamp(new Date().getTime()), 
-				new Timestamp(DateUtils.getDateFromAlexa(dateStr).getTime()), symbols);
+			endDate = DateUtils.getDateFromAlexa(dateStr);
 		} 
 		catch (ParseException e) {
 			String error = intentName + " could not parse date: " + dateStr;
@@ -56,13 +47,27 @@ public class IntentListEarnings implements InterfaceIntent {
 			return SpeechletResponse.newTellResponse(outputSpeech);		    	
 		}
 		
+		Timestamp startTimestamp = (intentName.endsWith("On") ? new Timestamp(endDate.getTime()) : new Timestamp(new Date().getTime()));
+		Timestamp endTimestamp = new Timestamp(endDate.getTime());
+		
+		List<String> symbols = new LinkedList<>();
+		String userId = session.getUser().getUserId();
+		Iterator<Item> items = DynamoDBUtils.queryMyStocksByUserId(userId);
+		while (items.hasNext()) {
+			symbols.add(items.next().getString("symbol"));
+		}
+		
+		EntityManager entityManager = JPAHelper.getEntityManager();
+		List<CompanyEarnings> earnings = CompanyUtils.fetchAllEarningsDateForDateRangeAndSymbols(entityManager, 
+			startTimestamp, endTimestamp, symbols);
 		String companys = "";
 		for (CompanyEarnings ce : earnings) {
 			companys += ce.getName() + ", ";
 		}
 		
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
-		outputSpeech.setText(intentName + " found " + companys + " in My Stocks for " + dateStr);
+		outputSpeech.setText("Found " + earnings.size() + " earnings in My Stocks " + 
+			(intentName.endsWith("On") ? "on " : "by ") + dateStr +", " + companys);
 		return SpeechletResponse.newTellResponse(outputSpeech);		    	
 	}
 }
