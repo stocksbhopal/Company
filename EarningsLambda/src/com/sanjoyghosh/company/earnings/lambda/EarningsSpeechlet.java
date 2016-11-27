@@ -14,6 +14,7 @@ import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.sanjoyghosh.company.earnings.intent.IntentAddCompany;
 import com.sanjoyghosh.company.earnings.intent.IntentGetStockPrice;
+import com.sanjoyghosh.company.earnings.intent.IntentListCompanies;
 import com.sanjoyghosh.company.earnings.intent.InterfaceIntent;
 
 public class EarningsSpeechlet implements Speechlet  {
@@ -39,10 +40,10 @@ public class EarningsSpeechlet implements Speechlet  {
 	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
 		String intentName = request.getIntent().getName();
 		log.info("Intent: " + intentName);
-		if (intentName.equals("GetStockPrice")) {
+		if (intentName.equals(InterfaceIntent.INTENT_GET_STOCK_PRICE)) {
 			return new IntentGetStockPrice().onIntent(request, session);
 		}		
-		if (intentName.equals("AddCompany")) {
+		if (intentName.equals(InterfaceIntent.INTENT_ADD_COMPANY)) {
 			return new IntentAddCompany().onIntent(request, session);
 		}		
 		if (intentName.equals("AMAZON.YesIntent")) {
@@ -51,7 +52,10 @@ public class EarningsSpeechlet implements Speechlet  {
 				return new IntentAddCompany().onIntent(request, session);
 			}
 		}
-
+		if (intentName.equals(InterfaceIntent.INTENT_LIST_COMPANIES)) {
+			return new IntentListCompanies().onIntent(request, session);
+		}
+		
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 		log.error(request.toString());
 		System.err.println(request.toString());

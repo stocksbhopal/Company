@@ -19,8 +19,8 @@ public class IntentGetStockPrice implements InterfaceIntent {
 
 	@Override
 	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
-		String company = request.getIntent().getSlot("company").getValue();
-		log.info("GetStockPrice invoked for company: " + company);
+		String company = request.getIntent().getSlot(SLOT_COMPANY).getValue();
+		log.info(INTENT_GET_STOCK_PRICE + " invoked for company: " + company);
 		
 		String error = null;
 		try {
@@ -33,11 +33,11 @@ public class IntentGetStockPrice implements InterfaceIntent {
 					return SpeechletResponse.newTellResponse(outputSpeech);
 				}
 				else {
-					error = "GetStockPrice found no quote for company named " + company;
+					error = INTENT_GET_STOCK_PRICE + " found no quote for company named " + company;
 				}
 			}
 			else {
-				error = "GetStockPrice found no company named " + company;
+				error = INTENT_GET_STOCK_PRICE + " found no company named " + company;
 			}
 		}
 		catch (Exception e) {

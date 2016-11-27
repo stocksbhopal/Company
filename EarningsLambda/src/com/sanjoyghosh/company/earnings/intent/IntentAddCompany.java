@@ -50,8 +50,8 @@ public class IntentAddCompany implements InterfaceIntent {
     	Company comp = CompanyUtils.fetchCompanyBySymbol(em, cf.getSymbol().toUpperCase());
     	
 		DynamoDB db = new DynamoDB(new AmazonDynamoDBClient());
-		Table myStocks = db.getTable("MyStocks");
-		myStocks.putItem(new Item().withPrimaryKey("userId", userId, "company", company));
+		Table myStocks = db.getTable(DYNDB_TABLE);
+		myStocks.putItem(new Item().withPrimaryKey(DYNDB_COL_USER_ID, userId, DYNDB_COL_COMPANY, company));
 
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 		outputSpeech.setText("Added " + company + " and " + comp.getName());
@@ -62,14 +62,14 @@ public class IntentAddCompany implements InterfaceIntent {
 	@Override
 	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
 		String intentName = request.getIntent().getName();
-		String company = intentName.equals("AddCompany") ?
-			request.getIntent().getSlot("company").getValue() :
+		String company = intentName.equals(INTENT_ADD_COMPANY) ?
+			request.getIntent().getSlot(SLOT_COMPANY).getValue() :
 			(String) session.getAttribute(ATTR_COMPANY);
 		company = company.toLowerCase();
 		
-		log.info("AddCompany invoked for company: " + company + ", with Intent: " + intentName);
+		log.info(INTENT_ADD_COMPANY + " invoked for company: " + company + ", with Intent: " + intentName);
 		
-		if (intentName.equals("AddCompany")) {
+		if (intentName.equals(INTENT_ADD_COMPANY)) {
 			return confirmIntent(company, session);
 		}
 		return addCompany(company, session);		
