@@ -16,6 +16,8 @@ public class DateUtils {
 	
 	private static final SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yyyy");
 	
+	private static final SimpleDateFormat alexaDateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+	
 	
 	public static Date getDateFromFidelityHoldingsFileName(String fileName) throws ParseException {
 		Matcher matcher = FidelityHoldingsPattern.matcher(fileName);
@@ -55,6 +57,12 @@ public class DateUtils {
 	
 	public static String toDateString(Date date) {
 		return dateFormatter.format(date);
+	}
+	
+	
+	public static Date getDateFromAlexa(String alexaDateStr) throws ParseException {
+		Date date = alexaDateFormatter.parse(alexaDateStr);
+		return date;
 	}
 	
 	

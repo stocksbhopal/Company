@@ -1,7 +1,10 @@
 package com.sanjoyghosh.company.db;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -190,9 +193,25 @@ public class CompanyUtils {
 
 	public static List<CompanyEarnings> fetchAllEarningsDateForDateRange(EntityManager entityManager, Timestamp earningsDateStart, Timestamp earningsDateEnd) {
 		List<CompanyEarnings> earningsDateList = 
-			entityManager.createQuery("SELECT new com.sanjoyghosh.company.api.CompanyEarnings(ed.symbol, ed.earningsDate) FROM EarningsDate AS ed WHERE ed.earningsDate >= :earningsDateStart AND ed.earningsDate <= :earningsDateEnd ORDER BY ed.earningsDate ASC, ed.beforeMarketOrAfterMarket DESC", CompanyEarnings.class)
+			entityManager.createQuery("SELECT new com.sanjoyghosh.company.api.CompanyEarnings(ed.symbol, c.name, ed.earningsDate, ed.beforeMarketOrAfterMarket, c.id, ed.id) " +
+				"FROM EarningsDate AS ed, Company AS c " +
+				"WHERE ed.earningsDate >= :earningsDateStart AND ed.earningsDate <= :earningsDateEnd AND ed.companyId = c.id " +
+				"ORDER BY ed.earningsDate ASC, ed.beforeMarketOrAfterMarket DESC", CompanyEarnings.class)
 			.setParameter("earningsDateStart", earningsDateStart)
 			.setParameter("earningsDateEnd", earningsDateEnd)
+			.getResultList();
+		return earningsDateList;
+	}
+
+	public static List<CompanyEarnings> fetchAllEarningsDateForDateRangeAndSymbols(EntityManager entityManager, Timestamp earningsDateStart, Timestamp earningsDateEnd, List<String> symbols) {
+		List<CompanyEarnings> earningsDateList = 
+			entityManager.createQuery("SELECT new com.sanjoyghosh.company.api.CompanyEarnings(ed.symbol, c.name, ed.earningsDate, ed.beforeMarketOrAfterMarket, c.id, ed.id) " +
+				"FROM EarningsDate AS ed, Company AS c " +
+				"WHERE ed.earningsDate >= :earningsDateStart AND ed.earningsDate <= :earningsDateEnd AND ed.symbol IN :symbols AND ed.companyId = c.id " +
+				"ORDER BY ed.earningsDate ASC, ed.beforeMarketOrAfterMarket DESC", CompanyEarnings.class)
+			.setParameter("earningsDateStart", earningsDateStart)
+			.setParameter("earningsDateEnd", earningsDateEnd)
+			.setParameter("symbols", symbols)
 			.getResultList();
 		return earningsDateList;
 	}
@@ -213,5 +232,23 @@ public class CompanyUtils {
 			.setMaxResults(1)
 			.getResultList();
 		return earningsDateList == null || earningsDateList.size() == 0 ? null : earningsDateList.get(0);
+	}
+	
+	
+	public static void main(String[] args) {
+		List<String> symbols = new ArrayList<>();
+		symbols.add("AMZN");
+		symbols.add("GWRE");
+		GregorianCalendar start = new GregorianCalendar();
+		GregorianCalendar end = new GregorianCalendar();
+		end.add(Calendar.DATE, 7);
+		EntityManager entityManager = JPAHelper.getEntityManager();
+		List<CompanyEarnings> earnings = CompanyUtils.fetchAllEarningsDateForDateRangeAndSymbols(entityManager, 
+			new Timestamp(start.getTimeInMillis()), new Timestamp(end.getTimeInMillis()), symbols);
+		System.out.println(earnings.size());
+		for (CompanyEarnings ce : earnings) {
+			System.out.println(ce.getSymbol());
+		}
+		System.exit(0);
 	}
 }

@@ -15,6 +15,7 @@ import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.sanjoyghosh.company.earnings.intent.IntentAddCompany;
 import com.sanjoyghosh.company.earnings.intent.IntentGetStockPrice;
 import com.sanjoyghosh.company.earnings.intent.IntentListCompanies;
+import com.sanjoyghosh.company.earnings.intent.IntentListEarnings;
 import com.sanjoyghosh.company.earnings.intent.InterfaceIntent;
 
 public class EarningsSpeechlet implements Speechlet  {
@@ -54,6 +55,12 @@ public class EarningsSpeechlet implements Speechlet  {
 		}
 		if (intentName.equals(InterfaceIntent.INTENT_LIST_COMPANIES)) {
 			return new IntentListCompanies().onIntent(request, session);
+		}
+		if (intentName.equals(InterfaceIntent.INTENT_LIST_EARNINGS_BY)) {
+			return new IntentListEarnings().onIntent(request, session);
+		}
+		if (intentName.equals(InterfaceIntent.INTENT_LIST_EARNINGS_ON)) {
+			return new IntentListEarnings().onIntent(request, session);
 		}
 		
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();

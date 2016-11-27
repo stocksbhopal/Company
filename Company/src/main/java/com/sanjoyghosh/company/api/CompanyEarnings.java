@@ -24,10 +24,9 @@ public class CompanyEarnings implements ITableItem {
 	}
 	
 	
-	public CompanyEarnings(int serialNum, String symbol, String name, Date earningsDate, String bmOrAm, 
+	public CompanyEarnings(String symbol, String name, Date earningsDate, String bmOrAm, 
 		int companyId, int earningsDateId) {
 		
-		this.serialNum = serialNum;
 		this.symbol = symbol;
 		this.name = name;
 		this.earningsDate = earningsDate;

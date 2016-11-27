@@ -3,7 +3,6 @@ package com.sanjoyghosh.company.api;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
@@ -27,15 +26,15 @@ public class CompanyApi {
 	}
 	
 	
-	private static CompanyEarnings toCompanyEarnings(int serialNum, EarningsDate earningsDate) {
+	private static CompanyEarnings toCompanyEarnings(EarningsDate earningsDate) {
 		Company company = companyByIdMap.get(earningsDate.getCompanyId());
 		CompanyEarnings ce = null;
 		if (company != null) {
-			ce = new CompanyEarnings(serialNum, company.getSymbol(), company.getName(), earningsDate.getEarningsDate(), 
+			ce = new CompanyEarnings(company.getSymbol(), company.getName(), earningsDate.getEarningsDate(), 
 				earningsDate.getBeforeMarketOrAfterMarket(), earningsDate.getCompanyId(), earningsDate.getId());
 		}
 		else {
-			ce = new CompanyEarnings(serialNum, "NOSY", "No Company", earningsDate.getEarningsDate(), 
+			ce = new CompanyEarnings("NOSY", "No Company", earningsDate.getEarningsDate(), 
 				earningsDate.getBeforeMarketOrAfterMarket(), earningsDate.getCompanyId() == null ? -1 : earningsDate.getCompanyId(), earningsDate.getId());
 		}
 		return ce;
