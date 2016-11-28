@@ -57,16 +57,8 @@ public class NasdaqCompanyListReader {
 				company.setSector(sector);
 				company.setSymbol(symbol);
 				
-				YahooStockSummary summary = YahooStockSummaryPage.fetchYahooStockSummary(symbol);
-				if (summary != null) {
-					if (summary.getMarketCap() != null) {
-						company.setMarketCap(summary.getMarketCap());
-						company.setMarketCapBM(summary.getMarketCapBM());
-						
-						entityManager.persist(company);
-						companyBySymbolMap.put(symbol, company);
-					}
-				}
+				entityManager.persist(company);
+				companyBySymbolMap.put(symbol, company);
 				
 				count++;
 				System.out.println("Done " + symbol + ", " + count + " of " + exchange);
