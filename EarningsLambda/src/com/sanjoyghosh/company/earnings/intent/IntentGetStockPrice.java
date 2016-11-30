@@ -8,10 +8,11 @@ import com.amazon.speech.speechlet.Session;
 import com.amazon.speech.speechlet.SpeechletException;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
-import com.sanjoyghosh.company.earnings.nasdaq.NasdaqRealtimeQuote;
-import com.sanjoyghosh.company.earnings.nasdaq.NasdaqRealtimeQuoteReader;
 import com.sanjoyghosh.company.earnings.utils.CompanyFacts;
 import com.sanjoyghosh.company.earnings.utils.CompanyFactsUtils;
+import com.sanjoyghosh.company.source.nasdaq.NasdaqRealtimeQuote;
+import com.sanjoyghosh.company.source.nasdaq.NasdaqRealtimeQuoteReader;
+import com.sanjoyghosh.company.utils.StringUtils;
 
 public class IntentGetStockPrice implements InterfaceIntent {
 
@@ -28,8 +29,15 @@ public class IntentGetStockPrice implements InterfaceIntent {
 			if (cf != null) {
 				NasdaqRealtimeQuote quote = NasdaqRealtimeQuoteReader.fetchNasdaqStockSummary(cf.getSymbol());
 				if (quote != null) {
+					String price = StringUtils.toStringWith2DecimalPlaces(quote.getPrice());
+					String priceChange = StringUtils.toStringWith2DecimalPlaces(quote.getPriceChange());
+					String priceChangePercent = StringUtils.toStringWith2DecimalPlaces(quote.getPriceChangePercent());
+					String text = "Price of " + cf.getFullName() + " is " + price + 
+						", " + (quote.getPriceChange() > 0.00D ? "up " : "down ") + priceChange +
+						", " + (quote.getPriceChange() > 0.00D ? "up " : "down ") + priceChangePercent + " percent";
+					
 					PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
-					outputSpeech.setText("Price of " + cf.getFullName() + " is " + quote.getPrice());
+					outputSpeech.setText(text);
 					return SpeechletResponse.newTellResponse(outputSpeech);
 				}
 				else {

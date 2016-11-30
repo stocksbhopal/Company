@@ -231,4 +231,25 @@ public class StringUtils {
 		value = isNegative ? -value : value;
 		return value;
 	}
+	
+	
+	public static String toStringWith2DecimalPlaces(double value) {
+		value = value * 100.00D;
+		long valueLong = Math.round(value);
+		String valueStr = String.valueOf(valueLong);
+		int valueStrLength = valueStr.length();
+		switch (valueStrLength) {
+			case 1: valueStr = "0.0" + valueStr; break;
+			case 2: valueStr = "0." + valueStr; break;
+			case 3: valueStr = ((valueStr.charAt(0) == '-') ? "-0" : valueStr.substring(0, 1)) + "." + valueStr.substring(1, 3); break;
+			default: valueStr = valueStr.substring(0, valueStrLength - 2) + "." + valueStr.substring(valueStrLength - 2);
+		}
+		return valueStr;
+	}
+	
+	
+	public static void main(String[] args) {
+		String str = toStringWith2DecimalPlaces(1.66);
+		System.out.println(str);
+	}
 }
