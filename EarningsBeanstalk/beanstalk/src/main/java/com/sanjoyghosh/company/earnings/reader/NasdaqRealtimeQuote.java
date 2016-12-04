@@ -1,4 +1,4 @@
-package com.sanjoyghosh.company.earnings.utils;
+package com.sanjoyghosh.company.earnings.reader;
 
 public class NasdaqRealtimeQuote {
 

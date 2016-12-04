@@ -1,10 +1,12 @@
-package com.sanjoyghosh.company.earnings.utils;
+package com.sanjoyghosh.company.earnings.reader;
 
 import java.io.IOException;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import com.sanjoyghosh.company.earnings.utils.JsoupUtils;
 
 public class NasdaqRealtimeQuoteReader {
 
