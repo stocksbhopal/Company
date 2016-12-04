@@ -101,6 +101,9 @@
 	<properties>
 		<!-- The main class to start by executing java -jar -->
 		<start-class>com.sanjoyghosh.company.db.CompanyDatabaseUpdater</start-class>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+
 	</properties>
 
 </project>
