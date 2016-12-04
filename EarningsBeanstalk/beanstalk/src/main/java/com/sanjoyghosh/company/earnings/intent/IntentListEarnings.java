@@ -16,7 +16,7 @@ import com.amazon.speech.speechlet.SpeechletException;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.amazonaws.services.dynamodbv2.document.Item;
-import com.sanjoyghosh.company.earnings.utils.DateUtils;
+import com.sanjoyghosh.company.utils.DateUtils;
 
 public class IntentListEarnings implements InterfaceIntent {
 
