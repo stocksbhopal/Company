@@ -62,6 +62,12 @@ public class EarningsSpeechlet implements Speechlet  {
 		if (intentName.equals(InterfaceIntent.INTENT_LIST_EARNINGS_ON)) {
 			return new IntentListEarnings().onIntent(request, session);
 		}
+		if (intentName.equals(InterfaceIntent.INTENT_LIST_EARNINGS_NEXT)) {
+			return new IntentListEarnings().onIntent(request, session);
+		}
+		if (intentName.equals(InterfaceIntent.INTENT_LIST_EARNINGS_MY_NEXT)) {
+			return new IntentListEarnings().onIntent(request, session);
+		}
 		
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 		log.error(request.toString());

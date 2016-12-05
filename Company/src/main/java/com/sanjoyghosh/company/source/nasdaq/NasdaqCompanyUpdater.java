@@ -17,7 +17,7 @@ import com.sanjoyghosh.company.utils.StringUtils;
 
 public class NasdaqCompanyUpdater {
 
-	private static void updateCompany(Company company) throws IOException {
+	public static void updateCompany(Company company) throws IOException {
 		String symbol = company.getSymbol();
 		String url = "http://www.nasdaq.com/symbol/" + symbol;
 		Document doc = JsoupUtils.fetchDocument(url);
@@ -33,7 +33,6 @@ public class NasdaqCompanyUpdater {
 		
 		Element td = aList.first().parent().nextElementSibling();
 		String MarketCapStr = td.text();
-		System.out.println(symbol + ": " + MarketCapStr);
 		
 		Long marketCap = StringUtils.parseIntegerDollarAmount(MarketCapStr);
 		if (marketCap != null) {

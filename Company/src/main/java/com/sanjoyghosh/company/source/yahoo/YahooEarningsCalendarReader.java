@@ -17,6 +17,7 @@ import com.sanjoyghosh.company.db.CompanyUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.db.model.EarningsDate;
+import com.sanjoyghosh.company.source.nasdaq.NasdaqCompanyUpdater;
 import com.sanjoyghosh.company.utils.JsoupUtils;
 
 public class YahooEarningsCalendarReader {
@@ -31,13 +32,11 @@ public class YahooEarningsCalendarReader {
     	Timestamp timestamp = new Timestamp(date.getTime().getTime());
     	
 		Document doc = JsoupUtils.fetchDocument(yepUrl);		
-		System.out.println("Fetch: " + yepUrl);
 	    Elements trElements = doc.select("table[cellpadding=2").select("tr");
 	    for (int i = 0; i < trElements.size(); i++) {
 	    	Element trElement = trElements.get(i);
 	    	Elements aElements = trElement.select("a[href^=http://finance.yahoo.com/q?s]");
 	    	Elements smallElements = trElement.select("small");
-	    	System.out.println(aElements);
 	    	if (!aElements.isEmpty()) {
 	    		String symbol = aElements.text();
 	    		if ((symbol.indexOf('^') >= 0) || (symbol.indexOf('.') >= 0)) {
@@ -60,16 +59,19 @@ public class YahooEarningsCalendarReader {
 	    		earningsDate.setEarningsDate(new Timestamp(date.getTime().getTime()));
 	    		earningsDate.setBeforeMarketOrAfterMarket((releaseTime != null && releaseTime.indexOf("After Market Close") >= 0) ? "AM" : "BM");
 	    		
-	    		YahooStockSummary summary = YahooStockSummaryPage.fetchYahooStockSummary(symbol);
-	    		earningsDate.setMarketCap(summary == null ? null : summary.getMarketCap());
+	    		// This updates the company's market cap.
+	    		if (company != null) {
+	    			NasdaqCompanyUpdater.updateCompany(company);
+	    			earningsDate.setMarketCap(company.getMarketCap());
+	    		}
 
 	    		YahooAnalystOpinion opinion = YahooAnalystOpinionPage.fetchAnalystOpinionYahoo(symbol);
 	    		if (opinion != null) {
 	    			earningsDate.setAnalystOpinion(opinion.getMeanRecommendationThisWeek());
 	    			earningsDate.setNumberBrokers(opinion.getNumberOfBrokers());
 	    		}
-	    		System.out.println("Earnings Cal: " + earningsDate);
-
+	    		System.out.println(earningsDate);
+	    		
 	    		if (!updateEarningsDate) {
 	    			entityManager.persist(earningsDate);
 	    		}
@@ -94,8 +96,7 @@ public class YahooEarningsCalendarReader {
 			    entityManager.getTransaction().commit();
 			} 
 			catch (IOException e) {
-				// TODO Auto-generated catch block
-				// e.printStackTrace();
+				e.printStackTrace();
 				entityManager.getTransaction().rollback();
 			}
 			calendar.add(Calendar.DATE, 1);

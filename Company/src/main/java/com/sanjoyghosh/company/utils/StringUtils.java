@@ -1,6 +1,8 @@
 package com.sanjoyghosh.company.utils;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class StringUtils {
 
@@ -265,6 +267,45 @@ public class StringUtils {
 			default: valueStr = valueStr.substring(0, valueStrLength - 2) + "." + valueStr.substring(valueStrLength - 2);
 		}
 		return valueStr;
+	}
+	
+	
+	private static final Set<String> companyTypeSet = new HashSet<>();
+	static {
+		companyTypeSet.add("Corp.");
+		companyTypeSet.add("Corporation");
+		companyTypeSet.add("Inc");
+		companyTypeSet.add("Inc.");
+		companyTypeSet.add("Incorporated");
+		companyTypeSet.add("Limited");
+		companyTypeSet.add("LLC");
+		companyTypeSet.add("Ltd.");
+		companyTypeSet.add("LP");
+		companyTypeSet.add("LP.");
+		companyTypeSet.add("N.P.");
+		companyTypeSet.add("plc");
+		companyTypeSet.add("S.A.");
+		companyTypeSet.add("(The)");
+	}
+
+	public static String stripTrailingCompanyTypeFromName(String name) {
+		if (name == null || name.length() == 0) {
+			return null;
+		}
+		name = name.trim();
+		
+		String[] pieces = name.split(" ");
+		int length = pieces.length;
+		if (length > 1) {
+			length = (companyTypeSet.contains(pieces[length - 1])) ? length - 1 : length;
+			name = "";
+			for (int i = 0; i < length; i++) {
+				name += pieces[i] + " ";
+			}
+			name = name.trim();
+			name = name.endsWith(",") ? name.substring(0, name.length() - 1) : name;
+		}
+		return name;
 	}
 	
 	
