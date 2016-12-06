@@ -19,6 +19,8 @@ public class EarningsDate {
 	@Column
 	private String symbol;
 	@Column
+	private String name;
+	@Column
 	private Integer companyId;
 	@Column
 	private Timestamp earningsDate;
@@ -27,11 +29,9 @@ public class EarningsDate {
 	@Column
 	private Double analystOpinion;
 	@Column
-	private Integer numberBrokers;
-	@Column
 	private Long marketCap;
 	@Column
-	private Boolean isFactSet;
+	private String marketCapBM;
 	@Column
 	private String jpmOpinion;
 	@Column
@@ -102,23 +102,13 @@ public class EarningsDate {
 	}
 
 
-	public Integer getNumberBrokers() {
-		return numberBrokers;
+	public String getMarketCapBM() {
+		return getMarketCapBM();
 	}
 
 
-	public void setNumberBrokers(Integer numberBrokers) {
-		this.numberBrokers = numberBrokers;
-	}
-
-
-	public Long getMarketCap() {
-		return marketCap;
-	}
-
-
-	public void setMarketCap(Long marketCap) {
-		this.marketCap = marketCap;
+	public void setMarketCapBM(String marketCapBM) {
+		this.marketCapBM = marketCapBM;
 	}
 
 
@@ -155,16 +145,6 @@ public class EarningsDate {
 	}
 
 
-	public Boolean getIsFactSet() {
-		return isFactSet;
-	}
-
-
-	public void setIsFactSet(Boolean isFactSet) {
-		this.isFactSet = isFactSet;
-	}
-
-
 	public String getJpmOpinion() {
 		return jpmOpinion;
 	}
@@ -185,11 +165,31 @@ public class EarningsDate {
 	}
 
 
+	public String getName() {
+		return name;
+	}
+
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+
+	public Long getMarketCap() {
+		return marketCap;
+	}
+
+
+	public void setMarketCap(Long marketCap) {
+		this.marketCap = marketCap;
+	}
+
+
 	@Override
 	public String toString() {
-		return "EarningsDate [id=" + id + ", symbol=" + symbol + ", companyId=" + companyId + ", earningsDate="
-				+ earningsDate + ", beforeMarketOrAfterMarket=" + beforeMarketOrAfterMarket + ", analystOpinion="
-				+ analystOpinion + ", numberBrokers=" + numberBrokers + ", marketCap=" + marketCap + ", isFactSet="
-				+ isFactSet + ", jpmOpinion=" + jpmOpinion + ", jpmAnalyst=" + jpmAnalyst + "]";
+		return "EarningsDate [id=" + id + ", symbol=" + symbol + ", name=" + name + ", companyId=" + companyId
+				+ ", earningsDate=" + earningsDate + ", beforeMarketOrAfterMarket=" + beforeMarketOrAfterMarket
+				+ ", analystOpinion=" + analystOpinion + ", marketCap=" + marketCap + ", marketCapBM=" + marketCapBM
+				+ ", jpmOpinion=" + jpmOpinion + ", jpmAnalyst=" + jpmAnalyst + "]";
 	}
 }

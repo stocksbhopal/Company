@@ -24,10 +24,7 @@ import com.sanjoyghosh.company.db.CompanyUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.db.model.EarningsDate;
-import com.sanjoyghosh.company.source.yahoo.YahooAnalystOpinion;
-import com.sanjoyghosh.company.source.yahoo.YahooAnalystOpinionPage;
-import com.sanjoyghosh.company.source.yahoo.YahooStockSummary;
-import com.sanjoyghosh.company.source.yahoo.YahooStockSummaryPage;
+import com.sanjoyghosh.company.source.nasdaq.NasdaqCompanyUpdater;
 import com.sanjoyghosh.company.utils.StringUtils;
 
 public class JPMorganEarningsCalendarReader {
@@ -86,15 +83,14 @@ public class JPMorganEarningsCalendarReader {
 							earningsDateDB.setJpmOpinion(opinion);
 							earningsDateDB.setSymbol(symbol);
 							
-							YahooStockSummary summary = YahooStockSummaryPage.fetchYahooStockSummary(symbol);
-							earningsDateDB.setMarketCap(summary == null ? 0L : summary.getMarketCap() == null ? 0L : summary.getMarketCap());
-							
-							YahooAnalystOpinion yahooOpinion = YahooAnalystOpinionPage.fetchAnalystOpinionYahoo(symbol);
-							if (yahooOpinion != null) {
-								earningsDateDB.setAnalystOpinion(yahooOpinion.getMeanRecommendationThisWeek());
-								earningsDateDB.setNumberBrokers(yahooOpinion.getNumberOfBrokers());
+							if (company != null) {
+								NasdaqCompanyUpdater.updateCompany(company);
+								earningsDateDB.setMarketCap(company.getMarketCap());
+								earningsDateDB.setMarketCapBM(company.getMarketCapBM());
+								earningsDateDB.setAnalystOpinion(company.getAnalystOpinion());
+								earningsDateDB.setName(StringUtils.stripTrailingCompanyTypeFromName(company.getName()));
 							}
-
+							
 							entityManager.persist(earningsDateDB);
 						}
 					}

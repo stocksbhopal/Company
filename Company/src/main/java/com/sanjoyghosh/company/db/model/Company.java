@@ -17,6 +17,8 @@ public class Company {
 	@Column
 	private String name;
 	@Column
+	private Double analystOpinion;
+	@Column
 	private Integer ipoYear;
 	@Column
 	private String sector;
@@ -143,16 +145,23 @@ public class Company {
 
 	public void setMarketCap(Long marketCap) {
 		this.marketCap = marketCap;
+		
+		if (marketCap > 1000000000L) {
+			int marketCapBillions = (int) (marketCap / 1000000000L);
+			marketCapBM = String.valueOf(marketCapBillions) + " billion";
+		}
+		else if (marketCap > 1000000) {
+			int marketCapMillions = (int) (marketCap / 1000000);
+			marketCapBM = String.valueOf(marketCapMillions) + " million";
+		}
+		else {
+			marketCapBM = String.valueOf(marketCap);
+		}
 	}
 
 
 	public String getMarketCapBM() {
 		return marketCapBM;
-	}
-
-
-	public void setMarketCapBM(String marketCapBM) {
-		this.marketCapBM = marketCapBM;
 	}
 
 
@@ -186,11 +195,21 @@ public class Company {
 	}
 
 
+	public Double getAnalystOpinion() {
+		return analystOpinion;
+	}
+
+
+	public void setAnalystOpinion(Double analystOpinion) {
+		this.analystOpinion = analystOpinion;
+	}
+
+
 	@Override
 	public String toString() {
-		return "Company [id=" + id + ", symbol=" + symbol + ", name=" + name + ", ipoYear=" + ipoYear + ", sector="
-				+ sector + ", industry=" + industry + ", exchange=" + exchange + ", marketCap=" + marketCap
-				+ ", marketCapBM=" + marketCapBM + ", isSnP500=" + isSnP500 + ", isDJIA=" + isDJIA + ", isNasdaq100="
-				+ isNasdaq100 + "]";
+		return "Company [id=" + id + ", symbol=" + symbol + ", name=" + name + ", analystOpinion=" + analystOpinion
+				+ ", ipoYear=" + ipoYear + ", sector=" + sector + ", industry=" + industry + ", exchange=" + exchange
+				+ ", marketCap=" + marketCap + ", marketCapBM=" + marketCapBM + ", isSnP500=" + isSnP500 + ", isDJIA="
+				+ isDJIA + ", isNasdaq100=" + isNasdaq100 + "]";
 	}	
 }

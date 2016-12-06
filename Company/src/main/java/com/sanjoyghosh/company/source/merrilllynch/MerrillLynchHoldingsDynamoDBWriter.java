@@ -60,6 +60,7 @@ public class MerrillLynchHoldingsDynamoDBWriter {
 				    String symbol = record.get("Symbol").trim();
 				    Company company = CompanyUtils.fetchCompanyBySymbol(entityManager, symbol);
 				    if (company != null) {
+				    	System.out.println("Adding Merrill Lynch company: " + company.getName());
 						myStocks.putItem(new Item().withPrimaryKey(DYNDB_COL_USER_ID, ALEXA_USERID, DYNDB_COL_SYMBOL, symbol.toLowerCase())
 							.withString(DYNDB_COL_FULL_NAME, company.getName()));
 				    }
@@ -85,7 +86,7 @@ public class MerrillLynchHoldingsDynamoDBWriter {
 			}
 		}
 		
-//		merrillLynchFile.delete();
+		merrillLynchFile.delete();
 	}
 		
 	

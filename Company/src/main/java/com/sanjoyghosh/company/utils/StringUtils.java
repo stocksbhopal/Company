@@ -274,12 +274,14 @@ public class StringUtils {
 	static {
 		companyTypeSet.add("Corp.");
 		companyTypeSet.add("Corporation");
+		companyTypeSet.add("inc.");
 		companyTypeSet.add("Inc");
 		companyTypeSet.add("Inc.");
 		companyTypeSet.add("Incorporated");
 		companyTypeSet.add("Limited");
 		companyTypeSet.add("LLC");
 		companyTypeSet.add("Ltd.");
+		companyTypeSet.add("L.P.");
 		companyTypeSet.add("LP");
 		companyTypeSet.add("LP.");
 		companyTypeSet.add("N.P.");
@@ -297,7 +299,7 @@ public class StringUtils {
 		String[] pieces = name.split(" ");
 		int length = pieces.length;
 		if (length > 1) {
-			length = (companyTypeSet.contains(pieces[length - 1])) ? length - 1 : length;
+			length = (companyTypeSet.contains(pieces[length - 1].trim())) ? length - 1 : length;
 			name = "";
 			for (int i = 0; i < length; i++) {
 				name += pieces[i] + " ";

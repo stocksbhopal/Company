@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 
+import org.jsoup.HttpStatusException;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -19,6 +20,7 @@ import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.db.model.EarningsDate;
 import com.sanjoyghosh.company.source.nasdaq.NasdaqCompanyUpdater;
 import com.sanjoyghosh.company.utils.JsoupUtils;
+import com.sanjoyghosh.company.utils.StringUtils;
 
 public class YahooEarningsCalendarReader {
 
@@ -31,7 +33,15 @@ public class YahooEarningsCalendarReader {
     	String yepUrl = "http://biz.yahoo.com/research/earncal/" + dateFormatter.format(date.getTime()) + ".html";
     	Timestamp timestamp = new Timestamp(date.getTime().getTime());
     	
-		Document doc = JsoupUtils.fetchDocument(yepUrl);		
+		Document doc = null;
+		try {
+			doc = JsoupUtils.fetchDocument(yepUrl);	
+		}
+		catch (HttpStatusException e) {
+			System.err.println("No doc for: " + yepUrl + ", status: " + e.getStatusCode());
+			return;
+		}
+		
 	    Elements trElements = doc.select("table[cellpadding=2").select("tr");
 	    for (int i = 0; i < trElements.size(); i++) {
 	    	Element trElement = trElements.get(i);
@@ -63,20 +73,9 @@ public class YahooEarningsCalendarReader {
 	    		if (company != null) {
 	    			NasdaqCompanyUpdater.updateCompany(company);
 	    			earningsDate.setMarketCap(company.getMarketCap());
-	    		}
-
-	    		YahooAnalystOpinion opinion = YahooAnalystOpinionPage.fetchAnalystOpinionYahoo(symbol);
-	    		if (opinion != null) {
-	    			earningsDate.setAnalystOpinion(opinion.getMeanRecommendationThisWeek());
-	    			earningsDate.setNumberBrokers(opinion.getNumberOfBrokers());
-	    		}
-	    		System.out.println(earningsDate);
-	    		
-	    		if (!updateEarningsDate) {
-	    			entityManager.persist(earningsDate);
-	    		}
-	    		else {
-	    			entityManager.merge(earningsDate);
+	    			earningsDate.setMarketCapBM(company.getMarketCapBM());
+	    			earningsDate.setAnalystOpinion(company.getAnalystOpinion());
+		    		earningsDate.setName(StringUtils.stripTrailingCompanyTypeFromName(company.getName()));
 	    		}
 	    	}
 	    }   
@@ -97,7 +96,6 @@ public class YahooEarningsCalendarReader {
 			} 
 			catch (IOException e) {
 				e.printStackTrace();
-				entityManager.getTransaction().rollback();
 			}
 			calendar.add(Calendar.DATE, 1);
 		}		
