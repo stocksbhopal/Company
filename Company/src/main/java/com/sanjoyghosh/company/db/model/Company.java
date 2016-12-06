@@ -36,6 +36,10 @@ public class Company {
 	private String isDJIA;
 	@Column
 	private String isNasdaq100;
+	@Column
+	private String jpmOpinion;
+	@Column
+	private String jpmAnalyst;
 	
 	
 	public Company() {}
@@ -211,5 +215,25 @@ public class Company {
 				+ ", ipoYear=" + ipoYear + ", sector=" + sector + ", industry=" + industry + ", exchange=" + exchange
 				+ ", marketCap=" + marketCap + ", marketCapBM=" + marketCapBM + ", isSnP500=" + isSnP500 + ", isDJIA="
 				+ isDJIA + ", isNasdaq100=" + isNasdaq100 + "]";
+	}
+
+
+	public String getJpmOpinion() {
+		return jpmOpinion;
+	}
+
+
+	public void setJpmOpinion(String jpmOpinion) {
+		this.jpmOpinion = jpmOpinion;
+	}
+
+
+	public String getJpmAnalyst() {
+		return jpmAnalyst;
+	}
+
+
+	public void setJpmAnalyst(String jpmAnalyst) {
+		this.jpmAnalyst = jpmAnalyst;
 	}	
 }

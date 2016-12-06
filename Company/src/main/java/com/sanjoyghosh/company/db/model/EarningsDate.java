@@ -19,23 +19,11 @@ public class EarningsDate {
 	@Column
 	private String symbol;
 	@Column
-	private String name;
-	@Column
 	private Integer companyId;
 	@Column
 	private Timestamp earningsDate;
 	@Column
 	private String beforeMarketOrAfterMarket;
-	@Column
-	private Double analystOpinion;
-	@Column
-	private Long marketCap;
-	@Column
-	private String marketCapBM;
-	@Column
-	private String jpmOpinion;
-	@Column
-	private String jpmAnalyst;
 	
 	
 	public EarningsDate() {}
@@ -92,26 +80,6 @@ public class EarningsDate {
 	}
 
 
-	public Double getAnalystOpinion() {
-		return analystOpinion;
-	}
-
-
-	public void setAnalystOpinion(Double analystOpinion) {
-		this.analystOpinion = analystOpinion;
-	}
-
-
-	public String getMarketCapBM() {
-		return getMarketCapBM();
-	}
-
-
-	public void setMarketCapBM(String marketCapBM) {
-		this.marketCapBM = marketCapBM;
-	}
-
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -145,51 +113,9 @@ public class EarningsDate {
 	}
 
 
-	public String getJpmOpinion() {
-		return jpmOpinion;
-	}
-
-
-	public void setJpmOpinion(String jpmOpinion) {
-		this.jpmOpinion = jpmOpinion;
-	}
-
-
-	public String getJpmAnalyst() {
-		return jpmAnalyst;
-	}
-
-
-	public void setJpmAnalyst(String jpmAnalyst) {
-		this.jpmAnalyst = jpmAnalyst;
-	}
-
-
-	public String getName() {
-		return name;
-	}
-
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-
-	public Long getMarketCap() {
-		return marketCap;
-	}
-
-
-	public void setMarketCap(Long marketCap) {
-		this.marketCap = marketCap;
-	}
-
-
 	@Override
 	public String toString() {
-		return "EarningsDate [id=" + id + ", symbol=" + symbol + ", name=" + name + ", companyId=" + companyId
-				+ ", earningsDate=" + earningsDate + ", beforeMarketOrAfterMarket=" + beforeMarketOrAfterMarket
-				+ ", analystOpinion=" + analystOpinion + ", marketCap=" + marketCap + ", marketCapBM=" + marketCapBM
-				+ ", jpmOpinion=" + jpmOpinion + ", jpmAnalyst=" + jpmAnalyst + "]";
+		return "EarningsDate [id=" + id + ", symbol=" + symbol + ", companyId=" + companyId + ", earningsDate="
+				+ earningsDate + ", beforeMarketOrAfterMarket=" + beforeMarketOrAfterMarket + "]";
 	}
 }

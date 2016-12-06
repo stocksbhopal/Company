@@ -18,9 +18,7 @@ import com.sanjoyghosh.company.db.CompanyUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.db.model.EarningsDate;
-import com.sanjoyghosh.company.source.nasdaq.NasdaqCompanyUpdater;
 import com.sanjoyghosh.company.utils.JsoupUtils;
-import com.sanjoyghosh.company.utils.StringUtils;
 
 public class YahooEarningsCalendarReader {
 
@@ -68,15 +66,6 @@ public class YahooEarningsCalendarReader {
 	    		earningsDate.setSymbol(symbol);
 	    		earningsDate.setEarningsDate(new Timestamp(date.getTime().getTime()));
 	    		earningsDate.setBeforeMarketOrAfterMarket((releaseTime != null && releaseTime.indexOf("After Market Close") >= 0) ? "AM" : "BM");
-	    		
-	    		// This updates the company's market cap.
-	    		if (company != null) {
-	    			NasdaqCompanyUpdater.updateCompany(company);
-	    			earningsDate.setMarketCap(company.getMarketCap());
-	    			earningsDate.setMarketCapBM(company.getMarketCapBM());
-	    			earningsDate.setAnalystOpinion(company.getAnalystOpinion());
-		    		earningsDate.setName(StringUtils.stripTrailingCompanyTypeFromName(company.getName()));
-	    		}
 	    	}
 	    }   
     }

@@ -24,7 +24,6 @@ import com.sanjoyghosh.company.db.CompanyUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.db.model.EarningsDate;
-import com.sanjoyghosh.company.source.nasdaq.NasdaqCompanyUpdater;
 import com.sanjoyghosh.company.utils.StringUtils;
 
 public class JPMorganEarningsCalendarReader {
@@ -46,7 +45,9 @@ public class JPMorganEarningsCalendarReader {
 				earningsDate = dateParser.parse(line);
 			} 
 			catch (ParseException e) {
+				e.printStackTrace();
 			}
+			
 			if (earningsDate != null && line.length() > 24) {
 				String[] prefixAndSuffix = StringUtils.prefixAndSuffixWithEmbedded(line, opinionList);
 				if (prefixAndSuffix != null) {
@@ -60,39 +61,26 @@ public class JPMorganEarningsCalendarReader {
 						continue;
 					}
 					
-					pos = embedded.indexOf(' ');
-					String opinion = embedded.substring(pos, embedded.length()).trim();
-					
-					pos = suffix.indexOf('$');
-					String analyst = suffix.substring(0, pos).trim();
+					Company company = CompanyUtils.fetchCompanyBySymbol(entityManager, symbol);
+					if (company != null) {
+						pos = embedded.indexOf(' ');
+						String opinion = embedded.substring(pos, embedded.length()).trim();
+						pos = suffix.indexOf('$');
+						String analyst = suffix.substring(0, pos).trim();
+						
+						company.setJpmOpinion(opinion);
+						company.setJpmAnalyst(analyst);
+						entityManager.persist(company);
+					}
 							
 					EarningsDate earningsDateDB = CompanyUtils.fetchEarningsDateForSymbolDate(entityManager, symbol, new Timestamp(earningsDate.getTime()));
-					if (earningsDateDB != null) {
-						earningsDateDB.setJpmAnalyst(analyst);
-						earningsDateDB.setJpmOpinion(opinion);
+					if (earningsDateDB == null && earningsDate.after(new Date())) {
+						earningsDateDB = new EarningsDate();
+						earningsDateDB.setBeforeMarketOrAfterMarket("BM");
+						earningsDateDB.setCompanyId(company == null ? null : company.getId());
+						earningsDateDB.setEarningsDate(new Timestamp(earningsDate.getTime()));
+						earningsDateDB.setSymbol(symbol);							
 						entityManager.persist(earningsDateDB);
-					}
-					else {
-						if (earningsDate.after(new Date())) {
-							Company company = CompanyUtils.fetchCompanyBySymbol(entityManager, symbol);
-							earningsDateDB = new EarningsDate();
-							earningsDateDB.setBeforeMarketOrAfterMarket("BM");
-							earningsDateDB.setCompanyId(company == null ? null : company.getId());
-							earningsDateDB.setEarningsDate(new Timestamp(earningsDate.getTime()));
-							earningsDateDB.setJpmAnalyst(analyst);
-							earningsDateDB.setJpmOpinion(opinion);
-							earningsDateDB.setSymbol(symbol);
-							
-							if (company != null) {
-								NasdaqCompanyUpdater.updateCompany(company);
-								earningsDateDB.setMarketCap(company.getMarketCap());
-								earningsDateDB.setMarketCapBM(company.getMarketCapBM());
-								earningsDateDB.setAnalystOpinion(company.getAnalystOpinion());
-								earningsDateDB.setName(StringUtils.stripTrailingCompanyTypeFromName(company.getName()));
-							}
-							
-							entityManager.persist(earningsDateDB);
-						}
 					}
 				}
 			}
