@@ -216,13 +216,13 @@ public class CompanyUtils {
 		return earningsDateList;
 	}
 
-	public static EarningsDate fetchEarningsDateForSymbolDate(EntityManager entityManager, String symbol, Timestamp earningsDate) {
+	public static List<EarningsDate> fetchEarningsDateForSymbolDate(EntityManager entityManager, String symbol, Timestamp earningsDate) {
 		List<EarningsDate> earningsDateList = 
-			entityManager.createQuery("SELECT ed FROM EarningsDate AS ed WHERE ed.symbol = :symbol AND ed.earningsDate = :earningsDate", EarningsDate.class)
+			entityManager.createQuery("SELECT ed FROM EarningsDate AS ed WHERE ed.symbol = :symbol AND ed.earningsDate >= :earningsDate", EarningsDate.class)
 			.setParameter("symbol", symbol)
 			.setParameter("earningsDate", earningsDate)
 			.getResultList();
-		return earningsDateList == null || earningsDateList.size() == 0 ? null : earningsDateList.get(0);
+		return earningsDateList;
 	}
 
 	public static EarningsDate fetchLastEarningsDateForSymbol(EntityManager entityManager, String symbol) {

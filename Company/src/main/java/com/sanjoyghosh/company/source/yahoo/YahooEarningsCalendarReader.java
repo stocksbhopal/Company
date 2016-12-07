@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
@@ -18,6 +19,8 @@ import com.sanjoyghosh.company.db.CompanyUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.db.model.EarningsDate;
+import com.sanjoyghosh.company.source.nasdaq.NasdaqCompanyUpdater;
+import com.sanjoyghosh.company.utils.DateUtils;
 import com.sanjoyghosh.company.utils.JsoupUtils;
 
 public class YahooEarningsCalendarReader {
@@ -50,22 +53,39 @@ public class YahooEarningsCalendarReader {
 	    		if ((symbol.indexOf('^') >= 0) || (symbol.indexOf('.') >= 0)) {
 	    			continue;
 	    		}
-	    		
-	    		boolean updateEarningsDate = false;
-	    		EarningsDate currentEarningsDate = CompanyUtils.fetchEarningsDateForSymbolDate(entityManager, symbol, timestamp);
-	    		if (currentEarningsDate != null) {
-	    			updateEarningsDate = true;
+	    		Company company = companyBySymbolMap.get(symbol);
+	    		if (company == null) {
+	    			continue;
 	    		}
+
+	    		NasdaqCompanyUpdater.updateCompany(company);
+	    		entityManager.persist(company);
 	    		
 	    		String releaseTime = smallElements.text();
-	    		Company company = companyBySymbolMap.get(symbol);
-	    		Integer companyId = company == null ? null : company.getId();
+	    		releaseTime = (releaseTime != null && releaseTime.indexOf("After Market Close") >= 0) ? "AM" : "BM";
 	    		
-	    		EarningsDate earningsDate = updateEarningsDate ? currentEarningsDate : new EarningsDate();
-	    		earningsDate.setCompanyId(companyId);
-	    		earningsDate.setSymbol(symbol);
-	    		earningsDate.setEarningsDate(new Timestamp(date.getTime().getTime()));
-	    		earningsDate.setBeforeMarketOrAfterMarket((releaseTime != null && releaseTime.indexOf("After Market Close") >= 0) ? "AM" : "BM");
+	    		boolean hasEarningsDate = false;
+	    		List<EarningsDate> earningsDateList = CompanyUtils.fetchEarningsDateForSymbolDate(entityManager, symbol, timestamp);
+	    		for (EarningsDate earningsDate : earningsDateList) {
+	    			if (!earningsDate.getEarningsDate().equals(timestamp)) {
+	    				entityManager.remove(earningsDate);
+	    			}
+	    			else {
+	    				hasEarningsDate = true;
+	    			}
+	    		}
+
+	    		if (!hasEarningsDate) {
+		    		EarningsDate earningsDate = new EarningsDate();
+		    		
+		    		earningsDate.setCompanyId(company.getId());
+		    		earningsDate.setSymbol(symbol);
+		    		earningsDate.setEarningsDate(timestamp);
+		    		earningsDate.setBeforeMarketOrAfterMarket(releaseTime);
+		    		
+		    		entityManager.persist(earningsDate);
+		    		continue;
+	    		}
 	    	}
 	    }   
     }
@@ -77,8 +97,10 @@ public class YahooEarningsCalendarReader {
 		
 		Calendar calendar = new GregorianCalendar();
 		calendar = new GregorianCalendar(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-		for (int i = 0; i < 7; i++) {
+		for (int i = 0; i < 31; i++) {
 			try {
+				System.out.println("Getting earnings for " + DateUtils.toDateString(calendar.getTime()));
+				
 		    	entityManager.getTransaction().begin();		    	
 				readEarningsCalendarFor(calendar);
 			    entityManager.getTransaction().commit();

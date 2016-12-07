@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.LineNumberReader;
 import java.io.StringReader;
-import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -23,7 +22,6 @@ import org.apache.pdfbox.util.PDFTextStripper;
 import com.sanjoyghosh.company.db.CompanyUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.model.Company;
-import com.sanjoyghosh.company.db.model.EarningsDate;
 import com.sanjoyghosh.company.utils.StringUtils;
 
 public class JPMorganEarningsCalendarReader {
@@ -71,16 +69,6 @@ public class JPMorganEarningsCalendarReader {
 						company.setJpmOpinion(opinion);
 						company.setJpmAnalyst(analyst);
 						entityManager.persist(company);
-					}
-							
-					EarningsDate earningsDateDB = CompanyUtils.fetchEarningsDateForSymbolDate(entityManager, symbol, new Timestamp(earningsDate.getTime()));
-					if (earningsDateDB == null && earningsDate.after(new Date())) {
-						earningsDateDB = new EarningsDate();
-						earningsDateDB.setBeforeMarketOrAfterMarket("BM");
-						earningsDateDB.setCompanyId(company == null ? null : company.getId());
-						earningsDateDB.setEarningsDate(new Timestamp(earningsDate.getTime()));
-						earningsDateDB.setSymbol(symbol);							
-						entityManager.persist(earningsDateDB);
 					}
 				}
 			}
