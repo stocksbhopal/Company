@@ -107,11 +107,17 @@ public class CompanyFactsUtils {
 	
 	
 	public static CompanyFacts getCompanyFactsForName(String name) {
+		if (name == null) {
+			return null;
+		}
 		return companyFactsByNameMap.get(name.toLowerCase());
 	}
 
 
 	public static CompanyFacts getCompanyFactsForSymbol(String symbol) {
+		if (symbol == null) {
+			return null;
+		}
 		return companyFactsBySymbolMap.get(symbol.toLowerCase());
 	}
 }
