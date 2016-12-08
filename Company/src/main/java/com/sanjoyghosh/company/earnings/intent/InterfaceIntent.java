@@ -17,9 +17,13 @@ public interface InterfaceIntent {
     public static final String INTENT_ADD_COMPANY = "AddCompany";
     public static final String INTENT_LIST_COMPANIES = "ListCompanies";
     public static final String INTENT_LIST_EARNINGS_BY = "ListEarningsBy";
+    public static final String INTENT_LIST_INDEX_EARNINGS_BY = "ListIndexEarningsBy";
     public static final String INTENT_LIST_EARNINGS_ON = "ListEarningsOn";
+    public static final String INTENT_LIST_INDEX_EARNINGS_ON = "ListIndexEarningsOn";
     public static final String INTENT_LIST_EARNINGS_NEXT = "ListEarningsNext";
+    public static final String INTENT_LIST_INDEX_EARNINGS_NEXT = "ListIndexEarningsNext";
     public static final String INTENT_LIST_EARNINGS_MY_NEXT = "ListEarningsMyNext";
+    public static final String INTENT_LIST_INDEX_EARNINGS_MY_NEXT = "ListIndexEarningsMyNext";
     
     public static final String DYNDB_TABLE_MY_STOCKS = "MyStocks";
     public static final String DYNDB_TABLE_WATCH_LIST = "WatchList";

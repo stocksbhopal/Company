@@ -59,7 +59,7 @@ public class IntentListEarnings implements InterfaceIntent {
 		}
 		
 		EntityManager entityManager = JPAHelper.getEntityManager();
-		List<CompanyEarnings> earnings = CompanyUtils.fetchAllEarningsDateForDateRangeAndSymbols(entityManager, 
+		List<CompanyEarnings> earnings = CompanyUtils.fetchEarningsDateListForDateRangeAndSymbols(entityManager, 
 			startTimestamp, endTimestamp, symbols);
 		String companys = "";
 		for (CompanyEarnings ce : earnings) {

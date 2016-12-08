@@ -4,7 +4,7 @@ import java.util.Date;
 
 import com.sanjoyghosh.company.utils.DateUtils;
 
-public class CompanyEarnings implements ITableItem {
+public class CompanyEarnings {
 
 	private static final String[]	columnNames = { "#", "Earnings Date", "BM/AM", "Symbol", "Name"};
 	

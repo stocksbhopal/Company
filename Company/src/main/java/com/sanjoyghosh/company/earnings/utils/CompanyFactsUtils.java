@@ -31,6 +31,7 @@ public class CompanyFactsUtils {
 		addCompany("childrens place", "plce", "Children's Place");
 		addCompany("ciena", "cien", "Ciena");
 		addCompany("comcast", "cmcsa", "Comcast");
+		addCompany("cost co", "cost", "Costco Wholesale");
 		addCompany("danaher", "dhr", "Danaher");
 		addCompany("dollar general", "dg", "Dollar General");
 		addCompany("edwards", "ew", "Edwards Lifesciences");

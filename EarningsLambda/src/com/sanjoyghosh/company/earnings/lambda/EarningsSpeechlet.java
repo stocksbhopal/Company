@@ -59,20 +59,31 @@ public class EarningsSpeechlet implements Speechlet  {
 		if (intentName.equals(InterfaceIntent.INTENT_LIST_EARNINGS_BY)) {
 			return new IntentListEarnings().onIntent(request, session);
 		}
+		if (intentName.equals(InterfaceIntent.INTENT_LIST_INDEX_EARNINGS_BY)) {
+			return new IntentListEarnings().onIntent(request, session);
+		}
 		if (intentName.equals(InterfaceIntent.INTENT_LIST_EARNINGS_ON)) {
+			return new IntentListEarnings().onIntent(request, session);
+		}
+		if (intentName.equals(InterfaceIntent.INTENT_LIST_INDEX_EARNINGS_ON)) {
 			return new IntentListEarnings().onIntent(request, session);
 		}
 		if (intentName.equals(InterfaceIntent.INTENT_LIST_EARNINGS_NEXT)) {
 			return new IntentListEarnings().onIntent(request, session);
 		}
+		if (intentName.equals(InterfaceIntent.INTENT_LIST_INDEX_EARNINGS_NEXT)) {
+			return new IntentListEarnings().onIntent(request, session);
+		}
 		if (intentName.equals(InterfaceIntent.INTENT_LIST_EARNINGS_MY_NEXT)) {
 			return new IntentListEarnings().onIntent(request, session);
 		}
-		
+		if (intentName.equals(InterfaceIntent.INTENT_LIST_INDEX_EARNINGS_MY_NEXT)) {
+			return new IntentListEarnings().onIntent(request, session);
+		}
+		log.error("Unknown Intent Name: " + intentName);
+
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
-		log.error(request.toString());
-		System.err.println(request.toString());
-		outputSpeech.setText("Really this is Yes You will have great earnings soon like tomorrow.");
+		outputSpeech.setText("Sanjoy has no idea what to do with this intent: " + intentName);
 		return SpeechletResponse.newTellResponse(outputSpeech);
 	}
 

@@ -14,6 +14,7 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 
 import com.sanjoyghosh.company.api.CompanyEarnings;
+import com.sanjoyghosh.company.api.MarketIndexEnum;
 import com.sanjoyghosh.company.db.model.Activity;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.db.model.DividendHistory;
@@ -191,7 +192,7 @@ public class CompanyUtils {
 	
 	
 
-	public static List<CompanyEarnings> fetchAllEarningsDateForDateRange(EntityManager entityManager, Timestamp earningsDateStart, Timestamp earningsDateEnd) {
+	public static List<CompanyEarnings> fetchEarningsDateListForDateRange(EntityManager entityManager, Timestamp earningsDateStart, Timestamp earningsDateEnd) {
 		List<CompanyEarnings> earningsDateList = 
 			entityManager.createQuery("SELECT new com.sanjoyghosh.company.api.CompanyEarnings(ed.symbol, c.name, ed.earningsDate, ed.beforeMarketOrAfterMarket, c.id, ed.id) " +
 				"FROM EarningsDate AS ed, Company AS c " +
@@ -203,7 +204,7 @@ public class CompanyUtils {
 		return earningsDateList;
 	}
 
-	public static List<CompanyEarnings> fetchAllEarningsDateForDateRangeAndSymbols(EntityManager entityManager, Timestamp earningsDateStart, Timestamp earningsDateEnd, List<String> symbols) {
+	public static List<CompanyEarnings> fetchEarningsDateListForDateRangeAndSymbols(EntityManager entityManager, Timestamp earningsDateStart, Timestamp earningsDateEnd, List<String> symbols) {
 		List<CompanyEarnings> earningsDateList = 
 			entityManager.createQuery("SELECT new com.sanjoyghosh.company.api.CompanyEarnings(ed.symbol, c.name, ed.earningsDate, ed.beforeMarketOrAfterMarket, c.id, ed.id) " +
 				"FROM EarningsDate AS ed, Company AS c " +
@@ -216,7 +217,30 @@ public class CompanyUtils {
 		return earningsDateList;
 	}
 
-	public static List<EarningsDate> fetchEarningsDateForSymbolDate(EntityManager entityManager, String symbol, Timestamp earningsDate) {
+	private static String marketIndexToColumn(MarketIndexEnum index) {
+		switch (index.getIndex()) {
+		case MarketIndexEnum.INDEX_NONE: return "";
+		case MarketIndexEnum.INDEX_DJIA: return "isDJIA";
+		case MarketIndexEnum.INDEX_NASDAQ100: return "isNasdaq100";
+		case MarketIndexEnum.INDEX_SNP500: return "isSnP500";
+		default: return "";
+		}
+	}
+	
+	public static List<CompanyEarnings> fetchEarningsDateListForMarketIndexNext(EntityManager entityManager, Timestamp earningsDateStart, MarketIndexEnum marketIndex) {
+		List<CompanyEarnings> earningsDateList = 
+			entityManager.createQuery(
+				"SELECT new com.sanjoyghosh.company.api.CompanyEarnings(e.symbol, c.name, e.earningsDate, e.beforeMarketOrAfterMarket, c.id, e.id) " +
+				"FROM EarningsDate AS e, Company AS c " +
+				"WHERE e.companyId = c.id AND e.earningsDate IN " +
+					"(SELECT MIN(ed.earningsDdate) FROM EarningsDate AS ed, Company AS co WHERE ed.companyId = co.id AND ed.earningsDate >= :earningsDateStart AND co." + marketIndexToColumn(marketIndex) + " = 'Y') " +
+				"ORDER BY e.beforeMarketOrAfterMarket DESC", CompanyEarnings.class)
+			.setParameter("earningsDateStart", earningsDateStart)
+			.getResultList();
+		return earningsDateList;
+	}
+
+	public static List<EarningsDate> fetchEarningsDateListForSymbolDate(EntityManager entityManager, String symbol, Timestamp earningsDate) {
 		List<EarningsDate> earningsDateList = 
 			entityManager.createQuery("SELECT ed FROM EarningsDate AS ed WHERE ed.symbol = :symbol AND ed.earningsDate >= :earningsDate", EarningsDate.class)
 			.setParameter("symbol", symbol)
@@ -243,7 +267,7 @@ public class CompanyUtils {
 		GregorianCalendar end = new GregorianCalendar();
 		end.add(Calendar.DATE, 7);
 		EntityManager entityManager = JPAHelper.getEntityManager();
-		List<CompanyEarnings> earnings = CompanyUtils.fetchAllEarningsDateForDateRangeAndSymbols(entityManager, 
+		List<CompanyEarnings> earnings = CompanyUtils.fetchEarningsDateListForDateRangeAndSymbols(entityManager, 
 			new Timestamp(start.getTimeInMillis()), new Timestamp(end.getTimeInMillis()), symbols);
 		System.out.println(earnings.size());
 		for (CompanyEarnings ce : earnings) {
