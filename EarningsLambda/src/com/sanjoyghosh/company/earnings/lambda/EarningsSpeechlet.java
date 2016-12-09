@@ -41,31 +41,27 @@ public class EarningsSpeechlet implements Speechlet  {
 	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
 		String intentName = request.getIntent().getName();
 		log.info("Intent: " + intentName);
-		if (intentName.equals(InterfaceIntent.INTENT_GET_STOCK_PRICE)) {
-			return new IntentGetStockPrice().onIntent(request, session);
-		}		
-		if (intentName.equals(InterfaceIntent.INTENT_ADD_COMPANY)) {
-			return new IntentAddCompany().onIntent(request, session);
-		}		
+
 		if (intentName.equals("AMAZON.YesIntent")) {
 			String lastIntentName = (String) session.getAttribute(InterfaceIntent.ATTR_LAST_INTENT);
 			if (lastIntentName.equals(InterfaceIntent.INTENT_ADD_COMPANY)) {
 				return new IntentAddCompany().onIntent(request, session);
 			}
 		}
+
+		if (intentName.equals(InterfaceIntent.INTENT_GET_STOCK_PRICE)) {
+			return new IntentGetStockPrice().onIntent(request, session);
+		}		
+		if (intentName.equals(InterfaceIntent.INTENT_ADD_COMPANY)) {
+			return new IntentAddCompany().onIntent(request, session);
+		}		
 		if (intentName.equals(InterfaceIntent.INTENT_LIST_COMPANIES)) {
 			return new IntentListCompanies().onIntent(request, session);
 		}
-		if (intentName.equals(InterfaceIntent.INTENT_LIST_EARNINGS_BY)) {
+		if (intentName.equals(InterfaceIntent.INTENT_LIST_EARNINGS)) {
 			return new IntentListEarnings().onIntent(request, session);
 		}
-		if (intentName.equals(InterfaceIntent.INTENT_LIST_INDEX_EARNINGS_BY)) {
-			return new IntentListEarnings().onIntent(request, session);
-		}
-		if (intentName.equals(InterfaceIntent.INTENT_LIST_EARNINGS_ON)) {
-			return new IntentListEarnings().onIntent(request, session);
-		}
-		if (intentName.equals(InterfaceIntent.INTENT_LIST_INDEX_EARNINGS_ON)) {
+		if (intentName.equals(InterfaceIntent.INTENT_LIST_INDEX_EARNINGS)) {
 			return new IntentListEarnings().onIntent(request, session);
 		}
 		if (intentName.equals(InterfaceIntent.INTENT_LIST_EARNINGS_NEXT)) {

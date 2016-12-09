@@ -12,14 +12,13 @@ public interface InterfaceIntent {
 
     public static final String SLOT_COMPANY = "company";
     public static final String SLOT_DATE = "date";
+    public static final String SLOT_START_DATE = "start_date";
     
     public static final String INTENT_GET_STOCK_PRICE = "GetStockPrice";
     public static final String INTENT_ADD_COMPANY = "AddCompany";
     public static final String INTENT_LIST_COMPANIES = "ListCompanies";
-    public static final String INTENT_LIST_EARNINGS_BY = "ListEarningsBy";
-    public static final String INTENT_LIST_INDEX_EARNINGS_BY = "ListIndexEarningsBy";
-    public static final String INTENT_LIST_EARNINGS_ON = "ListEarningsOn";
-    public static final String INTENT_LIST_INDEX_EARNINGS_ON = "ListIndexEarningsOn";
+    public static final String INTENT_LIST_EARNINGS = "ListEarnings";
+    public static final String INTENT_LIST_INDEX_EARNINGS = "ListIndexEarnings";
     public static final String INTENT_LIST_EARNINGS_NEXT = "ListEarningsNext";
     public static final String INTENT_LIST_INDEX_EARNINGS_NEXT = "ListIndexEarningsNext";
     public static final String INTENT_LIST_EARNINGS_MY_NEXT = "ListEarningsMyNext";

@@ -65,7 +65,7 @@ public class YahooEarningsCalendarReader {
 	    		releaseTime = (releaseTime != null && releaseTime.indexOf("After Market Close") >= 0) ? "AM" : "BM";
 	    		
 	    		boolean hasEarningsDate = false;
-	    		List<EarningsDate> earningsDateList = CompanyUtils.fetchEarningsDateForSymbolDate(entityManager, symbol, timestamp);
+	    		List<EarningsDate> earningsDateList = CompanyUtils.fetchEarningsDateListForSymbolDate(entityManager, symbol, timestamp);
 	    		for (EarningsDate earningsDate : earningsDateList) {
 	    			if (!earningsDate.getEarningsDate().equals(timestamp)) {
 	    				entityManager.remove(earningsDate);

@@ -240,6 +240,19 @@ public class CompanyUtils {
 		return earningsDateList;
 	}
 
+	public static List<CompanyEarnings> fetchEarningsDateListForNext(EntityManager entityManager, Timestamp earningsDateStart) {
+		List<CompanyEarnings> earningsDateList = 
+			entityManager.createQuery(
+				"SELECT new com.sanjoyghosh.company.api.CompanyEarnings(e.symbol, c.name, e.earningsDate, e.beforeMarketOrAfterMarket, c.id, e.id) " +
+				"FROM EarningsDate AS e, Company AS c " +
+				"WHERE e.companyId = c.id AND e.earningsDate IN " +
+					"(SELECT MIN(ed.earningsDdate) FROM EarningsDate AS ed, Company AS co WHERE ed.companyId = co.id AND ed.earningsDate >= :earningsDateStart) " +
+				"ORDER BY e.beforeMarketOrAfterMarket DESC", CompanyEarnings.class)
+			.setParameter("earningsDateStart", earningsDateStart)
+			.getResultList();
+		return earningsDateList;
+	}
+
 	public static List<EarningsDate> fetchEarningsDateListForSymbolDate(EntityManager entityManager, String symbol, Timestamp earningsDate) {
 		List<EarningsDate> earningsDateList = 
 			entityManager.createQuery("SELECT ed FROM EarningsDate AS ed WHERE ed.symbol = :symbol AND ed.earningsDate >= :earningsDate", EarningsDate.class)
