@@ -5,9 +5,8 @@ import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.sql.Timestamp;
 import java.text.ParseException;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -30,13 +29,13 @@ public class MerrillLynchActivityReader {
 		
 	private EntityManager entityManager;
 	private Set<String> transactionTypeSet;
-	private Map<Date, Set<Activity>> activityByDateMap;
+	private Map<LocalDate, Set<Activity>> activityByDateMap;
 	
 	
 	public MerrillLynchActivityReader() {
 		entityManager = JPAHelper.getEntityManager();
 		transactionTypeSet = new HashSet<String>();
-		activityByDateMap = new HashMap<Date, Set<Activity>>();
+		activityByDateMap = new HashMap<LocalDate, Set<Activity>>();
 	}
 	
 	
@@ -60,8 +59,8 @@ public class MerrillLynchActivityReader {
 			Iterable<CSVRecord> records = CSVFormat.EXCEL.withHeader().parse(reader);
 			for (CSVRecord record : records) {
 				if (record.size() == 13) {
-					Date tradeDate = DateUtils.getLocalDate(record.get("Trade Date").trim());
-					Date settledDate = DateUtils.getLocalDate(record.get("Settlement Date").trim());
+					LocalDate tradeDate = DateUtils.getLocalDate(record.get("Trade Date").trim());
+					LocalDate settledDate = DateUtils.getLocalDate(record.get("Settlement Date").trim());
 					tradeDate = tradeDate == null ? settledDate : tradeDate;
 					String account = StringUtils.onlyLast4Characters(record.get("Account #").trim());
 					String transactionType = record.get("Description 1 ").trim();
@@ -75,8 +74,8 @@ public class MerrillLynchActivityReader {
 	
 				    Activity activity = new Activity();
 				    activity.setCompanyId(company == null ? 0 : company.getId());
-				    activity.setTradeDate(new Timestamp(tradeDate.getTime()));
-				    activity.setSettledDate(new Timestamp(settledDate.getTime()));
+				    activity.setTradeDate(tradeDate);
+				    activity.setSettledDate(settledDate);
 				    activity.setAccount(account);
 				    activity.setBrokerage(Constants.MerrillLynchBrokerage);
 				    activity.setSymbol(symbol);
@@ -88,7 +87,7 @@ public class MerrillLynchActivityReader {
 				    if (company != null) {
 				    	Set<Activity> activitySet = activityByDateMap.get(settledDate);
 				    	if (activitySet == null) {
-				    		activitySet = CompanyUtils.fetchAllActivityAtBrokerageForSettledDate(entityManager, Constants.MerrillLynchBrokerage, new Timestamp(settledDate.getTime()));
+				    		activitySet = CompanyUtils.fetchAllActivityAtBrokerageForSettledDate(entityManager, Constants.MerrillLynchBrokerage, settledDate);
 				    		activityByDateMap.put(settledDate, activitySet);
 				    	}
 				    	if (!activitySet.contains(activity)) {

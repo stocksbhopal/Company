@@ -76,7 +76,7 @@ public class CompanyUtils {
 	/**
 	 * For Merrill Lynch, settledDate is Non Null.
 	 */
-	public static Set<Activity> fetchAllActivityAtBrokerageForSettledDate(EntityManager entityManager, String brokerage, Timestamp settledDate) {
+	public static Set<Activity> fetchAllActivityAtBrokerageForSettledDate(EntityManager entityManager, String brokerage, LocalDate settledDate) {
 		List<Activity> activityList = 
 			entityManager.createQuery("SELECT a FROM Activity AS a WHERE a.brokerage = :brokerage AND a.settledDate = :settledDate", Activity.class)
 			.setParameter("brokerage", brokerage)
@@ -225,13 +225,13 @@ public class CompanyUtils {
 		}
 	}
 	
-	public static List<CompanyEarnings> fetchEarningsDateListForMarketIndexNext(EntityManager entityManager, Timestamp earningsDateStart, MarketIndexEnum marketIndex) {
+	public static List<CompanyEarnings> fetchEarningsDateListForMarketIndexNext(EntityManager entityManager, LocalDate earningsDateStart, MarketIndexEnum marketIndex) {
 		List<CompanyEarnings> earningsDateList = 
 			entityManager.createQuery(
 				"SELECT new com.sanjoyghosh.company.api.CompanyEarnings(e.symbol, c.name, e.earningsDate, e.beforeMarketOrAfterMarket, c.id, e.id) " +
 				"FROM EarningsDate AS e, Company AS c " +
-				"WHERE e.companyId = c.id AND e.earningsDate IN " +
-					"(SELECT MIN(ed.earningsDdate) FROM EarningsDate AS ed, Company AS co WHERE ed.companyId = co.id AND ed.earningsDate >= :earningsDateStart AND co." + marketIndexToColumn(marketIndex) + " = 'Y') " +
+				"WHERE e.companyId = c.id AND c." + marketIndexToColumn(marketIndex) + " = 'Y' AND e.earningsDate IN " +
+					"(SELECT MIN(ed.earningsDate) FROM EarningsDate AS ed, Company AS co WHERE ed.companyId = co.id AND ed.earningsDate >= :earningsDateStart AND co." + marketIndexToColumn(marketIndex) + " = 'Y') " +
 				"ORDER BY e.beforeMarketOrAfterMarket DESC", CompanyEarnings.class)
 			.setParameter("earningsDateStart", earningsDateStart)
 			.getResultList();
@@ -244,7 +244,7 @@ public class CompanyUtils {
 				"SELECT new com.sanjoyghosh.company.api.CompanyEarnings(e.symbol, c.name, e.earningsDate, e.beforeMarketOrAfterMarket, c.id, e.id) " +
 				"FROM EarningsDate AS e, Company AS c " +
 				"WHERE e.companyId = c.id AND e.earningsDate IN " +
-					"(SELECT MIN(ed.earningsDdate) FROM EarningsDate AS ed, Company AS co WHERE ed.companyId = co.id AND ed.earningsDate >= :earningsDateStart) " +
+					"(SELECT MIN(ed.earningsDate) FROM EarningsDate AS ed, Company AS co WHERE ed.companyId = co.id AND ed.earningsDate >= :earningsDateStart) " +
 				"ORDER BY e.beforeMarketOrAfterMarket DESC", CompanyEarnings.class)
 			.setParameter("earningsDateStart", earningsDateStart)
 			.getResultList();

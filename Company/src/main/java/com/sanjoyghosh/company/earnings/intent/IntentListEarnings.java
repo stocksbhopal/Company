@@ -20,6 +20,7 @@ import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.sanjoyghosh.company.api.CompanyEarnings;
+import com.sanjoyghosh.company.api.MarketIndexEnum;
 import com.sanjoyghosh.company.api.StartDateEnum;
 import com.sanjoyghosh.company.db.CompanyUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
@@ -111,10 +112,11 @@ GetStockPrice the price of {company}
 
     
     private List<CompanyEarnings> getIndexEarningsNext() {
+    	LocalDate startDate = LocalDate.now();
 		EntityManager entityManager = JPAHelper.getEntityManager();
-//		earningsList = CompanyUtils.fetchEarningsDateListForDateRangeAndSymbols(entityManager, 
-//			startTimestamp, endTimestamp, symbols);
-    	return null;
+		List<CompanyEarnings> earningsList = CompanyUtils.fetchEarningsDateListForMarketIndexNext(entityManager, 
+			startDate, MarketIndexEnum.SnP500);
+    	return earningsList;
     }
     
     
@@ -123,26 +125,30 @@ GetStockPrice the price of {company}
 		Intent intent = request.getIntent();
 		String intentName = intent.getName();
 		
+		LocalDate endDate = LocalDate.now();
+		StartDateEnum startDateEnum = StartDateEnum.on;
 		List<CompanyEarnings> earningsList = null;
+		
 		if (intentName.equals(INTENT_LIST_INDEX_EARNINGS_NEXT)) {
+			earningsList = getIndexEarningsNext();
+		}
+		else {
+			startDateEnum = getStartDateSlot(intent);
+			endDate = getDateSlot(intent);
+			LocalDate startDate = startDateEnum == StartDateEnum.on ? endDate : LocalDate.now();
 			
+			List<String> symbols = new LinkedList<>();
+			String userId = session.getUser().getUserId();
+			Iterator<Item> items = DynamoDBUtils.queryMyStocksByUserId(userId);
+			while (items.hasNext()) {
+				symbols.add(items.next().getString("symbol"));
+			}
+			
+			EntityManager entityManager = JPAHelper.getEntityManager();
+			earningsList = CompanyUtils.fetchEarningsDateListForDateRangeAndSymbols(entityManager, 
+				startDate, endDate, symbols);
 		}
 		
-		StartDateEnum startDateEnum = getStartDateSlot(intent);
-		LocalDate endDate = getDateSlot(intent);
-		
-		LocalDate startDate = startDateEnum == StartDateEnum.on ? endDate : LocalDate.now();
-		
-		List<String> symbols = new LinkedList<>();
-		String userId = session.getUser().getUserId();
-		Iterator<Item> items = DynamoDBUtils.queryMyStocksByUserId(userId);
-		while (items.hasNext()) {
-			symbols.add(items.next().getString("symbol"));
-		}
-		
-		EntityManager entityManager = JPAHelper.getEntityManager();
-		earningsList = CompanyUtils.fetchEarningsDateListForDateRangeAndSymbols(entityManager, 
-			startDate, endDate, symbols);
 		String companys = "";
 		for (CompanyEarnings ce : earningsList) {
 			companys += StringUtils.stripTrailingCompanyTypeFromName(ce.getName()) + ", ";

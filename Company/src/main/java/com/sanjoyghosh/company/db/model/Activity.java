@@ -1,6 +1,6 @@
 package com.sanjoyghosh.company.db.model;
 
-import java.sql.Timestamp;
+import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,9 +19,9 @@ public class Activity {
 	@Column
 	private int companyId;
 	@Column
-	private Timestamp tradeDate;
+	private LocalDate tradeDate;
 	@Column
-	private Timestamp settledDate;
+	private LocalDate settledDate;
 	@Column
 	private String account;
 	@Column
@@ -55,18 +55,18 @@ public class Activity {
 	}
 
 	@JsonFormat(pattern="yyyy-MM-dd")
-	public Timestamp getTradeDate() {
+	public LocalDate getTradeDate() {
 		return tradeDate;
 	}
-	public void setTradeDate(Timestamp tradeDate) {
+	public void setTradeDate(LocalDate tradeDate) {
 		this.tradeDate = tradeDate;
 	}
 
 	@JsonFormat(pattern="yyyy-MM-dd")
-	public Timestamp getSettledDate() {
+	public LocalDate getSettledDate() {
 		return settledDate;
 	}
-	public void setSettledDate(Timestamp settledDate) {
+	public void setSettledDate(LocalDate settledDate) {
 		this.settledDate = settledDate;
 	}
 

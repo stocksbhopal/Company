@@ -4,7 +4,7 @@
              version="2.0">
  
     <persistence-unit name="com.sanjoyghosh.company.db.model" transaction-type="RESOURCE_LOCAL">
-        <provider>org.hibernate.ejb.HibernatePersistence</provider>
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <class>com.sanjoyghosh.company.db.model.Company</class>
         <class>com.sanjoyghosh.company.db.model.EarningsDate</class>
         
