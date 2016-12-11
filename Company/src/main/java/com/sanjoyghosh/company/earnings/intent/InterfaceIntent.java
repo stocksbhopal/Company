@@ -13,6 +13,7 @@ public interface InterfaceIntent {
     public static final String SLOT_COMPANY = "company";
     public static final String SLOT_DATE = "date";
     public static final String SLOT_START_DATE = "start_date";
+    public static final String SLOT_MARKET_INDEX = "market_index";
     
     public static final String INTENT_GET_STOCK_PRICE = "GetStockPrice";
     public static final String INTENT_ADD_COMPANY = "AddCompany";

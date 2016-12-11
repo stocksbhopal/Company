@@ -63,59 +63,26 @@ public class IntentListEarnings implements InterfaceIntent {
 		return startDateEnum;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see com.sanjoyghosh.company.earnings.intent.InterfaceIntent#onIntent(com.amazon.speech.speechlet.IntentRequest, com.amazon.speech.speechlet.Session)
-{
-  "intents": [
-    {"intent": "AMAZON.YesIntent"},
     
-    {"intent": "GetStockPrice","slots": [{"name": "company","type": "COMPANY_NAMES"}]},
+    private MarketIndexEnum getMarketIndexSlot(Intent intent) {
+    	Slot marketIndexSlot = intent.getSlot(SLOT_MARKET_INDEX);
+    	if (marketIndexSlot == null) {
+    		return null;
+    	}
+    	
+    	String marketIndexStr = marketIndexSlot.getValue();
+    	log.info("MarketIndex: " + marketIndexStr);
+    	MarketIndexEnum marketIndexEnum = MarketIndexEnum.toMarketIndexEnum(marketIndexStr);
+    	return marketIndexEnum;
+    }
     
-    {"intent": "AddCompany","slots": [{"name": "company","type": "COMPANY_NAMES"}]},
-    
-    {"intent": "ListCompanies"},
-    
-    {"intent": "ListEarningsBy","slots": [{"name": "date","type": "DATE"}]},
-    {"intent": "ListIndexEarningsBy","slots": [{"name": "index","type": "MARKET_INDEX"},{"name": "date","type": "DATE"}]},
-    
-    {"intent": "ListEarningsOn","slots": [{"name": "date","type": "DATE"}]},
-    {"intent": "ListIndexEarningsOn","slots": [{"name": "index","type": "MARKET_INDEX"},{"name": "date","type": "DATE"}]},
-    
-    {"intent": "ListEarningsNext"},
-    {"intent": "ListIndexEarningsNext","slots": [{"name": "index","type": "MARKET_INDEX"}]},
-    
-    {"intent": "ListEarningsMyNext"},
-    {"intent": "ListIndexEarningsMyNext","slots": [{"name": "index","type": "MARKET_INDEX"}]}
-  ]
-}
-
-ListEarningsBy for earnings by {date}
-ListIndexEarningsBy for {index} earnings by {date}
-
-ListEarningsOn for earnings on {date}
-ListIndexEarningsOn for {index} earnings on {date}
-
-ListEarningsNext for next earnings
-ListIndexEarningsNext for next {index} earnings
-
-ListEarningsMyNext for my next earnings
-ListIndexEarningsMyNext for my next {index} earnings
-
-AddCompany to add {company}
-
-ListCompanies to list my companies
-
-GetStockPrice price of {company}
-GetStockPrice the price of {company}
-     */
-
-    
-    private List<CompanyEarnings> getIndexEarningsNext() {
+        
+    private List<CompanyEarnings> getIndexEarningsNext(Intent intent) {
     	LocalDate startDate = LocalDate.now();
 		EntityManager entityManager = JPAHelper.getEntityManager();
+		MarketIndexEnum marketIndex = getMarketIndexSlot(intent);
 		List<CompanyEarnings> earningsList = CompanyUtils.fetchEarningsDateListForMarketIndexNext(entityManager, 
-			startDate, MarketIndexEnum.SnP500);
+			startDate, marketIndex);
     	return earningsList;
     }
     
@@ -130,7 +97,11 @@ GetStockPrice the price of {company}
 		List<CompanyEarnings> earningsList = null;
 		
 		if (intentName.equals(INTENT_LIST_INDEX_EARNINGS_NEXT)) {
-			earningsList = getIndexEarningsNext();
+			earningsList = getIndexEarningsNext(intent);
+			if (earningsList.size() > 0) {
+				endDate = earningsList.get(0).getEarningsDate();
+				startDateEnum = StartDateEnum.on;
+			}
 		}
 		else {
 			startDateEnum = getStartDateSlot(intent);
@@ -155,7 +126,7 @@ GetStockPrice the price of {company}
 		}
 		
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
-		outputSpeech.setText("Found " + earningsList.size() + " earnings in My Stocks " + 
+		outputSpeech.setText("There are " + earningsList.size() + " earnings " + 
 			startDateEnum.toString() + DateUtils.toDateString(endDate) +", " + companys);
 		return SpeechletResponse.newTellResponse(outputSpeech);		    	
 	}
