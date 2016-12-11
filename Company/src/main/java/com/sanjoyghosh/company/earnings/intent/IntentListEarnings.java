@@ -51,19 +51,6 @@ public class IntentListEarnings implements InterfaceIntent {
     }
     
     
-    private StartDateEnum getStartDateSlot(Intent intent) {
-		Slot startDateSlot = intent.getSlot(SLOT_START_DATE);
-		if (startDateSlot == null) {
-			return null;
-		}
-		
-		String startDateStr = startDateSlot.getValue();
-		log.info("StartDate: " + startDateStr);
-		StartDateEnum startDateEnum = StartDateEnum.valueOf(startDateStr);
-		return startDateEnum;
-    }
-
-    
     private MarketIndexEnum getMarketIndexSlot(Intent intent) {
     	Slot marketIndexSlot = intent.getSlot(SLOT_MARKET_INDEX);
     	if (marketIndexSlot == null) {
@@ -79,11 +66,42 @@ public class IntentListEarnings implements InterfaceIntent {
         
     private List<CompanyEarnings> getIndexEarningsNext(Intent intent) {
     	LocalDate startDate = LocalDate.now();
-		EntityManager entityManager = JPAHelper.getEntityManager();
 		MarketIndexEnum marketIndex = getMarketIndexSlot(intent);
+		EntityManager entityManager = JPAHelper.getEntityManager();
 		List<CompanyEarnings> earningsList = CompanyUtils.fetchEarningsDateListForMarketIndexNext(entityManager, 
 			startDate, marketIndex);
     	return earningsList;
+    }
+    
+    
+    private List<String> getMyStockSymbols(Session session) {
+		List<String> symbols = new LinkedList<>();
+		String userId = session.getUser().getUserId();
+		Iterator<Item> items = DynamoDBUtils.queryMyStocksByUserId(userId);
+		while (items.hasNext()) {
+			symbols.add(items.next().getString("symbol"));
+		}	
+		return symbols;
+    }
+    
+    
+    private List<CompanyEarnings> getEarningsMyNext(Intent intent, Session session) {
+    	LocalDate startDate = LocalDate.now();
+		List<String> symbols = getMyStockSymbols(session);
+		EntityManager entityManager = JPAHelper.getEntityManager();
+		List<CompanyEarnings> earningsList = CompanyUtils.fetchEarningsDateListForNextAndSymbols(entityManager, 
+			startDate, symbols);
+    	return earningsList;    	
+    }
+    
+    
+    private List<CompanyEarnings> getEarningsMyBy(LocalDate endDate, Session session) {
+		LocalDate startDate = LocalDate.now();
+		List<String> symbols = getMyStockSymbols(session);
+		EntityManager entityManager = JPAHelper.getEntityManager();
+		List<CompanyEarnings> earningsList = CompanyUtils.fetchEarningsDateListForDateRangeAndSymbols(entityManager, 
+			startDate, endDate, symbols);
+		return earningsList;
     }
     
     
@@ -97,16 +115,28 @@ public class IntentListEarnings implements InterfaceIntent {
 		List<CompanyEarnings> earningsList = null;
 		
 		if (intentName.equals(INTENT_LIST_INDEX_EARNINGS_NEXT)) {
+			startDateEnum = StartDateEnum.on;
 			earningsList = getIndexEarningsNext(intent);
 			if (earningsList.size() > 0) {
 				endDate = earningsList.get(0).getEarningsDate();
-				startDateEnum = StartDateEnum.on;
 			}
 		}
-		else {
-			startDateEnum = getStartDateSlot(intent);
+		else if (intentName.equals(INTENT_LIST_EARNINGS_MY_NEXT)) {
+			startDateEnum = StartDateEnum.on;
+			earningsList = getEarningsMyNext(intent, session);
+			if (earningsList.size() > 0) {
+				endDate = earningsList.get(0).getEarningsDate();
+			}			
+		}
+		else if (intentName.equals(INTENT_LIST_EARNINGS_MY_BY)) {
+			startDateEnum = StartDateEnum.by;
 			endDate = getDateSlot(intent);
-			LocalDate startDate = startDateEnum == StartDateEnum.on ? endDate : LocalDate.now();
+			earningsList = getEarningsMyBy(endDate, session);
+		}
+		else {
+			startDateEnum = StartDateEnum.by;
+			endDate = getDateSlot(intent);
+			LocalDate startDate = LocalDate.now();
 			
 			List<String> symbols = new LinkedList<>();
 			String userId = session.getUser().getUserId();

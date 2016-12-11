@@ -189,6 +189,15 @@ public class CompanyUtils {
 
 	
 	
+	private static String marketIndexToColumn(MarketIndexEnum index) {
+		switch (index.getIndex()) {
+		case MarketIndexEnum.INDEX_NONE: return "";
+		case MarketIndexEnum.INDEX_DJIA: return "isDJIA";
+		case MarketIndexEnum.INDEX_NASDAQ100: return "isNasdaq100";
+		case MarketIndexEnum.INDEX_SNP500: return "isSnP500";
+		default: return "";
+		}
+	}
 
 	public static List<CompanyEarnings> fetchEarningsDateListForDateRange(EntityManager entityManager, Timestamp earningsDateStart, Timestamp earningsDateEnd) {
 		List<CompanyEarnings> earningsDateList = 
@@ -214,16 +223,6 @@ public class CompanyUtils {
 			.getResultList();
 		return earningsDateList;
 	}
-
-	private static String marketIndexToColumn(MarketIndexEnum index) {
-		switch (index.getIndex()) {
-		case MarketIndexEnum.INDEX_NONE: return "";
-		case MarketIndexEnum.INDEX_DJIA: return "isDJIA";
-		case MarketIndexEnum.INDEX_NASDAQ100: return "isNasdaq100";
-		case MarketIndexEnum.INDEX_SNP500: return "isSnP500";
-		default: return "";
-		}
-	}
 	
 	public static List<CompanyEarnings> fetchEarningsDateListForMarketIndexNext(EntityManager entityManager, LocalDate earningsDateStart, MarketIndexEnum marketIndex) {
 		List<CompanyEarnings> earningsDateList = 
@@ -238,15 +237,16 @@ public class CompanyUtils {
 		return earningsDateList;
 	}
 
-	public static List<CompanyEarnings> fetchEarningsDateListForNext(EntityManager entityManager, Timestamp earningsDateStart) {
+	public static List<CompanyEarnings> fetchEarningsDateListForNextAndSymbols(EntityManager entityManager, LocalDate earningsDateStart, List<String> symbols) {
 		List<CompanyEarnings> earningsDateList = 
 			entityManager.createQuery(
 				"SELECT new com.sanjoyghosh.company.api.CompanyEarnings(e.symbol, c.name, e.earningsDate, e.beforeMarketOrAfterMarket, c.id, e.id) " +
 				"FROM EarningsDate AS e, Company AS c " +
-				"WHERE e.companyId = c.id AND e.earningsDate IN " +
-					"(SELECT MIN(ed.earningsDate) FROM EarningsDate AS ed, Company AS co WHERE ed.companyId = co.id AND ed.earningsDate >= :earningsDateStart) " +
+				"WHERE e.companyId = c.id AND e.symbol IN :symbols AND e.earningsDate IN " +
+					"(SELECT MIN(ed.earningsDate) FROM EarningsDate AS ed WHERE ed.earningsDate >= :earningsDateStart AND ed.symbol IN :symbols) " +
 				"ORDER BY e.beforeMarketOrAfterMarket DESC", CompanyEarnings.class)
 			.setParameter("earningsDateStart", earningsDateStart)
+			.setParameter("symbols", symbols)
 			.getResultList();
 		return earningsDateList;
 	}
