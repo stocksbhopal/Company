@@ -60,8 +60,8 @@ public class MerrillLynchActivityReader {
 			Iterable<CSVRecord> records = CSVFormat.EXCEL.withHeader().parse(reader);
 			for (CSVRecord record : records) {
 				if (record.size() == 13) {
-					Date tradeDate = DateUtils.getDate(record.get("Trade Date").trim());
-					Date settledDate = DateUtils.getDate(record.get("Settlement Date").trim());
+					Date tradeDate = DateUtils.getLocalDate(record.get("Trade Date").trim());
+					Date settledDate = DateUtils.getLocalDate(record.get("Settlement Date").trim());
 					tradeDate = tradeDate == null ? settledDate : tradeDate;
 					String account = StringUtils.onlyLast4Characters(record.get("Account #").trim());
 					String transactionType = record.get("Description 1 ").trim();

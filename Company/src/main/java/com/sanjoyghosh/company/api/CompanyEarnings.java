@@ -1,6 +1,6 @@
 package com.sanjoyghosh.company.api;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import com.sanjoyghosh.company.utils.DateUtils;
 
@@ -8,23 +8,23 @@ public class CompanyEarnings {
 
 	private static final String[]	columnNames = { "#", "Earnings Date", "BM/AM", "Symbol", "Name"};
 	
-	private int		serialNum;
-	private String 	symbol;
-	private String 	name;
-	private Date	earningsDate;
-	private String 	bmOrAm;
+	private int			serialNum;
+	private String 		symbol;
+	private String 		name;
+	private LocalDate	earningsDate;
+	private String 		bmOrAm;
 	
-	private int		companyId;
-	private int		earningsDateId;
+	private int			companyId;
+	private int			earningsDateId;
 		
 	
-	public CompanyEarnings(String symbol, Date earningsDate) {
+	public CompanyEarnings(String symbol, LocalDate earningsDate) {
 		this.symbol = symbol;
 		this.earningsDate = earningsDate;
 	}
 	
 	
-	public CompanyEarnings(String symbol, String name, Date earningsDate, String bmOrAm, 
+	public CompanyEarnings(String symbol, String name, LocalDate earningsDate, String bmOrAm, 
 		int companyId, int earningsDateId) {
 		
 		this.symbol = symbol;
@@ -68,7 +68,7 @@ public class CompanyEarnings {
 	}
 
 
-	public Date getEarningsDate() {
+	public LocalDate getEarningsDate() {
 		return earningsDate;
 	}
 
@@ -103,7 +103,7 @@ public class CompanyEarnings {
 	}
 
 
-	public void setEarningsDate(Date earningsDate) {
+	public void setEarningsDate(LocalDate earningsDate) {
 		this.earningsDate = earningsDate;
 	}
 

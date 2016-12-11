@@ -1,10 +1,8 @@
 package com.sanjoyghosh.company.source.yahoo;
 
 import java.io.IOException;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -27,12 +25,11 @@ public class YahooEarningsCalendarReader {
 
 	private EntityManager entityManager;
 	private Map<String, Company> companyBySymbolMap;
-	private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyyMMdd");
+	private DateTimeFormatter dateFormatter = DateTimeFormatter.BASIC_ISO_DATE;
 	
 		
-	private void readEarningsCalendarFor(Calendar date) throws IOException {   
-    	String yepUrl = "http://biz.yahoo.com/research/earncal/" + dateFormatter.format(date.getTime()) + ".html";
-    	Timestamp timestamp = new Timestamp(date.getTime().getTime());
+	private void readEarningsCalendarFor(LocalDate date) throws IOException {   
+    	String yepUrl = "http://biz.yahoo.com/research/earncal/" + date.format(dateFormatter) + ".html";
     	
 		Document doc = null;
 		try {
@@ -65,9 +62,9 @@ public class YahooEarningsCalendarReader {
 	    		releaseTime = (releaseTime != null && releaseTime.indexOf("After Market Close") >= 0) ? "AM" : "BM";
 	    		
 	    		boolean hasEarningsDate = false;
-	    		List<EarningsDate> earningsDateList = CompanyUtils.fetchEarningsDateListForSymbolDate(entityManager, symbol, timestamp);
+	    		List<EarningsDate> earningsDateList = CompanyUtils.fetchEarningsDateListForSymbolDate(entityManager, symbol, date);
 	    		for (EarningsDate earningsDate : earningsDateList) {
-	    			if (!earningsDate.getEarningsDate().equals(timestamp)) {
+	    			if (!earningsDate.getEarningsDate().equals(date)) {
 	    				entityManager.remove(earningsDate);
 	    			}
 	    			else {
@@ -80,7 +77,7 @@ public class YahooEarningsCalendarReader {
 		    		
 		    		earningsDate.setCompanyId(company.getId());
 		    		earningsDate.setSymbol(symbol);
-		    		earningsDate.setEarningsDate(timestamp);
+		    		earningsDate.setEarningsDate(date);
 		    		earningsDate.setBeforeMarketOrAfterMarket(releaseTime);
 		    		
 		    		entityManager.persist(earningsDate);
@@ -94,21 +91,20 @@ public class YahooEarningsCalendarReader {
 	public void readEarningsCalendarforWeek() {
 		entityManager = JPAHelper.getEntityManager();
 		companyBySymbolMap = CompanyUtils.fetchAllCompanyBySymbolMap(entityManager);
-		
-		Calendar calendar = new GregorianCalendar();
-		calendar = new GregorianCalendar(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+
+		LocalDate date = LocalDate.now();
 		for (int i = 0; i < 31; i++) {
 			try {
-				System.out.println("Getting earnings for " + DateUtils.toDateString(calendar.getTime()));
+				System.out.println("Getting earnings for " + DateUtils.toDateString(date));
 				
 		    	entityManager.getTransaction().begin();		    	
-				readEarningsCalendarFor(calendar);
+				readEarningsCalendarFor(date);
 			    entityManager.getTransaction().commit();
 			} 
 			catch (IOException e) {
 				e.printStackTrace();
 			}
-			calendar.add(Calendar.DATE, 1);
+			date = date.plusDays(1);
 		}		
 	}
 	

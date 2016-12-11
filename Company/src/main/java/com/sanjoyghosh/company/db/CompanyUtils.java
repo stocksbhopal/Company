@@ -1,10 +1,8 @@
 package com.sanjoyghosh.company.db;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Calendar;
+import java.time.LocalDate;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -204,7 +202,7 @@ public class CompanyUtils {
 		return earningsDateList;
 	}
 
-	public static List<CompanyEarnings> fetchEarningsDateListForDateRangeAndSymbols(EntityManager entityManager, Timestamp earningsDateStart, Timestamp earningsDateEnd, List<String> symbols) {
+	public static List<CompanyEarnings> fetchEarningsDateListForDateRangeAndSymbols(EntityManager entityManager, LocalDate earningsDateStart, LocalDate earningsDateEnd, List<String> symbols) {
 		List<CompanyEarnings> earningsDateList = 
 			entityManager.createQuery("SELECT new com.sanjoyghosh.company.api.CompanyEarnings(ed.symbol, c.name, ed.earningsDate, ed.beforeMarketOrAfterMarket, c.id, ed.id) " +
 				"FROM EarningsDate AS ed, Company AS c " +
@@ -253,7 +251,7 @@ public class CompanyUtils {
 		return earningsDateList;
 	}
 
-	public static List<EarningsDate> fetchEarningsDateListForSymbolDate(EntityManager entityManager, String symbol, Timestamp earningsDate) {
+	public static List<EarningsDate> fetchEarningsDateListForSymbolDate(EntityManager entityManager, String symbol, LocalDate earningsDate) {
 		List<EarningsDate> earningsDateList = 
 			entityManager.createQuery("SELECT ed FROM EarningsDate AS ed WHERE ed.symbol = :symbol AND ed.earningsDate >= :earningsDate", EarningsDate.class)
 			.setParameter("symbol", symbol)
@@ -269,23 +267,5 @@ public class CompanyUtils {
 			.setMaxResults(1)
 			.getResultList();
 		return earningsDateList == null || earningsDateList.size() == 0 ? null : earningsDateList.get(0);
-	}
-	
-	
-	public static void main(String[] args) {
-		List<String> symbols = new ArrayList<>();
-		symbols.add("AMZN");
-		symbols.add("GWRE");
-		GregorianCalendar start = new GregorianCalendar();
-		GregorianCalendar end = new GregorianCalendar();
-		end.add(Calendar.DATE, 7);
-		EntityManager entityManager = JPAHelper.getEntityManager();
-		List<CompanyEarnings> earnings = CompanyUtils.fetchEarningsDateListForDateRangeAndSymbols(entityManager, 
-			new Timestamp(start.getTimeInMillis()), new Timestamp(end.getTimeInMillis()), symbols);
-		System.out.println(earnings.size());
-		for (CompanyEarnings ce : earnings) {
-			System.out.println(ce.getSymbol());
-		}
-		System.exit(0);
 	}
 }

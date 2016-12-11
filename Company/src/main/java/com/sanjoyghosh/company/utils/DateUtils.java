@@ -2,6 +2,8 @@ package com.sanjoyghosh.company.utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,9 +16,8 @@ public class DateUtils {
 	private static final Pattern MerrillLynchHoldingsPattern = Pattern.compile(Constants.MerrillLynchHoldingsFileName);
 	private static final SimpleDateFormat MerrillLynchDateFormatter = new SimpleDateFormat("MMddyyyy");
 	
-	private static final SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yyyy");
-	
-	private static final SimpleDateFormat alexaDateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+	private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+	private static final DateTimeFormatter alexaDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	
 	
 	public static Date getDateFromFidelityHoldingsFileName(String fileName) throws ParseException {
@@ -46,33 +47,22 @@ public class DateUtils {
 	/**
 	 * Assumes that the date is of the form: "8/27/2015"
 	 */
-	public static Date getDate(String dateStr) throws ParseException {
+	public static LocalDate getLocalDate(String dateStr) throws ParseException {
 		if (dateStr.equals("--") || dateStr.equals("")) {
 			return null;
 		}
-		Date day = dateFormatter.parse(dateStr);
+		LocalDate day = LocalDate.parse(dateStr, dateFormatter);
 		return day;
 	}
 	
 	
-	public static String toDateString(Date date) {
-		return dateFormatter.format(date);
+	public static String toDateString(LocalDate date) {
+		return date.format(dateFormatter);
 	}
 	
 	
-	public static Date getDateFromAlexa(String alexaDateStr) throws ParseException {
-		Date date = alexaDateFormatter.parse(alexaDateStr);
+	public static LocalDate getDateFromAlexa(String alexaDateStr) throws ParseException {
+		LocalDate date = LocalDate.parse(alexaDateStr, alexaDateFormatter);
 		return date;
-	}
-	
-	
-	public static void main(String[] args) {
-		try {
-			Date date = getDateFromFidelityHoldingsFileName("Portfolio_Position_Aug-24-2016.csv");
-			System.out.println(dateFormatter.format(date));
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 }

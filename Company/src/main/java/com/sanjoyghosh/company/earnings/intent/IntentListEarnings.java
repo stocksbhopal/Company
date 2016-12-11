@@ -1,8 +1,7 @@
 package com.sanjoyghosh.company.earnings.intent;
 
-import java.sql.Timestamp;
 import java.text.ParseException;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,7 +31,7 @@ public class IntentListEarnings implements InterfaceIntent {
     private static final Logger log = LoggerFactory.getLogger(IntentListEarnings.class);
 
     
-    private Date getDateSlot(Intent intent) {
+    private LocalDate getDateSlot(Intent intent) {
 		Slot dateSlot = intent.getSlot(SLOT_DATE);
 		if (dateSlot == null) {
 			return null;
@@ -41,7 +40,7 @@ public class IntentListEarnings implements InterfaceIntent {
 		String dateStr = dateSlot.getValue();
 		log.info("Date: " + dateStr);
 		try {
-			Date date = DateUtils.getDateFromAlexa(dateStr);
+			LocalDate date = DateUtils.getDateFromAlexa(dateStr);
 			return date;
 		}
 		catch (ParseException e) {
@@ -111,16 +110,28 @@ GetStockPrice the price of {company}
      */
 
     
+    private List<CompanyEarnings> getIndexEarningsNext() {
+		EntityManager entityManager = JPAHelper.getEntityManager();
+//		earningsList = CompanyUtils.fetchEarningsDateListForDateRangeAndSymbols(entityManager, 
+//			startTimestamp, endTimestamp, symbols);
+    	return null;
+    }
+    
+    
 	@Override
 	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
 		Intent intent = request.getIntent();
 		String intentName = intent.getName();
 		
-		StartDateEnum startDateEnum = getStartDateSlot(intent);
-		Date endDate = getDateSlot(intent);
+		List<CompanyEarnings> earningsList = null;
+		if (intentName.equals(INTENT_LIST_INDEX_EARNINGS_NEXT)) {
+			
+		}
 		
-		Timestamp startTimestamp = (startDateEnum == StartDateEnum.on ? new Timestamp(endDate.getTime()) : new Timestamp(new Date().getTime()));
-		Timestamp endTimestamp = new Timestamp(endDate.getTime());
+		StartDateEnum startDateEnum = getStartDateSlot(intent);
+		LocalDate endDate = getDateSlot(intent);
+		
+		LocalDate startDate = startDateEnum == StartDateEnum.on ? endDate : LocalDate.now();
 		
 		List<String> symbols = new LinkedList<>();
 		String userId = session.getUser().getUserId();
@@ -130,15 +141,15 @@ GetStockPrice the price of {company}
 		}
 		
 		EntityManager entityManager = JPAHelper.getEntityManager();
-		List<CompanyEarnings> earnings = CompanyUtils.fetchEarningsDateListForDateRangeAndSymbols(entityManager, 
-			startTimestamp, endTimestamp, symbols);
+		earningsList = CompanyUtils.fetchEarningsDateListForDateRangeAndSymbols(entityManager, 
+			startDate, endDate, symbols);
 		String companys = "";
-		for (CompanyEarnings ce : earnings) {
+		for (CompanyEarnings ce : earningsList) {
 			companys += StringUtils.stripTrailingCompanyTypeFromName(ce.getName()) + ", ";
 		}
 		
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
-		outputSpeech.setText("Found " + earnings.size() + " earnings in My Stocks " + 
+		outputSpeech.setText("Found " + earningsList.size() + " earnings in My Stocks " + 
 			startDateEnum.toString() + DateUtils.toDateString(endDate) +", " + companys);
 		return SpeechletResponse.newTellResponse(outputSpeech);		    	
 	}

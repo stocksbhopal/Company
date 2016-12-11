@@ -1,6 +1,6 @@
 package com.sanjoyghosh.company.db.model;
 
-import java.sql.Timestamp;
+import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -21,7 +21,7 @@ public class EarningsDate {
 	@Column
 	private Integer companyId;
 	@Column
-	private Timestamp earningsDate;
+	private LocalDate earningsDate;
 	@Column
 	private String beforeMarketOrAfterMarket;
 	
@@ -60,12 +60,12 @@ public class EarningsDate {
 
 
 	@JsonFormat(pattern="yyyy-MM-dd")
-	public Timestamp getEarningsDate() {
+	public LocalDate getEarningsDate() {
 		return earningsDate;
 	}
 
 
-	public void setEarningsDate(Timestamp earningsDate) {
+	public void setEarningsDate(LocalDate earningsDate) {
 		this.earningsDate = earningsDate;
 	}
 

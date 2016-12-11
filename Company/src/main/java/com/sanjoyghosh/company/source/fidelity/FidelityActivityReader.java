@@ -63,7 +63,7 @@ public class FidelityActivityReader {
 				if (record.size() == 13) {
 					Date tradeDate = null;
 					try {
-						tradeDate = DateUtils.getDate(record.get("Run Date").trim());
+						tradeDate = DateUtils.getLocalDate(record.get("Run Date").trim());
 						if (tradeDate == null) {
 							continue;
 						}
@@ -72,7 +72,7 @@ public class FidelityActivityReader {
 						continue;
 					}
 					
-					Date settledDate = DateUtils.getDate(record.get("Settlement Date").trim());
+					Date settledDate = DateUtils.getLocalDate(record.get("Settlement Date").trim());
 					settledDate = settledDate == null ? tradeDate : settledDate;
 					String account = StringUtils.onlyLast4Characters(record.get("Account").trim());
 					String transactionType = record.get("Action").trim();
