@@ -43,6 +43,12 @@ public class Company {
 	
 	
 	public Company() {}
+	
+	
+	public Company(int id, String symbol) {
+		this.id = id;
+		this.symbol = symbol;
+	}
 
 
 	public int getId() {

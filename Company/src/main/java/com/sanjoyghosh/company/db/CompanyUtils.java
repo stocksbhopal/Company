@@ -189,6 +189,15 @@ public class CompanyUtils {
 
 	
 	
+	public static List<Company> fetchCompanyListForAlexaUserId(EntityManager entityManager, int alexaUserId) {
+		List<Company> companyList =
+			entityManager.createQuery("SELECT new com.sanjoyghosh.company.db.model.Company(c.id, c.symbol) FROM MyStocks AS m, Company AS c WHERE m.companyId = c.id AND alexaUserId = :alexaUserId", Company.class)
+			.setParameter("alexaUserId", alexaUserId)
+			.getResultList();
+		return companyList;
+	}
+	
+	
 	private static String marketIndexToColumn(MarketIndexEnum index) {
 		switch (index.getIndex()) {
 		case MarketIndexEnum.INDEX_NONE: return "";
