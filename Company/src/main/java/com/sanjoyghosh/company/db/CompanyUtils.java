@@ -220,19 +220,20 @@ public class CompanyUtils {
 		return earningsDateList;
 	}
 
-	public static List<CompanyEarnings> fetchEarningsDateListForDateRangeAndSymbols(EntityManager entityManager, LocalDate earningsDateStart, LocalDate earningsDateEnd, List<String> symbols) {
+	public static List<CompanyEarnings> fetchEarningsDateListForDateRangeAndAlexaUser(EntityManager entityManager, LocalDate earningsDateStart, LocalDate earningsDateEnd, String alexaUser) {
 		List<CompanyEarnings> earningsDateList = 
-			entityManager.createQuery("SELECT new com.sanjoyghosh.company.api.CompanyEarnings(ed.symbol, c.name, ed.earningsDate, ed.beforeMarketOrAfterMarket, c.id, ed.id) " +
-				"FROM EarningsDate AS ed, Company AS c " +
-				"WHERE ed.earningsDate >= :earningsDateStart AND ed.earningsDate <= :earningsDateEnd AND ed.symbol IN :symbols AND ed.companyId = c.id " +
-				"ORDER BY ed.earningsDate ASC, ed.beforeMarketOrAfterMarket DESC", CompanyEarnings.class)
+			entityManager.createQuery("SELECT new com.sanjoyghosh.company.api.CompanyEarnings(e.symbol, c.name, e.earningsDate, e.beforeMarketOrAfterMarket, c.id, e.id) " +
+				"FROM EarningsDate AS e, Company AS c " +
+				"WHERE e.earningsDate >= :earningsDateStart AND e.earningsDate <= :earningsDateEnd AND e.companyId = c.id AND e.symbol IN " +
+		           "(SELECT co.symbol FROM Company AS co, MyStocks AS ms, AlexaUser AS au WHERE au.alexaUser = :alexaUser AND au.id = ms.alexaUserId AND ms.companyId = co.id)" + 
+				"ORDER BY e.earningsDate ASC, e.beforeMarketOrAfterMarket DESC", CompanyEarnings.class)
 			.setParameter("earningsDateStart", earningsDateStart)
 			.setParameter("earningsDateEnd", earningsDateEnd)
-			.setParameter("symbols", symbols)
+			.setParameter("alexaUser", alexaUser)
 			.getResultList();
 		return earningsDateList;
 	}
-	
+
 	public static List<CompanyEarnings> fetchEarningsDateListForMarketIndexNext(EntityManager entityManager, LocalDate earningsDateStart, MarketIndexEnum marketIndex) {
 		List<CompanyEarnings> earningsDateList = 
 			entityManager.createQuery(
@@ -246,16 +247,21 @@ public class CompanyUtils {
 		return earningsDateList;
 	}
 
-	public static List<CompanyEarnings> fetchEarningsDateListForNextAndSymbols(EntityManager entityManager, LocalDate earningsDateStart, List<String> symbols) {
+	public static List<CompanyEarnings> fetchEarningsDateListForNextAndAlexaUser(EntityManager entityManager, LocalDate earningsDateStart, String alexaUser) {
 		List<CompanyEarnings> earningsDateList = 
 			entityManager.createQuery(
 				"SELECT new com.sanjoyghosh.company.api.CompanyEarnings(e.symbol, c.name, e.earningsDate, e.beforeMarketOrAfterMarket, c.id, e.id) " +
 				"FROM EarningsDate AS e, Company AS c " +
-				"WHERE e.companyId = c.id AND e.symbol IN :symbols AND e.earningsDate IN " +
-					"(SELECT MIN(ed.earningsDate) FROM EarningsDate AS ed WHERE ed.earningsDate >= :earningsDateStart AND ed.symbol IN :symbols) " +
+				"WHERE " + 
+				    "e.companyId = c.id AND " +
+				    "e.symbol IN (SELECT co.symbol FROM Company AS co, MyStocks AS ms, AlexaUser AS au WHERE au.alexaUser = :alexaUser AND au.id = ms.alexaUserId AND ms.companyId = co.id) AND " + 
+				    "e.earningsDate IN " +
+					   "(SELECT MIN(ed.earningsDate) FROM EarningsDate AS ed WHERE ed.earningsDate >= :earningsDateStart AND ed.symbol IN " + 
+				          "(SELECT co.symbol FROM Company AS co, MyStocks AS ms, AlexaUser AS au WHERE au.alexaUser = :alexaUser AND au.id = ms.alexaUserId AND ms.companyId = co.id)" + 
+					   ") " +
 				"ORDER BY e.beforeMarketOrAfterMarket DESC", CompanyEarnings.class)
 			.setParameter("earningsDateStart", earningsDateStart)
-			.setParameter("symbols", symbols)
+			.setParameter("alexaUser", alexaUser)
 			.getResultList();
 		return earningsDateList;
 	}

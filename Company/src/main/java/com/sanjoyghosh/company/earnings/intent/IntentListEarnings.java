@@ -74,33 +74,20 @@ public class IntentListEarnings implements InterfaceIntent {
     }
     
     
-    private List<String> getMyStockSymbols(Session session) {
-		List<String> symbols = new LinkedList<>();
-		String userId = session.getUser().getUserId();
-		Iterator<Item> items = DynamoDBUtils.queryMyStocksByUserId(userId);
-		while (items.hasNext()) {
-			symbols.add(items.next().getString("symbol"));
-		}	
-		return symbols;
-    }
-    
-    
     private List<CompanyEarnings> getEarningsMyNext(Intent intent, Session session) {
     	LocalDate startDate = LocalDate.now();
-		List<String> symbols = getMyStockSymbols(session);
 		EntityManager entityManager = JPAHelper.getEntityManager();
-		List<CompanyEarnings> earningsList = CompanyUtils.fetchEarningsDateListForNextAndSymbols(entityManager, 
-			startDate, symbols);
+		List<CompanyEarnings> earningsList = CompanyUtils.fetchEarningsDateListForNextAndAlexaUser(entityManager, 
+			startDate, session.getUser().getUserId());
     	return earningsList;    	
     }
     
     
     private List<CompanyEarnings> getEarningsMyBy(LocalDate endDate, Session session) {
 		LocalDate startDate = LocalDate.now();
-		List<String> symbols = getMyStockSymbols(session);
 		EntityManager entityManager = JPAHelper.getEntityManager();
-		List<CompanyEarnings> earningsList = CompanyUtils.fetchEarningsDateListForDateRangeAndSymbols(entityManager, 
-			startDate, endDate, symbols);
+		List<CompanyEarnings> earningsList = CompanyUtils.fetchEarningsDateListForDateRangeAndAlexaUser(entityManager, 
+			startDate, endDate, session.getUser().getUserId());
 		return earningsList;
     }
     
@@ -146,8 +133,8 @@ public class IntentListEarnings implements InterfaceIntent {
 			}
 			
 			EntityManager entityManager = JPAHelper.getEntityManager();
-			earningsList = CompanyUtils.fetchEarningsDateListForDateRangeAndSymbols(entityManager, 
-				startDate, endDate, symbols);
+			earningsList = CompanyUtils.fetchEarningsDateListForDateRangeAndAlexaUser(entityManager, 
+				startDate, endDate, session.getUser().getUserId());
 		}
 		
 		String companys = "";
