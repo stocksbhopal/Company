@@ -12,12 +12,14 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 
 import com.sanjoyghosh.company.api.CompanyEarnings;
+import com.sanjoyghosh.company.api.CompanyPrice;
 import com.sanjoyghosh.company.api.MarketIndexEnum;
 import com.sanjoyghosh.company.db.model.Activity;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.db.model.DividendHistory;
 import com.sanjoyghosh.company.db.model.EarningsDate;
 import com.sanjoyghosh.company.db.model.Holding;
+import com.sanjoyghosh.company.db.model.Price;
 import com.sanjoyghosh.company.db.model.PriceHistory;
 import com.sanjoyghosh.company.db.model.StockSplitHistory;
 
@@ -189,6 +191,35 @@ public class CompanyUtils {
 
 	
 	
+	public static List<CompanyPrice> fetchCompanyPriceListForAlexaUser(EntityManager entityManager, String alexaUser) {
+		List<CompanyPrice> companyPriceList = entityManager.createQuery(
+			"SELECT new com.sanjoyghosh.company.api.CompanyPrice(c.symbol, c.name, p.price, p.priceChange, p.priceChangePercent) " +
+				"FROM MyStocks AS m, Company AS c, Price AS p, AlexaUser AS a " +
+				"WHERE a.alexaUser = :alexaUser AND a.id = m.alexaUserId AND m.companyId = c.id AND c.id = p.companyId " +
+				"ORDER BY p.priceChangePercent DESC", CompanyPrice.class)
+				.setParameter("alexaUser", alexaUser)
+				.getResultList();
+		return companyPriceList;
+	}
+	
+	
+	public static List<Price> fetchPriceList(EntityManager entityManager) {
+		List<Price> priceList = entityManager.createQuery("SELECT p FROM Price AS p", Price.class).getResultList();
+		return priceList;
+	}
+	
+	
+	
+	public static List<Company> fetchCompanyListForAllUsersMinusPrice(EntityManager entityManager) {
+		List<Company> companyList =
+			entityManager.createQuery(
+				"SELECT new com.sanjoyghosh.company.db.model.Company(c.id, c.symbol) FROM MyStocks AS m, Company AS c WHERE m.companyId = c.id AND " +
+					"m.companyId IN (SELECT DISTINCT(companyId) FROM MyStocks) AND " +
+					"m.companyId NOT IN (SELECT companyId FROM Price)", Company.class)
+			.getResultList();
+		return companyList;
+	}
+
 	public static List<Company> fetchCompanyListForAlexaUserId(EntityManager entityManager, int alexaUserId) {
 		List<Company> companyList =
 			entityManager.createQuery("SELECT new com.sanjoyghosh.company.db.model.Company(c.id, c.symbol) FROM MyStocks AS m, Company AS c WHERE m.companyId = c.id AND alexaUserId = :alexaUserId", Company.class)
@@ -210,7 +241,7 @@ public class CompanyUtils {
 
 	public static List<CompanyEarnings> fetchEarningsDateListForDateRange(EntityManager entityManager, Timestamp earningsDateStart, Timestamp earningsDateEnd) {
 		List<CompanyEarnings> earningsDateList = 
-			entityManager.createQuery("SELECT new com.sanjoyghosh.company.api.CompanyEarnings(ed.symbol, c.name, ed.earningsDate, ed.beforeMarketOrAfterMarket, c.id, ed.id) " +
+			entityManager.createQuery("SELECT new com.sanjoyghosh.company.api.CompanyEarnings(ed.symbol, c.name, ed.earningsDate, ed.beforeMarketOrAfterMarket) " +
 				"FROM EarningsDate AS ed, Company AS c " +
 				"WHERE ed.earningsDate >= :earningsDateStart AND ed.earningsDate <= :earningsDateEnd AND ed.companyId = c.id " +
 				"ORDER BY ed.earningsDate ASC, ed.beforeMarketOrAfterMarket DESC", CompanyEarnings.class)
@@ -222,7 +253,7 @@ public class CompanyUtils {
 
 	public static List<CompanyEarnings> fetchEarningsDateListForDateRangeAndAlexaUser(EntityManager entityManager, LocalDate earningsDateStart, LocalDate earningsDateEnd, String alexaUser) {
 		List<CompanyEarnings> earningsDateList = 
-			entityManager.createQuery("SELECT new com.sanjoyghosh.company.api.CompanyEarnings(e.symbol, c.name, e.earningsDate, e.beforeMarketOrAfterMarket, c.id, e.id) " +
+			entityManager.createQuery("SELECT new com.sanjoyghosh.company.api.CompanyEarnings(e.symbol, c.name, e.earningsDate, e.beforeMarketOrAfterMarket) " +
 				"FROM EarningsDate AS e, Company AS c " +
 				"WHERE e.earningsDate >= :earningsDateStart AND e.earningsDate <= :earningsDateEnd AND e.companyId = c.id AND e.symbol IN " +
 		           "(SELECT co.symbol FROM Company AS co, MyStocks AS ms, AlexaUser AS au WHERE au.alexaUser = :alexaUser AND au.id = ms.alexaUserId AND ms.companyId = co.id)" + 
@@ -237,7 +268,7 @@ public class CompanyUtils {
 	public static List<CompanyEarnings> fetchEarningsDateListForMarketIndexNext(EntityManager entityManager, LocalDate earningsDateStart, MarketIndexEnum marketIndex) {
 		List<CompanyEarnings> earningsDateList = 
 			entityManager.createQuery(
-				"SELECT new com.sanjoyghosh.company.api.CompanyEarnings(e.symbol, c.name, e.earningsDate, e.beforeMarketOrAfterMarket, c.id, e.id) " +
+				"SELECT new com.sanjoyghosh.company.api.CompanyEarnings(e.symbol, c.name, e.earningsDate, e.beforeMarketOrAfterMarket) " +
 				"FROM EarningsDate AS e, Company AS c " +
 				"WHERE e.companyId = c.id AND c." + marketIndexToColumn(marketIndex) + " = 'Y' AND e.earningsDate IN " +
 					"(SELECT MIN(ed.earningsDate) FROM EarningsDate AS ed, Company AS co WHERE ed.companyId = co.id AND ed.earningsDate >= :earningsDateStart AND co." + marketIndexToColumn(marketIndex) + " = 'Y') " +
@@ -250,7 +281,7 @@ public class CompanyUtils {
 	public static List<CompanyEarnings> fetchEarningsDateListForNextAndAlexaUser(EntityManager entityManager, LocalDate earningsDateStart, String alexaUser) {
 		List<CompanyEarnings> earningsDateList = 
 			entityManager.createQuery(
-				"SELECT new com.sanjoyghosh.company.api.CompanyEarnings(e.symbol, c.name, e.earningsDate, e.beforeMarketOrAfterMarket, c.id, e.id) " +
+				"SELECT new com.sanjoyghosh.company.api.CompanyEarnings(e.symbol, c.name, e.earningsDate, e.beforeMarketOrAfterMarket) " +
 				"FROM EarningsDate AS e, Company AS c " +
 				"WHERE " + 
 				    "e.companyId = c.id AND " +

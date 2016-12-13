@@ -16,6 +16,7 @@ import com.sanjoyghosh.company.earnings.intent.IntentAddCompany;
 import com.sanjoyghosh.company.earnings.intent.IntentGetStockPrice;
 import com.sanjoyghosh.company.earnings.intent.IntentListCompanies;
 import com.sanjoyghosh.company.earnings.intent.IntentListEarnings;
+import com.sanjoyghosh.company.earnings.intent.IntentMyStocksStatus;
 import com.sanjoyghosh.company.earnings.intent.InterfaceIntent;
 
 public class EarningsSpeechlet implements Speechlet  {
@@ -75,6 +76,9 @@ public class EarningsSpeechlet implements Speechlet  {
 		}
 		if (intentName.equals(InterfaceIntent.INTENT_LIST_INDEX_EARNINGS_MY_NEXT)) {
 			return new IntentListEarnings().onIntent(request, session);
+		}
+		if (intentName.equals(InterfaceIntent.INTENT_MY_STOCKS_STATUS)) {
+			return new IntentMyStocksStatus().onIntent(request, session);
 		}
 		log.error("Unknown Intent Name: " + intentName);
 
