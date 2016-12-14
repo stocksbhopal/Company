@@ -26,7 +26,8 @@ public class NasdaqRealtimeQuoteReader {
 			return null;
 		}
 
-		Double price = Double.parseDouble(span.text());
+		String priceStr = span.text();
+		Double price = priceStr.equals("unch") ? 0.00D : Double.parseDouble(priceStr);
 		
 		span = span.nextElementSibling();
 		Double priceChange = Double.parseDouble(span.text());
