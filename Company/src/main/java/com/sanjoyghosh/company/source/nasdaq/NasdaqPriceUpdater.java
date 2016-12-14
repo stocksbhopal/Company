@@ -13,7 +13,7 @@ import com.sanjoyghosh.company.db.model.Price;
 
 public class NasdaqPriceUpdater {
 
-	public static void main (String[] args) {
+	public static void updatePrices() {
 		long startTime = System.currentTimeMillis();
 		
 		LocalDateTime dateTime = LocalDateTime.now();
@@ -62,6 +62,11 @@ public class NasdaqPriceUpdater {
 		
 		long endTime = System.currentTimeMillis();
 		System.out.println("Total time: " + ((endTime - startTime) / 1000L) + " seconds");
+	}
+	
+	
+	public static void main (String[] args) {
+		updatePrices();
 		System.exit(0);
 	}
 }

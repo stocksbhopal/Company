@@ -27,18 +27,29 @@ public class NasdaqRealtimeQuoteReader {
 		}
 
 		String priceStr = span.text();
-		Double price = priceStr.equals("unch") ? 0.00D : Double.parseDouble(priceStr);
+		Double price = null;
+		try {
+			price = priceStr.equals("unch") ? 0.00D : Double.parseDouble(priceStr);
+		}
+		catch (Exception e) {
+			System.err.println("Could not parse as Double: " + priceStr);
+			return null;
+		}
 		
 		span = span.nextElementSibling();
-		Double priceChange = Double.parseDouble(span.text());
+		String priceChangeStr = span.text();
+		Double priceChange = priceChangeStr.equals("unch") ? 0.00D : Double.parseDouble(span.text());
 
 		span = span.nextElementSibling();
 		boolean isUp = span.text().equals("▲");
 
 		span = span.nextElementSibling();
 		String percentStr = span.text();
-		percentStr = percentStr.substring(0, percentStr.length() - 1);
-		Double priceChangePercent = Double.parseDouble(percentStr);
+		Double priceChangePercent = 0.00D;
+		if (percentStr.length() > 0) {
+			percentStr = percentStr.substring(0, percentStr.length() - 1);
+			priceChangePercent = Double.parseDouble(percentStr);
+		}
 		
 		NasdaqRealtimeQuote nrq = new NasdaqRealtimeQuote();
 		nrq.setPrice(price);

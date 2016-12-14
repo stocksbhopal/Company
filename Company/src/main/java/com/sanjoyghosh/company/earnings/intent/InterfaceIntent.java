@@ -24,6 +24,7 @@ public interface InterfaceIntent {
     public static final String INTENT_LIST_EARNINGS_MY_NEXT = "ListEarningsMyNext";
     public static final String INTENT_LIST_INDEX_EARNINGS_MY_NEXT = "ListIndexEarningsMyNext";
     public static final String INTENT_MY_STOCKS_STATUS = "MyStocksStatus";
+    public static final String INTENT_UPDATE_PRICES = "UpdatePrices";
     
     public static final String DYNDB_TABLE_MY_STOCKS = "MyStocks";
     public static final String DYNDB_TABLE_WATCH_LIST = "WatchList";
