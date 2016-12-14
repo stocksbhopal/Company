@@ -5,9 +5,7 @@ import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 
@@ -22,20 +20,13 @@ import com.sanjoyghosh.company.utils.Constants;
 
 public class FidelityHoldingsDBWriter {
 	
-//    private static final String ALEXA_USERID = "amzn1.ask.account.AG3AH7ORTENZGSI5ATVRSNF2V4C2QK6CH3IXLPQMPLAWCCTWZNMGGWOGNVG5E6742XCHBILJRV6IIPQHMBLZ6L7TTTZSBVXRDEC567NDTNJHCJBN5P2JXH3C7XEDD7FSHUGIDIOKG7LTDXPZUU7XGF5VXNDMCKUV7CNL7CI7DVAWKANDCHLHWCJDQYS4VITDDBVTOPJ7FSV2MQQ";
+    private static final String ALEXA_USERID = "amzn1.ask.account.AG3AH7ORTENZGSI5ATVRSNF2V4C2QK6CH3IXLPQMPLAWCCTWZNMGGWOGNVG5E6742XCHBILJRV6IIPQHMBLZ6L7TTTZSBVXRDEC567NDTNJHCJBN5P2JXH3C7XEDD7FSHUGIDIOKG7LTDXPZUU7XGF5VXNDMCKUV7CNL7CI7DVAWKANDCHLHWCJDQYS4VITDDBVTOPJ7FSV2MQQ";
 
 	private EntityManager entityManager;
-	private Set<Company> companies;
 	
 	
 	public FidelityHoldingsDBWriter() {
 		entityManager = JPAHelper.getEntityManager();
-		
-		companies = new HashSet<>();
-		List<Company> companyList = CompanyUtils.fetchCompanyListForAlexaUserId(entityManager, 1);
-		for (Company company : companyList) {
-			companies.add(company);
-		}
 	}
 	
 	
@@ -53,24 +44,26 @@ public class FidelityHoldingsDBWriter {
 		Reader reader = null;
 		try {
 			entityManager.getTransaction().begin();
+			Map<String, Company> companyBySymbolMap = CompanyUtils.fetchAllCompanyBySymbolMap(entityManager);
+			Map<Integer, MyStocks> myStocksByCompanyIdMap = CompanyUtils.fetchMyStocksMapByCompanyIdForAlexaUser(entityManager, ALEXA_USERID);
+
 			reader = new FileReader(fidelityFile);
 			Iterable<CSVRecord> records = CSVFormat.EXCEL.withHeader().parse(reader);
 			for (CSVRecord record : records) {
 				if (record.size() == 14) {
+					
 				    String symbol = record.get("Symbol").trim();
-				    Company company = CompanyUtils.fetchCompanyBySymbol(entityManager, symbol);
-				    if (!companies.contains(company)) {
-					    if (company != null) {
-					    	System.out.println("Adding Fidelity company: " + company.getName());
-					    	MyStocks myStocks = new MyStocks();
-					    	myStocks.setAlexaUserId(1);
-					    	myStocks.setCompanyId(company.getId());
-					    	companies.add(company);
-					    	entityManager.persist(myStocks);
-					    }
-					    else {
-					    	System.err.println("No Company for " + symbol);
-					    }
+				    Company company = companyBySymbolMap.get(symbol);
+				    if (company != null && !myStocksByCompanyIdMap.containsKey(company.getId())) {
+					    System.out.println("Adding Fidelity company: " + company.getName());
+					    MyStocks myStocks = new MyStocks();
+					    myStocks.setAlexaUserId(1);
+					    myStocks.setCompanyId(company.getId());
+					    myStocksByCompanyIdMap.put(company.getId(), myStocks);
+					    entityManager.persist(myStocks);
+				    }
+					else if (company == null) {
+						System.err.println("No Company for " + symbol);
 				    }
 				}
 			}

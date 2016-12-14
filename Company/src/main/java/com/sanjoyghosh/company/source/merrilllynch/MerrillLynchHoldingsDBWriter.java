@@ -5,8 +5,7 @@ import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 
@@ -21,15 +20,13 @@ import com.sanjoyghosh.company.utils.Constants;
 
 public class MerrillLynchHoldingsDBWriter {
 	
-    // private static final String ALEXA_USERID = "amzn1.ask.account.AG3AH7ORTENZGSI5ATVRSNF2V4C2QK6CH3IXLPQMPLAWCCTWZNMGGWOGNVG5E6742XCHBILJRV6IIPQHMBLZ6L7TTTZSBVXRDEC567NDTNJHCJBN5P2JXH3C7XEDD7FSHUGIDIOKG7LTDXPZUU7XGF5VXNDMCKUV7CNL7CI7DVAWKANDCHLHWCJDQYS4VITDDBVTOPJ7FSV2MQQ";
+    private static final String ALEXA_USERID = "amzn1.ask.account.AG3AH7ORTENZGSI5ATVRSNF2V4C2QK6CH3IXLPQMPLAWCCTWZNMGGWOGNVG5E6742XCHBILJRV6IIPQHMBLZ6L7TTTZSBVXRDEC567NDTNJHCJBN5P2JXH3C7XEDD7FSHUGIDIOKG7LTDXPZUU7XGF5VXNDMCKUV7CNL7CI7DVAWKANDCHLHWCJDQYS4VITDDBVTOPJ7FSV2MQQ";
 		
 	private EntityManager entityManager;
-	private Set<String> symbols;
 		
 	
 	public MerrillLynchHoldingsDBWriter() {
 		entityManager = JPAHelper.getEntityManager();
-		symbols = new HashSet<>();
 	}
 	
 	
@@ -47,26 +44,28 @@ public class MerrillLynchHoldingsDBWriter {
 		Reader reader = null;
 		try {
 			entityManager.getTransaction().begin();
+			Map<String, Company> companyBySymbolMap = CompanyUtils.fetchAllCompanyBySymbolMap(entityManager);
+			Map<Integer, MyStocks> myStocksByCompanyIdMap = CompanyUtils.fetchMyStocksMapByCompanyIdForAlexaUser(entityManager, ALEXA_USERID);
+			
 			reader = new FileReader(merrillLynchFile);
 			Iterable<CSVRecord> records = CSVFormat.EXCEL.withHeader().parse(reader);
 			for (CSVRecord record : records) {
 				if (record.size() == 16) {
+					
 				    String symbol = record.get("Symbol").trim();
-				    if (!symbols.contains(symbol)) {
-					    Company company = CompanyUtils.fetchCompanyBySymbol(entityManager, symbol);
-					    if (company != null) {
-					    	System.out.println("Adding Merrill Lynch company: " + company.getName());
-					    	MyStocks myStocks = new MyStocks();
-					    	myStocks.setAlexaUserId(1);
-					    	myStocks.setCompanyId(company.getId());
-					    	symbols.add(symbol);
-					    	entityManager.persist(myStocks);
-					    }
-					    else {
-					    	System.err.println("No Company for " + symbol);
-					    }
+					Company company = companyBySymbolMap.get(symbol);
+				    if (company != null && !myStocksByCompanyIdMap.containsKey(company.getId())) {
+				    	System.out.println("Adding Merrill Lynch company: " + company.getName());
+				    	MyStocks myStocks = new MyStocks();
+				    	myStocks.setAlexaUserId(1);
+				    	myStocks.setCompanyId(company.getId());
+				    	myStocksByCompanyIdMap.put(company.getId(), myStocks);
+				    	entityManager.persist(myStocks);
 				    }
-				}
+				    else if (company == null) {
+				    	System.err.println("No Company for " + symbol);
+				    }
+			    }
 			}
 			entityManager.getTransaction().commit();
 		} 
@@ -87,7 +86,7 @@ public class MerrillLynchHoldingsDBWriter {
 			}
 		}
 		
-//		merrillLynchFile.delete();
+		merrillLynchFile.delete();
 	}
 		
 	

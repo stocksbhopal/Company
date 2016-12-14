@@ -19,6 +19,7 @@ import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.db.model.DividendHistory;
 import com.sanjoyghosh.company.db.model.EarningsDate;
 import com.sanjoyghosh.company.db.model.Holding;
+import com.sanjoyghosh.company.db.model.MyStocks;
 import com.sanjoyghosh.company.db.model.Price;
 import com.sanjoyghosh.company.db.model.PriceHistory;
 import com.sanjoyghosh.company.db.model.StockSplitHistory;
@@ -227,6 +228,29 @@ public class CompanyUtils {
 			.getResultList();
 		return companyList;
 	}
+	
+	
+	public static List<MyStocks> fetchMyStocksListForAlexaUser(EntityManager entityManager, String alexaUser) {
+		List<MyStocks> myStocksList =
+				entityManager.createQuery("SELECT m FROM MyStocks AS m, AlexaUser AS a WHERE m.alexaUserId = a.id AND a.alexaUser = :alexaUser", MyStocks.class)
+				.setParameter("alexaUser", alexaUser)
+				.getResultList();
+			return myStocksList;		
+	}
+	
+	public static Map<Integer, MyStocks> fetchMyStocksMapByCompanyIdForAlexaUser(EntityManager entityManager, String alexaUser) {
+		List<MyStocks> myStocksList =
+			entityManager.createQuery("SELECT m FROM MyStocks AS m, AlexaUser AS a WHERE m.alexaUserId = a.id AND a.alexaUser = :alexaUser", MyStocks.class)
+			.setParameter("alexaUser", alexaUser)
+			.getResultList();
+		
+		Map<Integer, MyStocks> myStocksByCompanyIdMap = new HashMap<>();
+		for (MyStocks myStocks : myStocksList) {
+			myStocksByCompanyIdMap.put(myStocks.getCompanyId(), myStocks);
+		}
+		return myStocksByCompanyIdMap;		
+	}
+
 	
 	
 	private static String marketIndexToColumn(MarketIndexEnum index) {
