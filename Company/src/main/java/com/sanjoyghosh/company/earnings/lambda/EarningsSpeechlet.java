@@ -1,5 +1,8 @@
 package com.sanjoyghosh.company.earnings.lambda;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +19,7 @@ import com.sanjoyghosh.company.earnings.intent.IntentAddCompany;
 import com.sanjoyghosh.company.earnings.intent.IntentGetStockPrice;
 import com.sanjoyghosh.company.earnings.intent.IntentListCompanies;
 import com.sanjoyghosh.company.earnings.intent.IntentListEarnings;
+import com.sanjoyghosh.company.earnings.intent.IntentMyStocksMovers;
 import com.sanjoyghosh.company.earnings.intent.IntentMyStocksStatus;
 import com.sanjoyghosh.company.earnings.intent.IntentUpdatePrices;
 import com.sanjoyghosh.company.earnings.intent.InterfaceIntent;
@@ -23,12 +27,34 @@ import com.sanjoyghosh.company.earnings.intent.InterfaceIntent;
 public class EarningsSpeechlet implements Speechlet  {
 
     private static final Logger log = LoggerFactory.getLogger(EarningsSpeechlet.class);
+    
+    private static final Map<String, InterfaceIntent> intentInterfaceByIntentNameMap = new HashMap<>();
+    static {
+		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_GET_STOCK_PRICE, new IntentGetStockPrice());
+		
+		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_ADD_COMPANY, new IntentAddCompany());
+		
+		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_LIST_COMPANIES, new IntentListCompanies());
+		
+		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_LIST_EARNINGS_MY_BY, new IntentListEarnings());
+		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_LIST_INDEX_EARNINGS, new IntentListEarnings());
+		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_LIST_EARNINGS_NEXT, new IntentListEarnings());
+		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_LIST_INDEX_EARNINGS_NEXT, new IntentListEarnings());
+		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_LIST_EARNINGS_MY_NEXT, new IntentListEarnings());
+		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_LIST_INDEX_EARNINGS_MY_NEXT, new IntentListEarnings());
+		
+		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_MY_STOCKS_STATUS, new IntentMyStocksStatus());
+		
+		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_MY_STOCKS_GAINERS, new IntentMyStocksMovers());
+		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_MY_STOCKS_LOSERS, new IntentMyStocksMovers());
+		
+		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_UPDATE_PRICES, new IntentUpdatePrices());
+    }
         
 	
     @Override
 	public void onSessionStarted(SessionStartedRequest request, Session session) throws SpeechletException {
 		// TODO Auto-generated method stub
-		
 	}
 
 
@@ -51,41 +77,12 @@ public class EarningsSpeechlet implements Speechlet  {
 			}
 		}
 
-		if (intentName.equals(InterfaceIntent.INTENT_GET_STOCK_PRICE)) {
-			return new IntentGetStockPrice().onIntent(request, session);
-		}		
-		if (intentName.equals(InterfaceIntent.INTENT_ADD_COMPANY)) {
-			return new IntentAddCompany().onIntent(request, session);
-		}		
-		if (intentName.equals(InterfaceIntent.INTENT_LIST_COMPANIES)) {
-			return new IntentListCompanies().onIntent(request, session);
+		InterfaceIntent interfaceIntent = intentInterfaceByIntentNameMap.get(intentName);
+		if (interfaceIntent != null) {
+			return interfaceIntent.onIntent(request, session);
 		}
-		if (intentName.equals(InterfaceIntent.INTENT_LIST_EARNINGS_MY_BY)) {
-			return new IntentListEarnings().onIntent(request, session);
-		}
-		if (intentName.equals(InterfaceIntent.INTENT_LIST_INDEX_EARNINGS)) {
-			return new IntentListEarnings().onIntent(request, session);
-		}
-		if (intentName.equals(InterfaceIntent.INTENT_LIST_EARNINGS_NEXT)) {
-			return new IntentListEarnings().onIntent(request, session);
-		}
-		if (intentName.equals(InterfaceIntent.INTENT_LIST_INDEX_EARNINGS_NEXT)) {
-			return new IntentListEarnings().onIntent(request, session);
-		}
-		if (intentName.equals(InterfaceIntent.INTENT_LIST_EARNINGS_MY_NEXT)) {
-			return new IntentListEarnings().onIntent(request, session);
-		}
-		if (intentName.equals(InterfaceIntent.INTENT_LIST_INDEX_EARNINGS_MY_NEXT)) {
-			return new IntentListEarnings().onIntent(request, session);
-		}
-		if (intentName.equals(InterfaceIntent.INTENT_MY_STOCKS_STATUS)) {
-			return new IntentMyStocksStatus().onIntent(request, session);
-		}
-		if (intentName.equals(InterfaceIntent.INTENT_UPDATE_PRICES)) {
-			return new IntentUpdatePrices().onIntent(request, session);
-		}
-		log.error("Unknown Intent Name: " + intentName);
 
+		log.error("Unknown Intent Name: " + intentName);
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 		outputSpeech.setText("Sanjoy has no idea what to do with this intent: " + intentName);
 		return SpeechletResponse.newTellResponse(outputSpeech);
@@ -94,7 +91,6 @@ public class EarningsSpeechlet implements Speechlet  {
 	
 	@Override
 	public void onSessionEnded(SessionEndedRequest request, Session session) throws SpeechletException {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub	
 	}
 }

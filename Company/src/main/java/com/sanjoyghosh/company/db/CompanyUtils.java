@@ -192,6 +192,18 @@ public class CompanyUtils {
 
 	
 	
+	public static List<CompanyPrice> fetchCompanyPriceListForAlexaUserLimit(EntityManager entityManager, String alexaUser, int limit, boolean gainers) {
+		List<CompanyPrice> companyPriceList = entityManager.createQuery(
+			"SELECT new com.sanjoyghosh.company.api.CompanyPrice(c.symbol, c.name, p.price, p.priceChange, p.priceChangePercent) " +
+				"FROM MyStocks AS m, Company AS c, Price AS p, AlexaUser AS a " +
+				"WHERE a.alexaUser = :alexaUser AND a.id = m.alexaUserId AND m.companyId = c.id AND c.id = p.companyId " +
+				"ORDER BY p.priceChangePercent " + (gainers ? "DESC" : "ASC"), CompanyPrice.class)
+				.setParameter("alexaUser", alexaUser)
+				.setMaxResults(limit)
+				.getResultList();
+		return companyPriceList;
+	}
+
 	public static List<CompanyPrice> fetchCompanyPriceListForAlexaUser(EntityManager entityManager, String alexaUser) {
 		List<CompanyPrice> companyPriceList = entityManager.createQuery(
 			"SELECT new com.sanjoyghosh.company.api.CompanyPrice(c.symbol, c.name, p.price, p.priceChange, p.priceChangePercent) " +
@@ -232,10 +244,10 @@ public class CompanyUtils {
 	
 	public static List<MyStocks> fetchMyStocksListForAlexaUser(EntityManager entityManager, String alexaUser) {
 		List<MyStocks> myStocksList =
-				entityManager.createQuery("SELECT m FROM MyStocks AS m, AlexaUser AS a WHERE m.alexaUserId = a.id AND a.alexaUser = :alexaUser", MyStocks.class)
-				.setParameter("alexaUser", alexaUser)
-				.getResultList();
-			return myStocksList;		
+			entityManager.createQuery("SELECT m FROM MyStocks AS m, AlexaUser AS a WHERE m.alexaUserId = a.id AND a.alexaUser = :alexaUser", MyStocks.class)
+			.setParameter("alexaUser", alexaUser)
+			.getResultList();
+		return myStocksList;		
 	}
 	
 	public static Map<Integer, MyStocks> fetchMyStocksMapByCompanyIdForAlexaUser(EntityManager entityManager, String alexaUser) {
