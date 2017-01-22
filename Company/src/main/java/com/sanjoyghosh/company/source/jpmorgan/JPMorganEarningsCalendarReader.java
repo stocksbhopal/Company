@@ -3,7 +3,6 @@ package com.sanjoyghosh.company.source.jpmorgan;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.LineNumberReader;
 import java.io.StringReader;
 import java.text.ParseException;
@@ -14,10 +13,8 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
-import org.apache.pdfbox.cos.COSDocument;
-import org.apache.pdfbox.pdfparser.PDFParser;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.util.PDFTextStripper;
+import org.apache.tika.Tika;
+import org.apache.tika.exception.TikaException;
 
 import com.sanjoyghosh.company.db.CompanyUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
@@ -43,7 +40,7 @@ public class JPMorganEarningsCalendarReader {
 				earningsDate = dateParser.parse(line);
 			} 
 			catch (ParseException e) {
-				e.printStackTrace();
+				continue;
 			}
 			
 			if (earningsDate != null && line.length() > 24) {
@@ -69,6 +66,7 @@ public class JPMorganEarningsCalendarReader {
 						company.setJpmOpinion(opinion);
 						company.setJpmAnalyst(analyst);
 						entityManager.persist(company);
+						System.out.println("Persisted Company: " + symbol);
 					}
 				}
 			}
@@ -77,37 +75,21 @@ public class JPMorganEarningsCalendarReader {
 	
 	
 	private void readJPMEarningsCalendarFile(File jpmEarningsFile) throws IOException {
-		InputStream stream = null;
-		PDFParser parser = null;
-		COSDocument cosDocument = null;
-		PDDocument pdDocument = null;
-		PDFTextStripper textStripper = null;
-		try {
-			stream = new FileInputStream(jpmEarningsFile);
-			parser = new PDFParser(new FileInputStream(jpmEarningsFile));
-			parser.parse();
-			cosDocument = parser.getDocument();
-			pdDocument = new PDDocument(cosDocument);
-			textStripper = new PDFTextStripper();
-			textStripper.setStartPage(1);
-			textStripper.setEndPage(pdDocument.getNumberOfPages());
-			String text = textStripper.getText(pdDocument);
-			readJPMEarningsCalendar(text);
+		FileInputStream fis = null;
+	    Tika tika = new Tika();
+	    try {
+	    	fis = new FileInputStream(jpmEarningsFile);
+			String contents = tika.parseToString(fis);
+			readJPMEarningsCalendar(contents);;
+		} 
+	    catch (TikaException e) {
+			e.printStackTrace();
 		}
-		finally {
-			if (pdDocument != null) {
-				pdDocument.close();
-			}
-			if (cosDocument != null) {
-				cosDocument.close();
-			}
-			if (parser != null) {
-				parser.clearResources();
-			}
-			if (stream != null) {
-				stream.close();
-			}
-		}
+	    finally {
+	    	if (fis != null) {
+	    		fis.close();
+	    	}
+	    }
 	}
 	
 	
