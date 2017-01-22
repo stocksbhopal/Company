@@ -66,7 +66,6 @@ public class JPMorganEarningsCalendarReader {
 						company.setJpmOpinion(opinion);
 						company.setJpmAnalyst(analyst);
 						entityManager.persist(company);
-						System.out.println("Persisted Company: " + symbol);
 					}
 				}
 			}
@@ -80,7 +79,7 @@ public class JPMorganEarningsCalendarReader {
 	    try {
 	    	fis = new FileInputStream(jpmEarningsFile);
 			String contents = tika.parseToString(fis);
-			readJPMEarningsCalendar(contents);;
+			readJPMEarningsCalendar(contents);
 		} 
 	    catch (TikaException e) {
 			e.printStackTrace();
