@@ -25,7 +25,7 @@ public class JPMorganEarningsCalendarReader {
 	
 	private EntityManager entityManager;
 	private SimpleDateFormat dateParser = new SimpleDateFormat("dd-MMM-yy");
-	private List<String> opinionList = Arrays.asList("US Overweight", "US Neutral", "US Underweight", "US Not Rated");
+	private List<String> opinionList = Arrays.asList("US Overweight", "US Neutral", "US Underweight", "US Not Rated", "US OW", "US N", "US UW", "US NR");
 	
 	
 	public JPMorganEarningsCalendarReader() {}
@@ -65,6 +65,7 @@ public class JPMorganEarningsCalendarReader {
 						
 						company.setJpmOpinion(opinion);
 						company.setJpmAnalyst(analyst);
+						System.out.println("Company: " + symbol);
 						entityManager.persist(company);
 					}
 				}

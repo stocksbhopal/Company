@@ -150,6 +150,6 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
-		<finalName>sanjoys-earnings-helper</finalName>
+		<finalName>ROOT</finalName>
 	</build>
 </project>
