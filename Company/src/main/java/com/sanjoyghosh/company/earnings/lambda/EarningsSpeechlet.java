@@ -23,6 +23,8 @@ import com.sanjoyghosh.company.earnings.intent.IntentMyStocksMovers;
 import com.sanjoyghosh.company.earnings.intent.IntentMyStocksStatus;
 import com.sanjoyghosh.company.earnings.intent.IntentUpdatePrices;
 import com.sanjoyghosh.company.earnings.intent.InterfaceIntent;
+import com.sanjoyghosh.company.earnings.utils.CompanyFacts;
+import com.sanjoyghosh.company.earnings.utils.CompanyFactsUtils;
 
 public class EarningsSpeechlet implements Speechlet  {
 
@@ -30,6 +32,9 @@ public class EarningsSpeechlet implements Speechlet  {
     
     private static final Map<String, InterfaceIntent> intentInterfaceByIntentNameMap = new HashMap<>();
     static {
+    	CompanyFacts cf = CompanyFactsUtils.getCompanyFactsForSymbol("AMZN");
+    	System.out.println("CompanyFactUtils initialized + " + cf.getFullName());
+    	
 		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_GET_STOCK_PRICE, new IntentGetStockPrice());
 		
 		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_ADD_COMPANY, new IntentAddCompany());

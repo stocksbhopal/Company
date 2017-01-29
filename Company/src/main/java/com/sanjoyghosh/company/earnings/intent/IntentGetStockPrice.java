@@ -1,7 +1,6 @@
 package com.sanjoyghosh.company.earnings.intent;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.Session;
@@ -16,16 +15,17 @@ import com.sanjoyghosh.company.utils.StringUtils;
 
 public class IntentGetStockPrice implements InterfaceIntent {
 
-    private static final Logger log = LoggerFactory.getLogger(IntentGetStockPrice.class);
+    private static final Logger log = Logger.getLogger(IntentGetStockPrice.class);
 
 	@Override
 	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
 		String company = request.getIntent().getSlot(SLOT_COMPANY).getValue();
-		log.info(INTENT_GET_STOCK_PRICE + " invoked for company: " + company);
+		System.out.println(INTENT_GET_STOCK_PRICE + " invoked for company: " + company);
 		
 		String error = null;
 		try {
-			CompanyFacts cf = CompanyFactsUtils.getCompanyFactsForName(company);
+			CompanyFacts cf = CompanyFactsUtils.getCompanyFactsForSymbol(company);
+			cf = cf != null ? cf : CompanyFactsUtils.getCompanyFactsForName(company);
 			if (cf != null) {
 				NasdaqRealtimeQuote quote = NasdaqRealtimeQuoteReader.fetchNasdaqStockSummary(cf.getSymbol());
 				if (quote != null) {
