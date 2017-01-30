@@ -11,10 +11,24 @@ public interface InterfaceIntent {
     public static final String ATTR_SYMBOL = "ATTR_SYMBOL";
 
     public static final String SLOT_COMPANY = "company";
+    public static final String SLOT_SPELLING_ONE = "spellingOne";
+    public static final String SLOT_SPELLING_TWO = "spellingTwo";
+    public static final String SLOT_SPELLING_THREE = "spellingThree";
+    public static final String SLOT_SPELLING_FOUR = "spellingFour";
+    public static final String SLOT_SPELLING_FIVE = "spellingFive";
+    public static final String SLOT_SPELLING_SIX = "spellingSix";
+    
     public static final String SLOT_DATE = "date";
     public static final String SLOT_MARKET_INDEX = "market_index";
     
     public static final String INTENT_GET_STOCK_PRICE = "GetStockPrice";
+    public static final String INTENT_GET_STOCK_PRICE_SPELL_ONE = "GetStockPriceSpellOne";
+    public static final String INTENT_GET_STOCK_PRICE_SPELL_TWO = "GetStockPriceSpellTwo";
+    public static final String INTENT_GET_STOCK_PRICE_SPELL_THREE = "GetStockPriceSpellThree";
+    public static final String INTENT_GET_STOCK_PRICE_SPELL_FOUR = "GetStockPriceSpellFour";
+    public static final String INTENT_GET_STOCK_PRICE_SPELL_FIVE = "GetStockPriceSpellFive";
+    public static final String INTENT_GET_STOCK_PRICE_SPELL_SIX = "GetStockPriceSpellSix";
+
     public static final String INTENT_ADD_COMPANY = "AddCompany";
     public static final String INTENT_LIST_COMPANIES = "ListCompanies";
     public static final String INTENT_LIST_EARNINGS_MY_BY = "ListEarningsMyBy";

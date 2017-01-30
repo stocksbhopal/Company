@@ -36,6 +36,12 @@ public class EarningsSpeechlet implements Speechlet  {
     	System.out.println("CompanyFactUtils initialized + " + cf.getFullName());
     	
 		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_GET_STOCK_PRICE, new IntentGetStockPrice());
+		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_GET_STOCK_PRICE_SPELL_ONE, new IntentGetStockPrice());
+		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_GET_STOCK_PRICE_SPELL_TWO, new IntentGetStockPrice());
+		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_GET_STOCK_PRICE_SPELL_THREE, new IntentGetStockPrice());
+		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_GET_STOCK_PRICE_SPELL_FOUR, new IntentGetStockPrice());
+		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_GET_STOCK_PRICE_SPELL_FIVE, new IntentGetStockPrice());
+		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_GET_STOCK_PRICE_SPELL_SIX, new IntentGetStockPrice());
 		
 		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_ADD_COMPANY, new IntentAddCompany());
 		
