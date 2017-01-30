@@ -56,8 +56,8 @@ public class IntentGetStockPrice implements InterfaceIntent {
 		String companyOrSymbol = getCompanyOrSymbol(request);
 		
 		try {
-			CompanyFacts cf = CompanyFactsUtils.getCompanyFactsForSymbol(companyOrSymbol);
-			cf = cf != null ? cf : CompanyFactsUtils.getCompanyFactsForName(companyOrSymbol);
+			CompanyFacts cf = CompanyFactsUtils.getCompanyFactsForName(companyOrSymbol);
+			cf = cf != null ? cf : CompanyFactsUtils.getCompanyFactsForSymbol(companyOrSymbol);
 			if (cf != null) {
 				NasdaqRealtimeQuote quote = NasdaqRealtimeQuoteReader.fetchNasdaqStockSummary(cf.getSymbol());
 				if (quote != null) {

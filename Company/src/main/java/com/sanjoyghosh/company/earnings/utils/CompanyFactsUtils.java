@@ -24,6 +24,8 @@ public class CompanyFactsUtils {
 			String nameLower = StringUtils.stripTrailingCompanyTypeFromName(company.getName()).toLowerCase();
 			String[] pieces = nameLower.split(" ");
 			for (int i = 0; i < pieces.length; i++) {
+				// Mostly to strip .com from Amazon.com.
+				pieces[i] = (pieces[i].endsWith(".com")) ? pieces[i].substring(0, pieces[i].length() - ".com".length()) : pieces[i];
 				String partialName = "";
 				for (int j = 0; j < (i + 1); j++) {
 					partialName += pieces[j] + " ";
