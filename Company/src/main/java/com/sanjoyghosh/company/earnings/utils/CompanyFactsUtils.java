@@ -26,6 +26,7 @@ public class CompanyFactsUtils {
 			for (int i = 0; i < pieces.length; i++) {
 				// Mostly to strip .com from Amazon.com.
 				pieces[i] = (pieces[i].endsWith(".com")) ? pieces[i].substring(0, pieces[i].length() - ".com".length()) : pieces[i];
+				pieces[i] = (pieces[i].endsWith(",")) ? pieces[i].substring(0, pieces[i].length() - ",".length()) : pieces[i];
 				String partialName = "";
 				for (int j = 0; j < (i + 1); j++) {
 					partialName += pieces[j] + " ";
@@ -41,6 +42,30 @@ public class CompanyFactsUtils {
 				}
 			}
 		}
+		
+		// Vornado, VNO
+		// Hess, HES
+		// Altria Group, MO
+		// CalAtlantic Group, CAA
+		// Delta Air, DAL.  Processes as da
+		// Allergan, AGN
+		// Regeneron, REGN
+		// Acadia, ACAD
+		// PACCAR Inc, PCAR
+		// Norfolk Southern, NSC
+		// Eaton, ETN
+		// AECOM, ACM
+		// Crown Holdings, CCK
+		companyFactsByNameMap.put("haliburton", companyFactsBySymbolMap.get("HAL"));
+		companyFactsByNameMap.put("service now", companyFactsBySymbolMap.get("NOW"));
+		companyFactsByNameMap.put("us steel", companyFactsBySymbolMap.get("X"));
+		companyFactsByNameMap.put("under armor", companyFactsBySymbolMap.get("UA"));
+		companyFactsByNameMap.put("children's", companyFactsBySymbolMap.get("PLCE"));
+		companyFactsByNameMap.put("bank united", companyFactsBySymbolMap.get("BKU"));
+		companyFactsByNameMap.put("enterprise lp", companyFactsBySymbolMap.get("EPD"));
+		companyFactsByNameMap.put("sales force", companyFactsBySymbolMap.get("CRM"));
+		companyFactsByNameMap.put("checkpoint", companyFactsBySymbolMap.get("CHKP"));
+
 	}
 	
 
