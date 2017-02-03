@@ -295,13 +295,16 @@ public class StringUtils {
 			return null;
 		}
 		name = name.trim();
+		if (name.startsWith("the ")) {
+			name = name.substring("the ".length());
+		}
 		
 		String[] pieces = name.split(" ");
 		int length = pieces.length;
 		if (length > 1) {
 			length = (companyTypeSet.contains(pieces[length - 1].trim())) ? length - 1 : length;
 			name = "";
-			for (int i = 0; i < length; i++) {
+			for (int i = (pieces[0].length() <= 2 ? 1 : 0); i < length; i++) {
 				name += pieces[i] + " ";
 			}
 			name = name.trim();

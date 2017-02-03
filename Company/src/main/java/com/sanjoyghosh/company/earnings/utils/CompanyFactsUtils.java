@@ -42,11 +42,28 @@ public class CompanyFactsUtils {
 			}
 		}
 		
+		// Vornado, VNO
+		// Hess, HES
+		// Altria Group, MO
+		// CalAtlantic Group, CAA
+		// Delta Air, DAL.  Processes as da
+		// Allergan, AGN
+		// Regeneron, REGN
+		// Acadia, ACAD
+		// PACCAR Inc, PCAR
+		// Norfolk Southern, NSC
+		// Eaton, ETN
+		// AECOM, ACM
+		// Crown Holdings, CCK
 		companyFactsByNameMap.put("haliburton", companyFactsBySymbolMap.get("HAL"));
 		companyFactsByNameMap.put("service now", companyFactsBySymbolMap.get("NOW"));
 		companyFactsByNameMap.put("us steel", companyFactsBySymbolMap.get("X"));
 		companyFactsByNameMap.put("under armor", companyFactsBySymbolMap.get("UA"));
 		companyFactsByNameMap.put("children's", companyFactsBySymbolMap.get("PLCE"));
+		companyFactsByNameMap.put("bank united", companyFactsBySymbolMap.get("BKU"));
+		companyFactsByNameMap.put("enterprise lp", companyFactsBySymbolMap.get("EPD"));
+		companyFactsByNameMap.put("sales force", companyFactsBySymbolMap.get("CRM"));
+		companyFactsByNameMap.put("checkpoint", companyFactsBySymbolMap.get("CHKP"));
 	}
 	
 
