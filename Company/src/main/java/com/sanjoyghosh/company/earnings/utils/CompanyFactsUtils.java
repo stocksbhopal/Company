@@ -41,6 +41,12 @@ public class CompanyFactsUtils {
 				}
 			}
 		}
+		
+		companyFactsByNameMap.put("haliburton", companyFactsBySymbolMap.get("HAL"));
+		companyFactsByNameMap.put("service now", companyFactsBySymbolMap.get("NOW"));
+		companyFactsByNameMap.put("us steel", companyFactsBySymbolMap.get("X"));
+		companyFactsByNameMap.put("under armor", companyFactsBySymbolMap.get("UA"));
+		companyFactsByNameMap.put("children's", companyFactsBySymbolMap.get("PLCE"));
 	}
 	
 
