@@ -79,6 +79,12 @@
 			<artifactId>commons-codec</artifactId>
 			<version>1.10</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.tika/tika-app -->
+		<dependency>
+			<groupId>org.apache.tika</groupId>
+			<artifactId>tika-app</artifactId>
+			<version>1.14</version>
+		</dependency>
 	</dependencies>
 
 	<build>
