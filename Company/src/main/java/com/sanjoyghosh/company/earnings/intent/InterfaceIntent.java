@@ -21,6 +21,11 @@ public interface InterfaceIntent {
     public static final String SLOT_DATE = "date";
     public static final String SLOT_MARKET_INDEX = "market_index";
     
+    public static final String INTENT_CREATE_MERRILL_LYNCH_STOCK_LIST = "CreateMerrillLynchStockList";
+    public static final String INTENT_CREATE_MORGAN_STANLEY_STOCK_LIST = "CreateMorganStanleyStockList";
+    public static final String INTENT_CREATE_JP_MORGAN_STOCK_LIST = "CreateJPMorganStockList";
+    public static final String INTENT_CREATE_PERSONAL_STOCK_LIST = "CreatePersonalStockList";
+    
     public static final String INTENT_GET_STOCK_PRICE = "GetStockPrice";
     public static final String INTENT_GET_STOCK_PRICE_SPELL_ONE = "GetStockPriceSpellOne";
     public static final String INTENT_GET_STOCK_PRICE_SPELL_TWO = "GetStockPriceSpellTwo";

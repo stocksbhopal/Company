@@ -15,10 +15,8 @@ import com.amazon.speech.speechlet.Speechlet;
 import com.amazon.speech.speechlet.SpeechletException;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
-import com.sanjoyghosh.company.earnings.intent.IntentAddCompany;
+import com.sanjoyghosh.company.earnings.intent.IntentCreateStockList;
 import com.sanjoyghosh.company.earnings.intent.IntentGetStockPrice;
-import com.sanjoyghosh.company.earnings.intent.IntentListCompanies;
-import com.sanjoyghosh.company.earnings.intent.IntentListEarnings;
 import com.sanjoyghosh.company.earnings.intent.IntentMyStocksMovers;
 import com.sanjoyghosh.company.earnings.intent.IntentMyStocksStatus;
 import com.sanjoyghosh.company.earnings.intent.IntentUpdatePrices;
@@ -35,6 +33,11 @@ public class EarningsSpeechlet implements Speechlet  {
     	CompanyFacts cf = CompanyFactsUtils.getCompanyFactsForSymbol("AMZN");
     	System.out.println("CompanyFactUtils initialized + " + cf.getFullName());
     	
+    	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_CREATE_JP_MORGAN_STOCK_LIST, new IntentCreateStockList());
+    	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_CREATE_MERRILL_LYNCH_STOCK_LIST, new IntentCreateStockList());
+    	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_CREATE_MORGAN_STANLEY_STOCK_LIST, new IntentCreateStockList());
+    	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_CREATE_PERSONAL_STOCK_LIST, new IntentCreateStockList());
+    	
 		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_GET_STOCK_PRICE, new IntentGetStockPrice());
 		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_GET_STOCK_PRICE_SPELL_ONE, new IntentGetStockPrice());
 		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_GET_STOCK_PRICE_SPELL_TWO, new IntentGetStockPrice());
@@ -42,17 +45,6 @@ public class EarningsSpeechlet implements Speechlet  {
 		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_GET_STOCK_PRICE_SPELL_FOUR, new IntentGetStockPrice());
 		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_GET_STOCK_PRICE_SPELL_FIVE, new IntentGetStockPrice());
 		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_GET_STOCK_PRICE_SPELL_SIX, new IntentGetStockPrice());
-		
-		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_ADD_COMPANY, new IntentAddCompany());
-		
-		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_LIST_COMPANIES, new IntentListCompanies());
-		
-		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_LIST_EARNINGS_MY_BY, new IntentListEarnings());
-		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_LIST_INDEX_EARNINGS, new IntentListEarnings());
-		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_LIST_EARNINGS_NEXT, new IntentListEarnings());
-		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_LIST_INDEX_EARNINGS_NEXT, new IntentListEarnings());
-		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_LIST_EARNINGS_MY_NEXT, new IntentListEarnings());
-		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_LIST_INDEX_EARNINGS_MY_NEXT, new IntentListEarnings());
 		
 		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_MY_STOCKS_STATUS, new IntentMyStocksStatus());
 		
@@ -84,7 +76,6 @@ public class EarningsSpeechlet implements Speechlet  {
 		if (intentName.equals("AMAZON.YesIntent")) {
 			String lastIntentName = (String) session.getAttribute(InterfaceIntent.ATTR_LAST_INTENT);
 			if (lastIntentName.equals(InterfaceIntent.INTENT_ADD_COMPANY)) {
-				return new IntentAddCompany().onIntent(request, session);
 			}
 		}
 
