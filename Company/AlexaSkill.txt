@@ -1,0 +1,71 @@
+{
+  "intents": [
+    {"intent": "CreateMerrillLynchStockList"},
+    {"intent": "CreateMorganStanleyStockList"},
+    {"intent": "CreateJPMorganStockList"},
+    {"intent": "CreatePersonalStockList"},
+    
+    {"intent": "AMAZON.YesIntent"},
+    {"intent": "MyStocksStatus"},
+    {"intent": "MyStocksGainers","slots": [{"name": "number","type": "NUMBER"}]},
+    {"intent": "MyStocksLosers","slots": [{"name": "number","type": "NUMBER"}]},
+    {"intent": "UpdatePrices"},
+    
+    {"intent": "GetStockPrice","slots": [{"name": "company","type": "AMAZON.Corporation"}]},
+    {"intent": "GetStockPriceSpellOne","slots": [{"name": "spellingOne","type": "SPELLING_ALPHABET"}]},
+    {"intent": "GetStockPriceSpellTwo","slots": [{"name": "spellingOne","type": "SPELLING_ALPHABET"},{"name": "spellingTwo","type": "SPELLING_ALPHABET"}]},
+    {"intent": "GetStockPriceSpellThree","slots": [{"name": "spellingOne","type": "SPELLING_ALPHABET"},{"name": "spellingTwo","type": "SPELLING_ALPHABET"},{"name": "spellingThree","type": "SPELLING_ALPHABET"}]},
+    {"intent": "GetStockPriceSpellFour","slots": [{"name": "spellingOne","type": "SPELLING_ALPHABET"},{"name": "spellingTwo","type": "SPELLING_ALPHABET"},{"name": "spellingThree","type": "SPELLING_ALPHABET"},{"name": "spellingFour","type": "SPELLING_ALPHABET"}]},
+    {"intent": "GetStockPriceSpellFive","slots": [{"name": "spellingOne","type": "SPELLING_ALPHABET"},{"name": "spellingTwo","type": "SPELLING_ALPHABET"},{"name": "spellingThree","type": "SPELLING_ALPHABET"},{"name": "spellingFour","type": "SPELLING_ALPHABET"},{"name": "spellingFive","type": "SPELLING_ALPHABET"}]},
+    {"intent": "GetStockPriceSpellSix","slots": [{"name": "spellingOne","type": "SPELLING_ALPHABET"},{"name": "spellingTwo","type": "SPELLING_ALPHABET"},{"name": "spellingThree","type": "SPELLING_ALPHABET"},{"name": "spellingFour","type": "SPELLING_ALPHABET"},{"name": "spellingFive","type": "SPELLING_ALPHABET"},{"name": "spellingSix","type": "SPELLING_ALPHABET"}]},
+
+    {"intent": "AddCompany","slots": [{"name": "company","type": "AMAZON.Corporation"}]},
+    {"intent": "ListCompanies"},
+    {"intent":"ListEarningsMyBy","slots":[{"name":"date","type":"DATE"}]},
+    {"intent":"ListIndexEarnings","slots":[{"name":"market_index","type":"MARKET_INDEX"},{"name":"start_date","type":"START_DATE"},{"name":"date","type":"DATE"}]},
+    {"intent": "ListEarningsNext"},
+    {"intent": "ListIndexEarningsNext","slots": [{"name": "market_index","type": "MARKET_INDEX"}]},
+    {"intent": "ListEarningsMyNext"},
+    {"intent": "ListIndexEarningsMyNext","slots": [{"name": "market_index","type": "MARKET_INDEX"}]}
+  ]
+}
+
+
+
+
+CreateMerrillLynchStockList to create a merrill lynch stock list
+CreateMorganStanleyStockList to create a morgan stanley stock list
+CreateJPMorganStockList to create a J P morgan stock list
+CreatePersonalStockList to create a personal stock list
+
+ListIndexEarningsNext for next {market_index} earnings
+ListEarningsMyNext for my next earnings
+ListEarningsMyBy for my earnings by {date}
+ListIndexEarningsMyNext for my next {market_index} earnings
+
+
+ListIndexEarnings for {market_index} earnings {start_date} {date}
+
+ListEarningsNext for next earnings
+
+
+AddCompany to add {company}
+
+ListCompanies to list my companies
+
+
+GetStockPrice the price of {company}
+GetStockPriceSpellOne the price of {spellingOne}
+GetStockPriceSpellTwo the price of {spellingOne} {spellingTwo}
+GetStockPriceSpellThree the price of {spellingOne} {spellingTwo} {spellingThree}
+GetStockPriceSpellFour the price of {spellingOne} {spellingTwo} {spellingThree} {spellingFour}
+GetStockPriceSpellFive the price of {spellingOne} {spellingTwo} {spellingThree} {spellingFour} {spellingFive}
+GetStockPriceSpellSix the price of {spellingOne} {spellingTwo} {spellingThree} {spellingFour} {spellingFive} {spellingSix}
+
+MyStocksStatus how my stocks are doing today
+MyStocksStatus how are my stocks doing today
+MyStocksGainers for my top {number} gainers
+MyStocksLosers for my bottom {number} losers
+UpdatePrices to update prices
+
+
