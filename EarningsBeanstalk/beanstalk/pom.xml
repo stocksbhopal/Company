@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.sanjoyghosh.stocks</groupId>
+	<groupId>com.sanjoyghosh.company</groupId>
 	<artifactId>Earnings</artifactId>
 	<packaging>war</packaging>
 	<version>1.0</version>
@@ -20,18 +20,6 @@
 			<groupId>com.amazon.alexa</groupId>
 			<artifactId>alexa-skills-kit</artifactId>
 			<version>1.2</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-server</artifactId>
-			<version>9.0.6.v20130930</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-servlet</artifactId>
-			<version>9.0.6.v20130930</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -76,11 +64,6 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.amazonaws</groupId>
-			<artifactId>aws-java-sdk-dynamodb</artifactId>
-			<version>1.9.40</version>
-		</dependency>
-		<dependency>
 			<groupId>com.amazon.alexa</groupId>
 			<artifactId>alexa-skills-kit</artifactId>
 			<version>1.2</version>
@@ -91,8 +74,8 @@
 			<version>1.7.2</version>
 		</dependency>
 		<dependency>
-			<groupId>com.sanjoyghosh.stocks</groupId>
-			<artifactId>Company</artifactId>
+			<groupId>com.sanjoyghosh.company</groupId>
+			<artifactId>SanjoysHelper</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
