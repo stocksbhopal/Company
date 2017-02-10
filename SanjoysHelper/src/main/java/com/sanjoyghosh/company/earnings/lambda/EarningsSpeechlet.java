@@ -18,6 +18,7 @@ import com.sanjoyghosh.company.earnings.intent.IntentMyStocksMovers;
 import com.sanjoyghosh.company.earnings.intent.IntentMyStocksStatus;
 import com.sanjoyghosh.company.earnings.intent.IntentUpdatePrices;
 import com.sanjoyghosh.company.earnings.intent.InterfaceIntent;
+import com.sanjoyghosh.company.earnings.intent.LaunchSanjoysHelper;
 import com.sanjoyghosh.company.earnings.utils.CompanyFacts;
 import com.sanjoyghosh.company.earnings.utils.CompanyFactsUtils;
 
@@ -58,7 +59,7 @@ public class EarningsSpeechlet implements Speechlet  {
 
 	@Override
 	public SpeechletResponse onLaunch(LaunchRequest request, Session session) throws SpeechletException {
-		System.out.println("LAUNCHED YES YES YES");
+		LaunchSanjoysHelper.onLaunch(session);
 		return null;
 	}
 

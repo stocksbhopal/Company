@@ -1,15 +1,13 @@
 package com.sanjoyghosh.company.earnings.intent;
 
-import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.Session;
 import com.amazon.speech.speechlet.SpeechletException;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
 
-public class LaunchSanjoysHelper implements InterfaceIntent {
+public class LaunchSanjoysHelper {
 
-	@Override
-	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
+	public static SpeechletResponse onLaunch(Session session) throws SpeechletException {
 		String text = "Hello, Sanjoy's Helper is always open to help you. " +
 			"You can ask her for realtime quotes on listed US stocks. " +
 			"You can identify the company by its name, or ticker symbol. " +
