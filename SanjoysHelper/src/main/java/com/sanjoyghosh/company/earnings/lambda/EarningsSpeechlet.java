@@ -59,8 +59,8 @@ public class EarningsSpeechlet implements Speechlet  {
 
 	@Override
 	public SpeechletResponse onLaunch(LaunchRequest request, Session session) throws SpeechletException {
-		LaunchSanjoysHelper.onLaunch(session);
-		return null;
+		SpeechletResponse response = LaunchSanjoysHelper.onLaunch(session);
+		return response;
 	}
 
 	

@@ -13,7 +13,7 @@ public class LaunchSanjoysHelper {
 			"You can identify the company by its name, or ticker symbol. " +
 			"You can spell the symbol either by letter or using the Wikipedia Spelling Alphabet. " +
 			"Just use England for E when using the Spelling Alphabet. " +
-			"For example, Alexa, ask Sanjoy's Helper the price of amazon. ";
+			"For example, Alexa, ask Sanjoy's Helper, the price of amazon. ";
 		
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 		outputSpeech.setText(text);
