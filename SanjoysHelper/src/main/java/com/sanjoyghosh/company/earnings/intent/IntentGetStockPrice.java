@@ -2,12 +2,12 @@ package com.sanjoyghosh.company.earnings.intent;
 
 import org.apache.log4j.Logger;
 
-import com.amazon.speech.slu.Intent;
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.Session;
 import com.amazon.speech.speechlet.SpeechletException;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
+import com.amazon.speech.ui.Reprompt;
 import com.sanjoyghosh.company.earnings.utils.CompanyFacts;
 import com.sanjoyghosh.company.earnings.utils.CompanyFactsUtils;
 import com.sanjoyghosh.company.source.nasdaq.NasdaqRealtimeQuote;
@@ -19,59 +19,12 @@ public class IntentGetStockPrice implements InterfaceIntent {
     private static final Logger log = Logger.getLogger(IntentGetStockPrice.class);
 
     
-    private String companyOrSymbol; 
-    private String symbol;			// This contains symbol only.  Constructed from the Spelling Alphabet.
-    
-    
-    private void getCompanyOrSymbol(IntentRequest request) {
-    	symbol = "";
-    	companyOrSymbol = "";
-    	
-    	Intent intent = request.getIntent();
-    	if (intent.getSlot(SLOT_COMPANY) != null) {
-    		companyOrSymbol = intent.getSlot(SLOT_COMPANY).getValue();
-    	}
-    	else {
-    		if (intent.getSlot(SLOT_SPELLING_SIX) != null) {
-    			companyOrSymbol = intent.getSlot(SLOT_SPELLING_SIX).getValue();
-    			symbol = intent.getSlot(SLOT_SPELLING_SIX).getValue().substring(0, 1) + symbol;
-    		}
-    		if (intent.getSlot(SLOT_SPELLING_FIVE) != null) {
-    			companyOrSymbol = intent.getSlot(SLOT_SPELLING_FIVE).getValue() + " " + companyOrSymbol;
-    			symbol = intent.getSlot(SLOT_SPELLING_FIVE).getValue().substring(0, 1) + symbol;
-    		}
-    		if (intent.getSlot(SLOT_SPELLING_FOUR) != null) {
-    			companyOrSymbol = intent.getSlot(SLOT_SPELLING_FOUR).getValue() + " " + companyOrSymbol;
-    			symbol = intent.getSlot(SLOT_SPELLING_FOUR).getValue().substring(0, 1) + symbol;
-    		}
-    		if (intent.getSlot(SLOT_SPELLING_THREE) != null) {
-    			companyOrSymbol = intent.getSlot(SLOT_SPELLING_THREE).getValue() + " " + companyOrSymbol;
-    			symbol = intent.getSlot(SLOT_SPELLING_THREE).getValue().substring(0, 1) + symbol;
-    		}
-    		if (intent.getSlot(SLOT_SPELLING_TWO) != null) {
-    			companyOrSymbol = intent.getSlot(SLOT_SPELLING_TWO).getValue() + " " + companyOrSymbol;
-    			symbol = intent.getSlot(SLOT_SPELLING_TWO).getValue().substring(0, 1) + symbol;
-    		}
-    		if (intent.getSlot(SLOT_SPELLING_ONE) != null) {
-    			companyOrSymbol = intent.getSlot(SLOT_SPELLING_ONE).getValue() + " " + companyOrSymbol;
-    			symbol = intent.getSlot(SLOT_SPELLING_ONE).getValue().substring(0, 1) + symbol;
-    		}
-    	}
-    	symbol = symbol.trim();
-    	companyOrSymbol = companyOrSymbol.trim();
-		System.out.println(INTENT_GET_STOCK_PRICE + " invoked for company or symbol: " + companyOrSymbol + " or " + symbol);
-    }
-    
-    
-	@Override
-	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
-		String error = null;
-		getCompanyOrSymbol(request);
-		
+    private SpeechletResponse respondWithPrice(CompanyOrSymbol companyOrSymbol) {
+    	String error = "";
 		try {
-			CompanyFacts cf = CompanyFactsUtils.getCompanyFactsForName(companyOrSymbol);
-			cf = cf != null ? cf : CompanyFactsUtils.getCompanyFactsForSymbol(companyOrSymbol);
-			cf = cf != null ? cf : CompanyFactsUtils.getCompanyFactsForSymbol(symbol);
+			CompanyFacts cf = CompanyFactsUtils.getCompanyFactsForName(companyOrSymbol.getCompanyOrSymbol());
+			cf = cf != null ? cf : CompanyFactsUtils.getCompanyFactsForSymbol(companyOrSymbol.getCompanyOrSymbol());
+			cf = cf != null ? cf : CompanyFactsUtils.getCompanyFactsForSymbol(companyOrSymbol.getSymbol());
 			if (cf != null) {
 				NasdaqRealtimeQuote quote = NasdaqRealtimeQuoteReader.fetchNasdaqStockSummary(cf.getSymbol());
 				if (quote != null) {
@@ -91,7 +44,7 @@ public class IntentGetStockPrice implements InterfaceIntent {
 				}
 			}
 			else {
-				error = INTENT_GET_STOCK_PRICE + " found no company named " + companyOrSymbol;
+				error = INTENT_GET_STOCK_PRICE + " found no company or symbol " + companyOrSymbol;
 			}
 		}
 		catch (Exception e) {
@@ -101,6 +54,31 @@ public class IntentGetStockPrice implements InterfaceIntent {
 		log.error(error);
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 		outputSpeech.setText(error);
-		return SpeechletResponse.newTellResponse(outputSpeech);		
+		return SpeechletResponse.newTellResponse(outputSpeech);		    	
+    }
+    
+
+	private SpeechletResponse respondWithQuestion() {
+		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
+		outputSpeech.setText("Price of what company?  Tell me the name or symbol.");
+
+		Reprompt reprompt = new Reprompt();
+		PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
+		repromptSpeech.setText("Sorry, need the name or symbol to get the price.");
+		reprompt.setOutputSpeech(repromptSpeech);
+		
+		return SpeechletResponse.newAskResponse(outputSpeech, reprompt);	    	
+	}
+
+	
+	@Override
+	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
+		CompanyOrSymbol companyOrSymbol = IntentUtils.getCompanyOrSymbol(request);		
+		if (companyOrSymbol == null || companyOrSymbol.isEmpty()) {
+			return respondWithQuestion();
+		}
+		else {
+			return respondWithPrice(companyOrSymbol);
+		}
 	}
 }
