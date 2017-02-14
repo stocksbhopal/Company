@@ -7,6 +7,7 @@
 	<servlet>
 		<servlet-name>EarningsServlet</servlet-name>
 		<servlet-class>com.sanjoyghosh.company.earnings.lambda.EarningsServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>EarningsServlet</servlet-name>

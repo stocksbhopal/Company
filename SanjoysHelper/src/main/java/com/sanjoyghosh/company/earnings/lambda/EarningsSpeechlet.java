@@ -16,6 +16,7 @@ import com.sanjoyghosh.company.earnings.intent.IntentCreateStockList;
 import com.sanjoyghosh.company.earnings.intent.IntentGetStockPrice;
 import com.sanjoyghosh.company.earnings.intent.IntentMyStocksMovers;
 import com.sanjoyghosh.company.earnings.intent.IntentMyStocksStatus;
+import com.sanjoyghosh.company.earnings.intent.IntentStopCancel;
 import com.sanjoyghosh.company.earnings.intent.IntentUpdatePrices;
 import com.sanjoyghosh.company.earnings.intent.InterfaceIntent;
 import com.sanjoyghosh.company.earnings.intent.LaunchSanjoysHelper;
@@ -48,6 +49,8 @@ public class EarningsSpeechlet implements Speechlet  {
 		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_MY_STOCKS_LOSERS, new IntentMyStocksMovers());
 		
 		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_UPDATE_PRICES, new IntentUpdatePrices());
+		intentInterfaceByIntentNameMap.put("AMAZON.StopIntent", new IntentStopCancel());
+		intentInterfaceByIntentNameMap.put("AMAZON.CancelIntent", new IntentStopCancel());
     }
         
 	
@@ -73,6 +76,9 @@ public class EarningsSpeechlet implements Speechlet  {
 			String lastIntentName = (String) session.getAttribute(InterfaceIntent.ATTR_LAST_INTENT);
 			if (lastIntentName.equals(InterfaceIntent.INTENT_ADD_COMPANY)) {
 			}
+		}
+		if (intentName.equals("AMAZON.HelpIntent")) {
+			return LaunchSanjoysHelper.onLaunch(session);
 		}
 
 		InterfaceIntent interfaceIntent = intentInterfaceByIntentNameMap.get(intentName);
