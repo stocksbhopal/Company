@@ -88,7 +88,7 @@ public class EarningsSpeechlet implements Speechlet  {
 
 		System.out.println("Unknown Intent Name: " + intentName);
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
-		outputSpeech.setText("Sanjoy has no idea what to do with this intent: " + intentName);
+		outputSpeech.setText("Finance Helper has no idea what to do with this intent: " + intentName);
 		return SpeechletResponse.newTellResponse(outputSpeech);
 	}
 

@@ -35,7 +35,7 @@ public class IntentMyStocksMovers implements InterfaceIntent {
 			log.error("Unparseable int: " + numberSlot.getValue(), e);
 			
 			PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
-			outputSpeech.setText("Sanjoy needs an integer and not " + numberSlot.getValue());
+			outputSpeech.setText("Finance Helper needs an integer and not " + numberSlot.getValue());
 			return SpeechletResponse.newTellResponse(outputSpeech);
 		}
 		

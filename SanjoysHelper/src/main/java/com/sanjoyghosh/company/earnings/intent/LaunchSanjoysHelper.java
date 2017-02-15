@@ -9,12 +9,12 @@ import com.amazon.speech.ui.Reprompt;
 public class LaunchSanjoysHelper {
 
 	public static SpeechletResponse onLaunch(Session session) throws SpeechletException {
-		String text = "Hello, Sanjoy's Helper is always open to help you. " +
+		String text = "Hello, Finance Helper is always open to help you. " +
 			"You can ask her for roughly realtime quotes on listed US stocks. " +
 			"You can identify the company by its name, or ticker symbol. " +
 			"You can spell the symbol either by letter or using the Wikipedia Spelling Alphabet. " +
 			"Just use England for E when using the Spelling Alphabet. " +
-			"For example, Alexa, ask Sanjoy's Helper, the price of amazon. " +
+			"For example, Alexa, ask Finance Helper, the price of amazon. " +
 			"Go ahead, ask the price of your favorite stock.";
 		
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();

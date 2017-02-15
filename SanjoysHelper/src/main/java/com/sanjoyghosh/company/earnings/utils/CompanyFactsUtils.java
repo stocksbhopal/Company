@@ -66,6 +66,9 @@ public class CompanyFactsUtils {
 		companyFactsByNameMap.put("sales force", companyFactsBySymbolMap.get("CRM"));
 		companyFactsByNameMap.put("checkpoint", companyFactsBySymbolMap.get("CHKP"));
 		companyFactsByNameMap.put("price line", companyFactsBySymbolMap.get("PCLN"));
+		companyFactsByNameMap.put("go daddy", companyFactsBySymbolMap.get("GDDY"));
+		companyFactsByNameMap.put("gold daddy", companyFactsBySymbolMap.get("GDDY"));
+		companyFactsByNameMap.put("synopsis", companyFactsBySymbolMap.get("SNPS"));
 	}
 	
 
