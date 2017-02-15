@@ -1,4 +1,4 @@
-package com.sanjoyghosh.company.utils;
+package com.sanjoyghosh.company.aws;
 
 import java.io.File;
 

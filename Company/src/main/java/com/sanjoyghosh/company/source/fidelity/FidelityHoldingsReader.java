@@ -15,12 +15,12 @@ import javax.persistence.EntityManager;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 
+import com.sanjoyghosh.company.aws.Constants;
+import com.sanjoyghosh.company.aws.FileDateUtils;
 import com.sanjoyghosh.company.db.CompanyUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.db.model.Holding;
-import com.sanjoyghosh.company.utils.Constants;
-import com.sanjoyghosh.company.utils.DateUtils;
 import com.sanjoyghosh.company.utils.StringUtils;
 
 public class FidelityHoldingsReader {
@@ -49,7 +49,7 @@ public class FidelityHoldingsReader {
 		Reader reader = null;
 		try {
 			String fileName = fidelityFile.getName();
-			Date cobDate = DateUtils.getDateFromFidelityHoldingsFileName(fileName);
+			Date cobDate = FileDateUtils.getDateFromFidelityHoldingsFileName(fileName);
 			int numHoldingsDeleted = CompanyUtils.deleteAllHoldingsByDateBrokerage(entityManager, Constants.FidelityBrokerage, cobDate);
 			System.out.println("Deleted " + numHoldingsDeleted + " for Fidelity on: " + DateFormat.getDateInstance().format(cobDate));
 

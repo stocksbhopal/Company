@@ -17,11 +17,11 @@ import javax.persistence.EntityManager;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 
+import com.sanjoyghosh.company.aws.Constants;
 import com.sanjoyghosh.company.db.CompanyUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.model.Activity;
 import com.sanjoyghosh.company.db.model.Company;
-import com.sanjoyghosh.company.utils.Constants;
 import com.sanjoyghosh.company.utils.DateUtils;
 import com.sanjoyghosh.company.utils.StringUtils;
 

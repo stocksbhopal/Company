@@ -15,12 +15,12 @@ import javax.persistence.EntityManager;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 
+import com.sanjoyghosh.company.aws.Constants;
+import com.sanjoyghosh.company.aws.FileDateUtils;
 import com.sanjoyghosh.company.db.CompanyUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.db.model.Holding;
-import com.sanjoyghosh.company.utils.Constants;
-import com.sanjoyghosh.company.utils.DateUtils;
 import com.sanjoyghosh.company.utils.StringUtils;
 
 public class MerrillLynchHoldingsReader {
@@ -49,7 +49,7 @@ public class MerrillLynchHoldingsReader {
 		Reader reader = null;
 		try {
 			String fileName = merrillLynchFile.getName();
-			Date cobDate = DateUtils.getDateFromMerrillLynchHoldingsFileName(fileName);
+			Date cobDate = FileDateUtils.getDateFromMerrillLynchHoldingsFileName(fileName);
 			int numHoldingsDeleted = CompanyUtils.deleteAllHoldingsByDateBrokerage(entityManager, Constants.MerrillLynchBrokerage, cobDate);
 			System.out.println("Deleted " + numHoldingsDeleted + " for Merrill Lynch on: " + DateFormat.getDateInstance().format(cobDate));
 			
