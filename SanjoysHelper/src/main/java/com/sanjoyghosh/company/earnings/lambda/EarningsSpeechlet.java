@@ -28,7 +28,6 @@ public class EarningsSpeechlet implements Speechlet  {
     private static final Map<String, InterfaceIntent> intentInterfaceByIntentNameMap = new HashMap<>();
     static {
     	CompanyFacts cf = CompanyFactsUtils.getCompanyFactsForSymbol("AMZN");
-    	System.out.println("CompanyFactUtils initialized + " + cf.getFullName());
     	
     	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_CREATE_JP_MORGAN_STOCK_LIST, new IntentCreateStockList());
     	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_CREATE_MERRILL_LYNCH_STOCK_LIST, new IntentCreateStockList());
@@ -56,7 +55,6 @@ public class EarningsSpeechlet implements Speechlet  {
 	
     @Override
 	public void onSessionStarted(SessionStartedRequest request, Session session) throws SpeechletException {
-    	System.out.println("onSessionStarted: " + session.getSessionId() + "  " + session.getAttributes().size());
     }
 
 
@@ -70,8 +68,6 @@ public class EarningsSpeechlet implements Speechlet  {
 	@Override
 	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
 		String intentName = request.getIntent().getName();
-		System.out.println("Intent: " + intentName);
-
 		if (intentName.equals("AMAZON.YesIntent")) {
 			String lastIntentName = (String) session.getAttribute(InterfaceIntent.ATTR_LAST_INTENT);
 			if (lastIntentName.equals(InterfaceIntent.INTENT_ADD_COMPANY)) {
@@ -86,7 +82,6 @@ public class EarningsSpeechlet implements Speechlet  {
 			return interfaceIntent.onIntent(request, session);
 		}
 
-		System.out.println("Unknown Intent Name: " + intentName);
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 		outputSpeech.setText("Finance Helper has no idea what to do with this intent: " + intentName);
 		return SpeechletResponse.newTellResponse(outputSpeech);
@@ -95,6 +90,5 @@ public class EarningsSpeechlet implements Speechlet  {
 	
 	@Override
 	public void onSessionEnded(SessionEndedRequest request, Session session) throws SpeechletException {
-    	System.out.println("onSessionEnded: " + session.getSessionId() + "  " + session.getAttributes().size());
 	}
 }

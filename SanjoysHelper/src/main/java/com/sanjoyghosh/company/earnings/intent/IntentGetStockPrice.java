@@ -1,6 +1,6 @@
 package com.sanjoyghosh.company.earnings.intent;
 
-import org.apache.log4j.Logger;
+import java.util.logging.Logger;
 
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.Session;
@@ -16,7 +16,7 @@ import com.sanjoyghosh.company.utils.StringUtils;
 
 public class IntentGetStockPrice implements InterfaceIntent {
 
-    private static final Logger log = Logger.getLogger(IntentGetStockPrice.class);
+    private static final Logger logger = Logger.getLogger(IntentGetStockPrice.class.getPackage().getName());
 
     
     private SpeechletResponse respondWithPrice(CompanyOrSymbol companyOrSymbol) {
@@ -34,6 +34,7 @@ public class IntentGetStockPrice implements InterfaceIntent {
 					String text = "Price of " + cf.getFullName() + " is " + price + 
 						", " + (quote.getPriceChange() > 0.00D ? "up " : "down ") + priceChange +
 						", " + (quote.getPriceChange() > 0.00D ? "up " : "down ") + priceChangePercent + " percent";
+					logger.info(INTENT_GET_STOCK_PRICE + " found company: " + cf.getFullName() + " for user input: " + companyOrSymbol);
 					
 					PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 					outputSpeech.setText(text);
@@ -48,10 +49,10 @@ public class IntentGetStockPrice implements InterfaceIntent {
 			}
 		}
 		catch (Exception e) {
-			log.error(error, e);
+			logger.throwing(this.getClass().getName(), "respondWithPrice()", e);
 		}
 		
-		log.error(error);
+		logger.info(error);
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 		outputSpeech.setText(error);
 		return SpeechletResponse.newTellResponse(outputSpeech);		    	
@@ -67,6 +68,7 @@ public class IntentGetStockPrice implements InterfaceIntent {
 		repromptSpeech.setText("Sorry, need the name or symbol to get the price.");
 		reprompt.setOutputSpeech(repromptSpeech);
 		
+		logger.info(INTENT_GET_STOCK_PRICE + " user did not provide name of company.");
 		return SpeechletResponse.newAskResponse(outputSpeech, reprompt);	    	
 	}
 

@@ -57,12 +57,6 @@ public class IntentUtils {
     	companyOrSymbol = companyOrSymbol == null ? null : companyOrSymbol.trim();
     	
     	CompanyOrSymbol cos = new CompanyOrSymbol(companyOrSymbol, symbol);
-    	if (cos.isEmpty()) {
-    		System.out.println(intent.getName() + " no company or symbol provided");
-    	}
-    	else {
-    		System.out.println(intent.getName() + " invoked for company or symbol: " + cos);
-    	}
     	return cos;
     }
 }
