@@ -1,5 +1,6 @@
 package com.sanjoyghosh.company.earnings.intent;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.amazon.speech.speechlet.IntentRequest;
@@ -12,6 +13,7 @@ import com.sanjoyghosh.company.earnings.utils.CompanyFacts;
 import com.sanjoyghosh.company.earnings.utils.CompanyFactsUtils;
 import com.sanjoyghosh.company.source.nasdaq.NasdaqRealtimeQuote;
 import com.sanjoyghosh.company.source.nasdaq.NasdaqRealtimeQuoteReader;
+import com.sanjoyghosh.company.utils.LoggerUtils;
 import com.sanjoyghosh.company.utils.StringUtils;
 
 public class IntentGetStockPrice implements InterfaceIntent {
@@ -19,7 +21,7 @@ public class IntentGetStockPrice implements InterfaceIntent {
     private static final Logger logger = Logger.getLogger(IntentGetStockPrice.class.getPackage().getName());
 
     
-    private SpeechletResponse respondWithPrice(CompanyOrSymbol companyOrSymbol) {
+    private SpeechletResponse respondWithPrice(CompanyOrSymbol companyOrSymbol, Session session) {
     	String error = "";
 		try {
 			CompanyFacts cf = CompanyFactsUtils.getCompanyFactsForName(companyOrSymbol.getCompanyOrSymbol());
@@ -34,7 +36,7 @@ public class IntentGetStockPrice implements InterfaceIntent {
 					String text = "Price of " + cf.getFullName() + " is " + price + 
 						", " + (quote.getPriceChange() > 0.00D ? "up " : "down ") + priceChange +
 						", " + (quote.getPriceChange() > 0.00D ? "up " : "down ") + priceChangePercent + " percent";
-					logger.info(INTENT_GET_STOCK_PRICE + " found company: " + cf.getFullName() + " for user input: " + companyOrSymbol);
+					logger.info(LoggerUtils.makeLogString(session, INTENT_GET_STOCK_PRICE + " found company: " + cf.getFullName() + " for user input: " + companyOrSymbol));
 					
 					PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 					outputSpeech.setText(text);
@@ -49,17 +51,17 @@ public class IntentGetStockPrice implements InterfaceIntent {
 			}
 		}
 		catch (Exception e) {
-			logger.throwing(this.getClass().getName(), "respondWithPrice()", e);
+			logger.log(Level.SEVERE, LoggerUtils.makeLogString(session, INTENT_GET_STOCK_PRICE + " exception in respondWithPrice()"), e);
 		}
 		
-		logger.info(error);
+		logger.info(LoggerUtils.makeLogString(session, error));
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 		outputSpeech.setText(error);
 		return SpeechletResponse.newTellResponse(outputSpeech);		    	
     }
     
 
-	private SpeechletResponse respondWithQuestion() {
+	private SpeechletResponse respondWithQuestion(Session session) {
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 		outputSpeech.setText("Price of what company?  Tell me the name or symbol.");
 
@@ -68,7 +70,7 @@ public class IntentGetStockPrice implements InterfaceIntent {
 		repromptSpeech.setText("Sorry, need the name or symbol to get the price.");
 		reprompt.setOutputSpeech(repromptSpeech);
 		
-		logger.info(INTENT_GET_STOCK_PRICE + " user did not provide name of company.");
+		logger.info(LoggerUtils.makeLogString(session, INTENT_GET_STOCK_PRICE + " user did not provide name of company."));
 		return SpeechletResponse.newAskResponse(outputSpeech, reprompt);	    	
 	}
 
@@ -77,10 +79,10 @@ public class IntentGetStockPrice implements InterfaceIntent {
 	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
 		CompanyOrSymbol companyOrSymbol = IntentUtils.getCompanyOrSymbol(request);		
 		if (companyOrSymbol == null || companyOrSymbol.isEmpty()) {
-			return respondWithQuestion();
+			return respondWithQuestion(session);
 		}
 		else {
-			return respondWithPrice(companyOrSymbol);
+			return respondWithPrice(companyOrSymbol, session);
 		}
 	}
 }
