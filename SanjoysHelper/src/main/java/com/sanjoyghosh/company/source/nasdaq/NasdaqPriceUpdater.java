@@ -24,6 +24,7 @@ public class NasdaqPriceUpdater {
 			
 			Map<Integer, Company> companyByIdMap = CompanyUtils.fetchAllCompanyByIdMap(entityManager);
 			
+			/*
 			List<Price> priceList = CompanyUtils.fetchPriceList(entityManager);
 			for (Price price : priceList) {
 				Company company = companyByIdMap.get(price.getCompanyId());
@@ -52,6 +53,7 @@ public class NasdaqPriceUpdater {
 					entityManager.persist(price);					
 				}
 			}
+			*/
 			
 			entityManager.getTransaction().commit();
 		}

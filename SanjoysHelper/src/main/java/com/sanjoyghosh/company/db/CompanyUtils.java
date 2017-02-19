@@ -19,7 +19,7 @@ import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.db.model.DividendHistory;
 import com.sanjoyghosh.company.db.model.EarningsDate;
 import com.sanjoyghosh.company.db.model.Holding;
-import com.sanjoyghosh.company.db.model.MyStocks;
+import com.sanjoyghosh.company.db.model.Portfolio;
 import com.sanjoyghosh.company.db.model.Price;
 import com.sanjoyghosh.company.db.model.PriceHistory;
 import com.sanjoyghosh.company.db.model.StockSplitHistory;
@@ -191,7 +191,7 @@ public class CompanyUtils {
 	}
 
 	
-	
+	/*
 	public static List<CompanyPrice> fetchCompanyPriceListForAlexaUserLimit(EntityManager entityManager, String alexaUser, int limit, boolean gainers) {
 		List<CompanyPrice> companyPriceList = entityManager.createQuery(
 			"SELECT new com.sanjoyghosh.company.api.CompanyPrice(c.symbol, c.name, p.price, p.priceChange, p.priceChangePercent) " +
@@ -242,27 +242,27 @@ public class CompanyUtils {
 	}
 	
 	
-	public static List<MyStocks> fetchMyStocksListForAlexaUser(EntityManager entityManager, String alexaUser) {
-		List<MyStocks> myStocksList =
-			entityManager.createQuery("SELECT m FROM MyStocks AS m, AlexaUser AS a WHERE m.alexaUserId = a.id AND a.alexaUser = :alexaUser", MyStocks.class)
+	public static List<Portfolio> fetchMyStocksListForAlexaUser(EntityManager entityManager, String alexaUser) {
+		List<Portfolio> myStocksList =
+			entityManager.createQuery("SELECT m FROM MyStocks AS m, AlexaUser AS a WHERE m.alexaUserId = a.id AND a.alexaUser = :alexaUser", Portfolio.class)
 			.setParameter("alexaUser", alexaUser)
 			.getResultList();
 		return myStocksList;		
 	}
 	
-	public static Map<Integer, MyStocks> fetchMyStocksMapByCompanyIdForAlexaUser(EntityManager entityManager, String alexaUser) {
-		List<MyStocks> myStocksList =
-			entityManager.createQuery("SELECT m FROM MyStocks AS m, AlexaUser AS a WHERE m.alexaUserId = a.id AND a.alexaUser = :alexaUser", MyStocks.class)
+	public static Map<Integer, Portfolio> fetchMyStocksMapByCompanyIdForAlexaUser(EntityManager entityManager, String alexaUser) {
+		List<Portfolio> myStocksList =
+			entityManager.createQuery("SELECT m FROM MyStocks AS m, AlexaUser AS a WHERE m.alexaUserId = a.id AND a.alexaUser = :alexaUser", Portfolio.class)
 			.setParameter("alexaUser", alexaUser)
 			.getResultList();
 		
-		Map<Integer, MyStocks> myStocksByCompanyIdMap = new HashMap<>();
-		for (MyStocks myStocks : myStocksList) {
+		Map<Integer, Portfolio> myStocksByCompanyIdMap = new HashMap<>();
+		for (Portfolio myStocks : myStocksList) {
 			myStocksByCompanyIdMap.put(myStocks.getCompanyId(), myStocks);
 		}
 		return myStocksByCompanyIdMap;		
 	}
-
+	*/
 	
 	
 	private static String marketIndexToColumn(MarketIndexEnum index) {

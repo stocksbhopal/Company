@@ -26,6 +26,8 @@ public interface InterfaceIntent {
     public static final String INTENT_CREATE_JP_MORGAN_STOCK_LIST = "CreateJPMorganStockList";
     public static final String INTENT_CREATE_PERSONAL_STOCK_LIST = "CreatePersonalStockList";
     
+    public static final String INTENT_GET_STOCKS_IN_PORTFOLIO = "GetStocksInPortfolio";
+    
     public static final String INTENT_GET_STOCK_PRICE = "GetStockPrice";
     public static final String INTENT_GET_STOCK_PRICE_SPELL_ONE = "GetStockPriceSpellOne";
     public static final String INTENT_GET_STOCK_PRICE_SPELL_TWO = "GetStockPriceSpellTwo";

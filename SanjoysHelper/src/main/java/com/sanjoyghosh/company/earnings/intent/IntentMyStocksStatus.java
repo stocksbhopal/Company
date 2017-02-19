@@ -18,8 +18,8 @@ public class IntentMyStocksStatus implements InterfaceIntent {
 	@Override
 	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
         EntityManager entityManager = JPAHelper.getEntityManager();
-        List<CompanyPrice> companyPriceList = CompanyUtils.fetchCompanyPriceListForAlexaUser(entityManager, session.getUser().getUserId());
-		
+//        List<CompanyPrice> companyPriceList = CompanyUtils.fetchCompanyPriceListForAlexaUser(entityManager, session.getUser().getUserId());
+        List<CompanyPrice> companyPriceList = null;
         String speech = "You have no stocks.";
         String intentName = request.getIntent().getName();
         if (intentName.equals(INTENT_MY_STOCKS_STATUS)) {
