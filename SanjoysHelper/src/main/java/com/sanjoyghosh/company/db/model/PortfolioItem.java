@@ -22,6 +22,8 @@ public class PortfolioItem {
 	private LocalDate createDate;
 	@Column
 	private LocalDate validateDate;
+	@Column 
+	private double quantity;	// This field has a SQL Default of 0.00.
 	
 	@ManyToOne
 	@JoinColumn(name="portfolioId", referencedColumnName="id")
@@ -81,9 +83,19 @@ public class PortfolioItem {
 	}
 
 
+	public double getQuantity() {
+		return quantity;
+	}
+
+
+	public void setQuantity(double quantity) {
+		this.quantity = quantity;
+	}
+
+
 	@Override
 	public String toString() {
 		return "PortfolioItem [id=" + id + ", companyId=" + companyId + ", createDate=" + createDate + ", validateDate="
-				+ validateDate + ", portfolio=" + portfolio + "]";
+				+ validateDate + ", quantity=" + quantity + ", portfolio=" + portfolio + "]";
 	}
 }

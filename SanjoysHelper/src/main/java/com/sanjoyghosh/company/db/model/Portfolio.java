@@ -1,7 +1,9 @@
 package com.sanjoyghosh.company.db.model;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -18,7 +20,9 @@ public class Portfolio {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
 	@Column
-	private int alexaUserId;
+	private String name;
+	@Column
+	private String alexaUserId;
 	@Column
 	private LocalDate createDate;
 	@Column
@@ -26,6 +30,8 @@ public class Portfolio {
 	
 	@OneToMany(mappedBy="portfolio", cascade=CascadeType.ALL)
 	private List<PortfolioItem> portfolioItemList;
+	
+	private transient Map<String, PortfolioItem> portfolioItemBySymbolMap = new HashMap<>();
 	
 	
 	public Portfolio() {}
@@ -41,12 +47,12 @@ public class Portfolio {
 	}
 
 
-	public int getAlexaUserId() {
+	public String getAlexaUserId() {
 		return alexaUserId;
 	}
 
 
-	public void setAlexaUserId(int alexaUserId) {
+	public void setAlexaUserId(String alexaUserId) {
 		this.alexaUserId = alexaUserId;
 	}
 
@@ -68,5 +74,37 @@ public class Portfolio {
 
 	public void setUpdateDate(LocalDate updateDate) {
 		this.updateDate = updateDate;
+	}
+
+
+	public String getName() {
+		return name;
+	}
+
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+
+	public List<PortfolioItem> getPortfolioItemList() {
+		return portfolioItemList;
+	}
+
+
+	public void setPortfolioItemList(List<PortfolioItem> portfolioItemList) {
+		this.portfolioItemList = portfolioItemList;
+	}
+
+
+	@Override
+	public String toString() {
+		return "Portfolio [id=" + id + ", name=" + name + ", alexaUserId=" + alexaUserId + ", createDate=" + createDate
+				+ ", updateDate=" + updateDate + "]";
+	}
+
+
+	public Map<String, PortfolioItem> getPortfolioItemBySymbolMap() {
+		return portfolioItemBySymbolMap;
 	}
 }
