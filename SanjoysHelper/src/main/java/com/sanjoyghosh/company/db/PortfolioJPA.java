@@ -56,10 +56,7 @@ public class PortfolioJPA {
 		else {
 			Map<String, PortfolioItem> portfolioItemBySymbolMap = portfolio.getPortfolioItemBySymbolMap();
 			for (PortfolioItem portfolioItem : portfolio.getPortfolioItemList()) {
-				Company company = CompanyJPA.fetchCompanyById(portfolioItem.getCompanyId());
-				if (company != null) {
-					portfolioItemBySymbolMap.put(company.getSymbol(), portfolioItem);
-				}
+				portfolioItemBySymbolMap.put(portfolioItem.getCompany().getSymbol(), portfolioItem);
 			}
 		}
 		return portfolio;
@@ -72,7 +69,7 @@ public class PortfolioJPA {
 	    	PortfolioItem portfolioItem = portfolio.getPortfolioItemBySymbolMap().get(company.getSymbol());
 	    	if (portfolioItem == null) {
 	    		portfolioItem = new PortfolioItem();
-	    		portfolioItem.setCompanyId(company.getId());
+	    		portfolioItem.setCompany(company);
 	    		portfolioItem.setCreateDate(LocalDate.now());
 	    		portfolioItem.setPortfolio(portfolio);
 	    		

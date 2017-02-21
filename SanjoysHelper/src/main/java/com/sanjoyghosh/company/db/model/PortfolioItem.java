@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 @Entity
 public class PortfolioItem {
@@ -16,15 +17,17 @@ public class PortfolioItem {
 	@Id()
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
-	@Column
-	private int companyId;
+	@OneToOne
 	@Column
 	private LocalDate createDate;
 	@Column
 	private LocalDate validateDate;
 	@Column 
 	private double quantity;	// This field has a SQL Default of 0.00.
-	
+
+	@JoinColumn(name="companyId", referencedColumnName="id")
+	private Company company;
+
 	@ManyToOne
 	@JoinColumn(name="portfolioId", referencedColumnName="id")
 	private Portfolio portfolio;
@@ -43,13 +46,13 @@ public class PortfolioItem {
 	}
 
 
-	public int getCompanyId() {
-		return companyId;
+	public Company getCompany() {
+		return company;
 	}
 
 
-	public void setCompanyId(int companyId) {
-		this.companyId = companyId;
+	public void setCompany(Company company) {
+		this.company = company;
 	}
 
 
@@ -95,7 +98,7 @@ public class PortfolioItem {
 
 	@Override
 	public String toString() {
-		return "PortfolioItem [id=" + id + ", companyId=" + companyId + ", createDate=" + createDate + ", validateDate="
+		return "PortfolioItem [id=" + id + ", company=" + company + ", createDate=" + createDate + ", validateDate="
 				+ validateDate + ", quantity=" + quantity + ", portfolio=" + portfolio + "]";
 	}
 }
