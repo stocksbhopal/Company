@@ -12,15 +12,12 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 
 import com.sanjoyghosh.company.api.CompanyEarnings;
-import com.sanjoyghosh.company.api.CompanyPrice;
 import com.sanjoyghosh.company.api.MarketIndexEnum;
 import com.sanjoyghosh.company.db.model.Activity;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.db.model.DividendHistory;
 import com.sanjoyghosh.company.db.model.EarningsDate;
 import com.sanjoyghosh.company.db.model.Holding;
-import com.sanjoyghosh.company.db.model.Portfolio;
-import com.sanjoyghosh.company.db.model.Price;
 import com.sanjoyghosh.company.db.model.PriceHistory;
 import com.sanjoyghosh.company.db.model.StockSplitHistory;
 

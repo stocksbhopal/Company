@@ -1,7 +1,6 @@
 package com.sanjoyghosh.company.source.nasdaq;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
@@ -9,7 +8,6 @@ import javax.persistence.EntityManager;
 import com.sanjoyghosh.company.db.CompanyUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.model.Company;
-import com.sanjoyghosh.company.db.model.Price;
 
 public class NasdaqPriceUpdater {
 

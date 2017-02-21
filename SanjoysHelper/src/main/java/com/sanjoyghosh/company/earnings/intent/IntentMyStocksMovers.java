@@ -39,9 +39,6 @@ public class IntentMyStocksMovers implements InterfaceIntent {
 			return SpeechletResponse.newTellResponse(outputSpeech);
 		}
 		
-        EntityManager entityManager = JPAHelper.getEntityManager();
-//        List<CompanyPrice> companyPriceList = CompanyUtils.fetchCompanyPriceListForAlexaUserLimit(entityManager, session.getUser().getUserId(), number, gainers);
-		
         List<CompanyPrice> companyPriceList = null;
         String speech = "Your " + (gainers ? ("top " + number + " gainers") : ("bottom " + number + " losers")) + " are ";
         for (CompanyPrice companyPrice : companyPriceList) {

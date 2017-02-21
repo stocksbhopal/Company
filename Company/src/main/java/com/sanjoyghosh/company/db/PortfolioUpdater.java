@@ -21,7 +21,7 @@ public class PortfolioUpdater {
 		for (File fidelityFile : fidelityFiles) {
 			try {
 				fidelityReader.readFidelityHoldingsFiles(fidelityFile);
-//				fidelityFile.delete();
+				fidelityFile.delete();
 			}
 			catch (Throwable e) {
 				e.printStackTrace();
@@ -34,7 +34,7 @@ public class PortfolioUpdater {
 		for (File merrillLynchFile : merrillLynchFiles) {
 			try {
 				merrillLynchReader.readMerrillLynchHoldingsFile(merrillLynchFile);
-//				merrillLynchFile.delete();
+				merrillLynchFile.delete();
 			}
 			catch (Throwable e) {
 				e.printStackTrace();
