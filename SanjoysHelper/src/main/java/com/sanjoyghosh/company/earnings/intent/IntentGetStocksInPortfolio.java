@@ -28,10 +28,9 @@ public class IntentGetStocksInPortfolio implements InterfaceIntent {
 		else {
 			List<PortfolioItem> portfolioItemList = portfolio.getPortfolioItemList();
 			speech = "You have " + portfolioItemList.size() + " stocks in your list. They are: ";
-			for (PortfolioItem pi : portfolioItemList) {
-				
+			for (PortfolioItem portfolioItem : portfolioItemList) {
+				speech += ((int)portfolioItem.getQuantity()) + " shares of " + portfolioItem.getCompany().getName() + ", ";
 			}
-			
 		}
 		logger.info(LoggerUtils.makeLogString(session, speech));
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();

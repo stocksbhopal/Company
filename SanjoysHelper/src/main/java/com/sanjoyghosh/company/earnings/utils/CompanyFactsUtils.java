@@ -70,6 +70,7 @@ public class CompanyFactsUtils {
 		companyFactsByNameMap.put("gold daddy", companyFactsBySymbolMap.get("GDDY"));
 		companyFactsByNameMap.put("synopsis", companyFactsBySymbolMap.get("SNPS"));
 		companyFactsByNameMap.put("AT and T", companyFactsBySymbolMap.get("T"));
+		companyFactsByNameMap.put("tea", companyFactsBySymbolMap.get("T"));
 	}
 	
 

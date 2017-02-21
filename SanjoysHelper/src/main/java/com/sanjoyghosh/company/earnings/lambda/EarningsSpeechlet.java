@@ -14,6 +14,7 @@ import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.sanjoyghosh.company.earnings.intent.IntentCreateStockList;
 import com.sanjoyghosh.company.earnings.intent.IntentGetStockPrice;
+import com.sanjoyghosh.company.earnings.intent.IntentGetStocksInPortfolio;
 import com.sanjoyghosh.company.earnings.intent.IntentMyStocksMovers;
 import com.sanjoyghosh.company.earnings.intent.IntentMyStocksStatus;
 import com.sanjoyghosh.company.earnings.intent.IntentStopCancel;
@@ -29,10 +30,7 @@ public class EarningsSpeechlet implements Speechlet  {
     static {
     	CompanyFacts cf = CompanyFactsUtils.getCompanyFactsForSymbol("AMZN");
     	
-    	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_CREATE_JP_MORGAN_STOCK_LIST, new IntentCreateStockList());
-    	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_CREATE_MERRILL_LYNCH_STOCK_LIST, new IntentCreateStockList());
-    	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_CREATE_MORGAN_STANLEY_STOCK_LIST, new IntentCreateStockList());
-    	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_CREATE_PERSONAL_STOCK_LIST, new IntentCreateStockList());
+    	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_GET_STOCKS_IN_PORTFOLIO, new IntentGetStocksInPortfolio());
     	
 		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_GET_STOCK_PRICE, new IntentGetStockPrice());
 		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_GET_STOCK_PRICE_SPELL_ONE, new IntentGetStockPrice());
