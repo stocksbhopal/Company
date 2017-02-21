@@ -17,7 +17,6 @@ public class PortfolioItem {
 	@Id()
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
-	@OneToOne
 	@Column
 	private LocalDate createDate;
 	@Column
@@ -25,6 +24,7 @@ public class PortfolioItem {
 	@Column 
 	private double quantity;	// This field has a SQL Default of 0.00.
 
+	@OneToOne
 	@JoinColumn(name="companyId", referencedColumnName="id")
 	private Company company;
 
