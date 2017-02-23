@@ -24,3 +24,5 @@ alexa-skills-kit-java/
 .DS_Store
 
 EarningsLambda/src/META-INF/persistence.xml
+
+Company/sql/Untitled.sql

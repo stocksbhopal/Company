@@ -2,7 +2,9 @@ package com.sanjoyghosh.company.db;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -10,8 +12,12 @@ import javax.persistence.NoResultException;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.db.model.Portfolio;
 import com.sanjoyghosh.company.db.model.PortfolioItem;
+import com.sanjoyghosh.company.earnings.intent.IntentGetMyStocksWithEarnings;
+import com.sanjoyghosh.company.earnings.utils.CompanyFacts;
 
 public class PortfolioJPA {
+
+    private static final Logger logger = Logger.getLogger(PortfolioJPA.class.getPackage().getName());
 
 	public static final String MY_PORTFOLIO_NAME = "MyPortfolio";
 
@@ -79,5 +85,38 @@ public class PortfolioJPA {
     		portfolioItem.setQuantity(quantity + portfolioItem.getQuantity());
     		portfolioItem.setValidateDate(LocalDate.now());
 	    }
+	}
+	
+	
+	@SuppressWarnings("unchecked")
+	public static List<CompanyFacts> fetchCompanyFactsForPortfolioWithEarnings(
+		String portfolioName, String portfolioAlexaUserId, LocalDate startDate, LocalDate endDate) {
+		String sql = 
+			"SELECT DISTINCT c.symbol, c.name " +
+			"FROM Company AS c, Portfolio AS p, PortfolioItem AS pi, EarningsDate AS e " +
+			"WHERE " + 
+				"p.name = :portfolioName AND p.alexaUserId = :portfolioAlexaUserId " +
+				"AND pi.portfolioId = p.id " +
+				"AND pi.companyId = c.id " +
+				"AND c.id = e.companyId " +
+				"AND e.earningsDate >= :startDate AND e.earningsDate <= :endDate " +
+			"ORDER BY c.symbol ASC";
+		try {
+			List<Object[]> list = JPAHelper.getEntityManager().createNativeQuery(sql)
+					.setParameter("portfolioName", portfolioName)
+					.setParameter("portfolioAlexaUserId", portfolioAlexaUserId)
+					.setParameter("startDate", startDate)
+					.setParameter("endDate", endDate)
+					.getResultList();
+			List<CompanyFacts> companyFactsList = new ArrayList<>();
+			for (Object[] item : list) {
+				CompanyFacts companyFacts = new CompanyFacts(item[0].toString(), item[1].toString());
+				companyFactsList.add(companyFacts);
+			}
+			return companyFactsList;
+		}
+		catch (NoResultException e) {
+		}
+		return null;
 	}
 }

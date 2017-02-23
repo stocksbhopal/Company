@@ -13,9 +13,9 @@ import com.sanjoyghosh.company.db.model.Portfolio;
 import com.sanjoyghosh.company.db.model.PortfolioItem;
 import com.sanjoyghosh.company.utils.LoggerUtils;
 
-public class IntentGetStocksInPortfolio implements InterfaceIntent {
+public class IntentGetMyStocks implements InterfaceIntent {
 
-    private static final Logger logger = Logger.getLogger(IntentGetStocksInPortfolio.class.getPackage().getName());
+    private static final Logger logger = Logger.getLogger(IntentGetMyStocks.class.getPackage().getName());
 
     
 	@Override

@@ -12,9 +12,9 @@ import com.amazon.speech.speechlet.Speechlet;
 import com.amazon.speech.speechlet.SpeechletException;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
-import com.sanjoyghosh.company.earnings.intent.IntentCreateStockList;
+import com.sanjoyghosh.company.earnings.intent.IntentGetMyStocks;
+import com.sanjoyghosh.company.earnings.intent.IntentGetMyStocksWithEarnings;
 import com.sanjoyghosh.company.earnings.intent.IntentGetStockPrice;
-import com.sanjoyghosh.company.earnings.intent.IntentGetStocksInPortfolio;
 import com.sanjoyghosh.company.earnings.intent.IntentMyStocksMovers;
 import com.sanjoyghosh.company.earnings.intent.IntentMyStocksStatus;
 import com.sanjoyghosh.company.earnings.intent.IntentStopCancel;
@@ -30,7 +30,8 @@ public class EarningsSpeechlet implements Speechlet  {
     static {
     	CompanyFacts cf = CompanyFactsUtils.getCompanyFactsForSymbol("AMZN");
     	
-    	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_GET_STOCKS_IN_PORTFOLIO, new IntentGetStocksInPortfolio());
+    	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_GET_MY_STOCKS, new IntentGetMyStocks());
+    	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_GET_MY_STOCKS_WITH_EARNINGS, new IntentGetMyStocksWithEarnings());
     	
 		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_GET_STOCK_PRICE, new IntentGetStockPrice());
 		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_GET_STOCK_PRICE_SPELL_ONE, new IntentGetStockPrice());
@@ -66,6 +67,7 @@ public class EarningsSpeechlet implements Speechlet  {
 	@Override
 	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
 		String intentName = request.getIntent().getName();
+		System.out.println("INTENT: " + intentName);
 		if (intentName.equals("AMAZON.YesIntent")) {
 			String lastIntentName = (String) session.getAttribute(InterfaceIntent.ATTR_LAST_INTENT);
 			if (lastIntentName.equals(InterfaceIntent.INTENT_ADD_COMPANY)) {
