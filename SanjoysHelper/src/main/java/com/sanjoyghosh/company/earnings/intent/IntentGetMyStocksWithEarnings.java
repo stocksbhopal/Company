@@ -9,8 +9,8 @@ import com.amazon.speech.speechlet.Session;
 import com.amazon.speech.speechlet.SpeechletException;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
+import com.sanjoyghosh.company.db.PortfolioItemData;
 import com.sanjoyghosh.company.db.PortfolioJPA;
-import com.sanjoyghosh.company.earnings.utils.CompanyFacts;
 import com.sanjoyghosh.company.utils.LoggerUtils;
 
 public class IntentGetMyStocksWithEarnings implements InterfaceIntent {
@@ -21,15 +21,15 @@ public class IntentGetMyStocksWithEarnings implements InterfaceIntent {
 	@Override
 	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
 		String speech = "";
-		List<CompanyFacts> companyFactsList = PortfolioJPA.fetchCompanyFactsForPortfolioWithEarnings(
-			PortfolioJPA.MY_PORTFOLIO_NAME, session.getUser().getUserId(), LocalDate.now().minusDays(4), LocalDate.now());
-		if (companyFactsList == null) {
+		List<PortfolioItemData> portfolioItemDataList = PortfolioJPA.fetchPortfolioItemDataWithEarnings(
+			PortfolioJPA.MY_PORTFOLIO_NAME, session.getUser().getUserId(), LocalDate.now(), LocalDate.now());
+		if (portfolioItemDataList == null) {
 			speech = "Sorry you don't have a stock list";
 		}
 		else {
-			speech = "You have " + companyFactsList.size() + " stocks in your list. They are: ";
-			for (CompanyFacts companyFacts : companyFactsList) {
-				speech += companyFacts.getSpeechName() + ", ";
+			speech = "You have " + portfolioItemDataList.size() + " stocks in your list. They are: ";
+			for (PortfolioItemData portfolioItemData : portfolioItemDataList) {
+				speech += (int)portfolioItemData.getQuantity() + " shares of " + portfolioItemData.getSpeechName() + ", ";
 			}
 		}
 		logger.info(LoggerUtils.makeLogString(session, speech));

@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -12,11 +11,10 @@ import javax.persistence.NoResultException;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.db.model.Portfolio;
 import com.sanjoyghosh.company.db.model.PortfolioItem;
-import com.sanjoyghosh.company.earnings.utils.CompanyFacts;
 
 public class PortfolioJPA {
 
-    private static final Logger logger = Logger.getLogger(PortfolioJPA.class.getPackage().getName());
+//    private static final Logger logger = Logger.getLogger(PortfolioJPA.class.getPackage().getName());
 
 	public static final String MY_PORTFOLIO_NAME = "MyPortfolio";
 
@@ -86,12 +84,13 @@ public class PortfolioJPA {
 	    }
 	}
 	
-	
+	public static final String MY_ALEXA_USER_ID = "amzn1.ask.account.AG3AH7ORTENZGSI5ATVRSNF2V4C2QK6CH3IXLPQMPLAWCCTWZNMGGWOGNVG5E6742XCHBILJRV6IIPQHMBLZ6L7TTTZSBVXRDEC567NDTNJHCJBN5P2JXH3C7XEDD7FSHUGIDIOKG7LTDXPZUU7XGF5VXNDMCKUV7CNL7CI7DVAWKANDCHLHWCJDQYS4VITDDBVTOPJ7FSV2MQQ";
+
 	@SuppressWarnings("unchecked")
-	public static List<CompanyFacts> fetchCompanyFactsForPortfolioWithEarnings(
+	public static List<PortfolioItemData> fetchPortfolioItemDataWithEarnings(
 		String portfolioName, String portfolioAlexaUserId, LocalDate startDate, LocalDate endDate) {
 		String sql = 
-			"SELECT DISTINCT c.symbol, c.speechName " +
+			"SELECT DISTINCT c.speechName, pi.quantity " +
 			"FROM Company AS c, Portfolio AS p, PortfolioItem AS pi, EarningsDate AS e " +
 			"WHERE " + 
 				"p.name = :portfolioName AND p.alexaUserId = :portfolioAlexaUserId " +
@@ -99,7 +98,7 @@ public class PortfolioJPA {
 				"AND pi.companyId = c.id " +
 				"AND c.id = e.companyId " +
 				"AND e.earningsDate >= :startDate AND e.earningsDate <= :endDate " +
-			"ORDER BY c.symbol ASC";
+			"ORDER BY c.speechName ASC";
 		try {
 			List<Object[]> list = JPAHelper.getEntityManager().createNativeQuery(sql)
 					.setParameter("portfolioName", portfolioName)
@@ -107,12 +106,12 @@ public class PortfolioJPA {
 					.setParameter("startDate", startDate)
 					.setParameter("endDate", endDate)
 					.getResultList();
-			List<CompanyFacts> companyFactsList = new ArrayList<>();
+			List<PortfolioItemData> portfolioItemDataList = new ArrayList<>();
 			for (Object[] item : list) {
-				CompanyFacts companyFacts = new CompanyFacts(item[0].toString(), item[1].toString());
-				companyFactsList.add(companyFacts);
+				PortfolioItemData portfolioItemData = new PortfolioItemData(item[0].toString(), (Double)item[1]);
+				portfolioItemDataList.add(portfolioItemData);
 			}
-			return companyFactsList;
+			return portfolioItemDataList;
 		}
 		catch (NoResultException e) {
 		}
