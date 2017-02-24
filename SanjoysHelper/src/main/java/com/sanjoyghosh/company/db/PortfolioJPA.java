@@ -90,7 +90,7 @@ public class PortfolioJPA {
 	public static List<PortfolioItemData> fetchPortfolioItemDataWithEarnings(
 		String portfolioName, String portfolioAlexaUserId, LocalDate startDate, LocalDate endDate) {
 		String sql = 
-			"SELECT DISTINCT c.speechName, pi.quantity " +
+			"SELECT DISTINCT c.symbol, c.speechName, pi.quantity " +
 			"FROM Company AS c, Portfolio AS p, PortfolioItem AS pi, EarningsDate AS e " +
 			"WHERE " + 
 				"p.name = :portfolioName AND p.alexaUserId = :portfolioAlexaUserId " +
@@ -108,7 +108,7 @@ public class PortfolioJPA {
 					.getResultList();
 			List<PortfolioItemData> portfolioItemDataList = new ArrayList<>();
 			for (Object[] item : list) {
-				PortfolioItemData portfolioItemData = new PortfolioItemData(item[0].toString(), (Double)item[1]);
+				PortfolioItemData portfolioItemData = new PortfolioItemData(item[0].toString(), item[1].toString(), (Double)item[2]);
 				portfolioItemDataList.add(portfolioItemData);
 			}
 			return portfolioItemDataList;
