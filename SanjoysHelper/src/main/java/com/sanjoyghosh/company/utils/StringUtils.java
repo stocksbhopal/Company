@@ -303,6 +303,10 @@ public class StringUtils {
 		int length = pieces.length;
 		if (length > 1) {
 			length = (companyTypeSet.contains(pieces[length - 1].trim())) ? length - 1 : length;
+			// Check again for companies like Home Depot, Inc. (The)
+			if (length > 1) {
+				length = (companyTypeSet.contains(pieces[length - 1].trim())) ? length - 1 : length;
+			}
 			name = "";
 			// This skips over tiny first words like El, A, An, etc.
 			for (int i = (pieces[0].length() <= 2 ? 1 : 0); i < length; i++) {

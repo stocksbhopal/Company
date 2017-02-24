@@ -8,7 +8,6 @@ import javax.persistence.EntityManager;
 import com.sanjoyghosh.company.db.CompanyUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.model.Company;
-import com.sanjoyghosh.company.utils.StringUtils;
 
 public class CompanyFactsUtils {
 
@@ -18,10 +17,10 @@ public class CompanyFactsUtils {
 		EntityManager entityManager = JPAHelper.getEntityManager();
 		List<Company> companyList = CompanyUtils.fetchAllCompany(entityManager);
 		for (Company company : companyList) {
-			CompanyFacts cf = new CompanyFacts(company.getSymbol(), company.getName());
+			CompanyFacts cf = new CompanyFacts(company.getSymbol(), company.getSpeechName());
 			companyFactsBySymbolMap.put(company.getSymbol(), cf);
 			
-			String nameLower = StringUtils.stripTrailingCompanyTypeFromName(company.getName()).toLowerCase();
+			String nameLower = company.getSpeechName().toLowerCase();
 			String[] pieces = nameLower.split(" ");
 			for (int i = 0; i < pieces.length; i++) {
 				// Mostly to strip .com from Amazon.com.
@@ -34,7 +33,7 @@ public class CompanyFactsUtils {
 				partialName = partialName.trim();
 				if (companyFactsByNameMap.get(partialName) != null) {
 					System.out.println("ERROR: Duplicate partial company name: " + partialName + " FOR: " + 
-						companyFactsByNameMap.get(partialName).getFullName() + " AND: " + cf.getFullName());
+						companyFactsByNameMap.get(partialName).getSpeechName() + " AND: " + cf.getSpeechName());
 				}
 				else {
 					companyFactsByNameMap.put(partialName, cf);
@@ -87,12 +86,5 @@ public class CompanyFactsUtils {
 			return null;
 		}
 		return companyFactsBySymbolMap.get(symbol.toUpperCase());
-	}
-	
-	
-	public static void main(String[] args) {
-		CompanyFacts cf = getCompanyFactsForSymbol("AMZN");
-		System.out.println(cf.getFullName());
-		System.exit(0);
 	}
 }

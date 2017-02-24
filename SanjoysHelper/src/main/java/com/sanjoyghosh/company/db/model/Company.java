@@ -17,6 +17,8 @@ public class Company {
 	@Column
 	private String name;
 	@Column
+	private String speechName;
+	@Column
 	private Double analystOpinion;
 	@Column
 	private Integer ipoYear;
@@ -241,5 +243,15 @@ public class Company {
 
 	public void setJpmAnalyst(String jpmAnalyst) {
 		this.jpmAnalyst = jpmAnalyst;
+	}
+
+
+	public String getSpeechName() {
+		return speechName;
+	}
+
+
+	public void setSpeechName(String speechName) {
+		this.speechName = speechName;
 	}	
 }

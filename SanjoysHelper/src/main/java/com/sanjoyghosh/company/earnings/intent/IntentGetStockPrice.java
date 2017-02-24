@@ -33,17 +33,17 @@ public class IntentGetStockPrice implements InterfaceIntent {
 					String price = StringUtils.toStringWith2DecimalPlaces(quote.getPrice());
 					String priceChange = StringUtils.toStringWith2DecimalPlaces(quote.getPriceChange());
 					String priceChangePercent = StringUtils.toStringWith2DecimalPlaces(quote.getPriceChangePercent());
-					String text = "Price of " + cf.getFullName() + " is " + price + 
+					String text = "Price of " + cf.getSpeechName() + " is " + price + 
 						", " + (quote.getPriceChange() > 0.00D ? "up " : "down ") + priceChange +
 						", " + (quote.getPriceChange() > 0.00D ? "up " : "down ") + priceChangePercent + " percent";
-					logger.info(LoggerUtils.makeLogString(session, INTENT_GET_STOCK_PRICE + " found company: " + cf.getFullName() + " for user input: " + companyOrSymbol));
+					logger.info(LoggerUtils.makeLogString(session, INTENT_GET_STOCK_PRICE + " found company: " + cf.getSpeechName() + " for user input: " + companyOrSymbol));
 					
 					PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 					outputSpeech.setText(text);
 					return SpeechletResponse.newTellResponse(outputSpeech);
 				}
 				else {
-					error = INTENT_GET_STOCK_PRICE + " found no quote for company named " + cf.getFullName();
+					error = INTENT_GET_STOCK_PRICE + " found no quote for company named " + cf.getSpeechName();
 				}
 			}
 			else {

@@ -1,5 +1,6 @@
 package com.sanjoyghosh.company.db;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,11 @@ public class CompanyJPA {
 		}
 	}
 
+	
+	public static Collection<Company> fetchCompanies() {
+		return companyByIdMap.values();
+	}
+	
 	
 	public static Company fetchCompanyBySymbol(String symbol) {
 		return companyBySymbolMap.get(symbol.trim().toUpperCase());

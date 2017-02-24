@@ -29,7 +29,7 @@ public class IntentGetMyStocksWithEarnings implements InterfaceIntent {
 		else {
 			speech = "You have " + companyFactsList.size() + " stocks in your list. They are: ";
 			for (CompanyFacts companyFacts : companyFactsList) {
-				speech += companyFacts.getFullName() + ", ";
+				speech += companyFacts.getSpeechName() + ", ";
 			}
 		}
 		logger.info(LoggerUtils.makeLogString(session, speech));

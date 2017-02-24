@@ -12,7 +12,6 @@ import javax.persistence.NoResultException;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.db.model.Portfolio;
 import com.sanjoyghosh.company.db.model.PortfolioItem;
-import com.sanjoyghosh.company.earnings.intent.IntentGetMyStocksWithEarnings;
 import com.sanjoyghosh.company.earnings.utils.CompanyFacts;
 
 public class PortfolioJPA {
@@ -92,7 +91,7 @@ public class PortfolioJPA {
 	public static List<CompanyFacts> fetchCompanyFactsForPortfolioWithEarnings(
 		String portfolioName, String portfolioAlexaUserId, LocalDate startDate, LocalDate endDate) {
 		String sql = 
-			"SELECT DISTINCT c.symbol, c.name " +
+			"SELECT DISTINCT c.symbol, c.speechName " +
 			"FROM Company AS c, Portfolio AS p, PortfolioItem AS pi, EarningsDate AS e " +
 			"WHERE " + 
 				"p.name = :portfolioName AND p.alexaUserId = :portfolioAlexaUserId " +
