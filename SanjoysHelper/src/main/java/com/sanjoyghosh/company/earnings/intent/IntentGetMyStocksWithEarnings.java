@@ -10,10 +10,12 @@ import com.amazon.speech.speechlet.Session;
 import com.amazon.speech.speechlet.SpeechletException;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
+import com.amazon.speech.ui.Reprompt;
 import com.sanjoyghosh.company.db.PortfolioItemData;
 import com.sanjoyghosh.company.db.PortfolioJPA;
 import com.sanjoyghosh.company.source.nasdaq.NasdaqRealtimeQuote;
 import com.sanjoyghosh.company.source.nasdaq.NasdaqRealtimeQuoteReader;
+import com.sanjoyghosh.company.utils.LocalDateRange;
 import com.sanjoyghosh.company.utils.LoggerUtils;
 
 public class IntentGetMyStocksWithEarnings implements InterfaceIntent {
@@ -41,11 +43,10 @@ public class IntentGetMyStocksWithEarnings implements InterfaceIntent {
     }
     
     
-	@Override
-	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
+    private SpeechletResponse respondWithEarningsInfo(IntentRequest request, Session session, LocalDateRange dateRange) {
 		String speech = "";
 		List<PortfolioItemData> portfolioItemDataList = PortfolioJPA.fetchPortfolioItemDataWithEarnings(
-			PortfolioJPA.MY_PORTFOLIO_NAME, session.getUser().getUserId(), LocalDate.now(), LocalDate.now());
+			PortfolioJPA.MY_PORTFOLIO_NAME, session.getUser().getUserId(), dateRange.getStartDate(), dateRange.getEndDate());
 		if (portfolioItemDataList == null || portfolioItemDataList.size() == 0) {
 			speech = "Sorry you don't have any stocks with earnings in this period.";
 		}
@@ -68,6 +69,34 @@ public class IntentGetMyStocksWithEarnings implements InterfaceIntent {
 		logger.info(LoggerUtils.makeLogString(session, speech));
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 		outputSpeech.setText(speech);
-		return SpeechletResponse.newTellResponse(outputSpeech);		    	
+		return SpeechletResponse.newTellResponse(outputSpeech);
+    }
+    
+    
+    private SpeechletResponse respondToInvalidTimeFrame(IntentRequest request, Session session) {
+		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
+		outputSpeech.setText("Need a time frame less than 31 days ahead, like today or next week.");
+
+		Reprompt reprompt = new Reprompt();
+		PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
+		repromptSpeech.setText("Sorry, need a time frame less than 31 days ahead, like today or next week.");
+		reprompt.setOutputSpeech(repromptSpeech);
+		
+		logger.info(LoggerUtils.makeLogString(session, request.getIntent().getName() + " user did not provide a proper time frame."));
+		return SpeechletResponse.newAskResponse(outputSpeech, reprompt);	    				    	
+    }
+    
+    
+	@Override
+	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
+		SpeechletResponse response = null;
+		LocalDateRange dateRange = IntentUtils.getValidDateRange(request);
+		if (dateRange == null) {
+			response = respondToInvalidTimeFrame(request, session);
+		}
+		else {
+			response = respondWithEarningsInfo(request, session, dateRange);
+		}
+		return response;
 	}
 }
