@@ -8,22 +8,15 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class DateUtils {
 
-    private static final Logger log = LoggerFactory.getLogger(DateUtils.class);
-
-    
-	private static final Pattern FidelityHoldingsPattern = Pattern.compile(Constants.FidelityHoldingsFileName);
+    private static final Pattern FidelityHoldingsPattern = Pattern.compile(Constants.FidelityHoldingsFileName);
 	private static final SimpleDateFormat FidelityDateFormatter = new SimpleDateFormat("MMM-dd-yyyy");
 	
 	private static final Pattern MerrillLynchHoldingsPattern = Pattern.compile(Constants.MerrillLynchHoldingsFileName);
 	private static final SimpleDateFormat MerrillLynchDateFormatter = new SimpleDateFormat("MMddyyyy");
 	
 	private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-	private static final DateTimeFormatter alexaDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	
 	
 	public static Date getDateFromFidelityHoldingsFileName(String fileName) throws ParseException {
@@ -64,12 +57,5 @@ public class DateUtils {
 	
 	public static String toDateString(LocalDate date) {
 		return date.format(dateFormatter);
-	}
-	
-	
-	public static LocalDate getDateFromAlexa(String alexaDateStr) throws ParseException {
-		LocalDate date = LocalDate.parse(alexaDateStr, alexaDateFormatter);
-		log.info("DateUtils: date: " + date.toString());
-		return date;
 	}
 }
