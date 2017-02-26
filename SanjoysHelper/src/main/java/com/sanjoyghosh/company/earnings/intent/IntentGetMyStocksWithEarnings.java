@@ -1,7 +1,8 @@
 package com.sanjoyghosh.company.earnings.intent;
 
 import java.io.IOException;
-import java.time.LocalDate;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -56,6 +57,12 @@ public class IntentGetMyStocksWithEarnings implements InterfaceIntent {
 			int valueChange = (int)getNetValueChange(portfolioItemDataList);
 			speech += "For a net " + (valueChange >= 0 ? "gain" : "loss") + " of " + valueChange + " dollars. ";
 			
+			Collections.sort(portfolioItemDataList, new Comparator<PortfolioItemData>() {
+				@Override
+				public int compare(PortfolioItemData o1, PortfolioItemData o2) {
+					return -(new Double(o1.getValueChangeDollars()).compareTo(o2.getValueChangeDollars()));
+				}
+			});
 			for (PortfolioItemData portfolioItemData : portfolioItemDataList) {
 				speech += (int)portfolioItemData.getQuantity() + " shares of " + portfolioItemData.getSpeechName() + ", ";
 				if (portfolioItemData.getValueChangeDollars() >= 0.00) {
