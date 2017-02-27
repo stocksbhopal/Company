@@ -21,4 +21,10 @@ public class CompanyFacts {
 	public String getSpeechName() {
 		return speechName;
 	}
+
+
+	@Override
+	public String toString() {
+		return "CompanyFacts [symbol=" + symbol + ", speechName=" + speechName + "]";
+	}
 }

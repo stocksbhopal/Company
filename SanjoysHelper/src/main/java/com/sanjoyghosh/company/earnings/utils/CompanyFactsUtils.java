@@ -13,7 +13,13 @@ public class CompanyFactsUtils {
 
 	private static final HashMap<String, CompanyFacts> companyFactsByNameMap = new HashMap<>();
 	private static final HashMap<String, CompanyFacts> companyFactsBySymbolMap = new HashMap<>();
-	static {		
+	static {
+		loadCompanyNames();
+	}
+	
+	
+	private static void loadCompanyNames() {	
+		int duplicateCount = 0;
 		EntityManager entityManager = JPAHelper.getEntityManager();
 		List<Company> companyList = CompanyUtils.fetchAllCompany(entityManager);
 		for (Company company : companyList) {
@@ -32,12 +38,19 @@ public class CompanyFactsUtils {
 				}
 				partialName = partialName.trim();
 				if (companyFactsByNameMap.get(partialName) != null) {
-					System.out.println("ERROR: Duplicate partial company name: " + partialName + " FOR: " + 
-						companyFactsByNameMap.get(partialName).getSpeechName() + " AND: " + cf.getSpeechName());
+					String symbol = company.getSymbol().toLowerCase();
+					String inNameMapSymbol = companyFactsByNameMap.get(partialName).getSymbol().toLowerCase();
+					if (inNameMapSymbol.startsWith(symbol)) {
+						companyFactsByNameMap.put(partialName, cf);
+					}
+					else if (!symbol.startsWith(inNameMapSymbol)) {
+						duplicateCount++;
+						System.out.println("ERROR: Duplicate partial company name: " + partialName + " FOR: " + 
+							companyFactsByNameMap.get(partialName) + " AND: " + cf);
+					}
 				}
 				else {
 					companyFactsByNameMap.put(partialName, cf);
-					System.out.println(partialName);
 				}
 			}
 		}
@@ -71,6 +84,14 @@ public class CompanyFactsUtils {
 		companyFactsByNameMap.put("AT and T", companyFactsBySymbolMap.get("T"));
 		companyFactsByNameMap.put("tea", companyFactsBySymbolMap.get("T"));
 		companyFactsByNameMap.put("footlocker", companyFactsBySymbolMap.get("FL"));
+		
+		System.out.println("SIZE: " + companyFactsByNameMap.size() + "   " + duplicateCount);
+	}
+	
+	
+	public static void main(String[] args) {
+		loadCompanyNames();
+		System.exit(0);
 	}
 	
 
