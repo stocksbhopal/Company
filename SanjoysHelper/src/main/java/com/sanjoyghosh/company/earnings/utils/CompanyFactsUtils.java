@@ -84,6 +84,8 @@ public class CompanyFactsUtils {
 		companyFactsByNameMap.put("AT and T", companyFactsBySymbolMap.get("T"));
 		companyFactsByNameMap.put("tea", companyFactsBySymbolMap.get("T"));
 		companyFactsByNameMap.put("footlocker", companyFactsBySymbolMap.get("FL"));
+		companyFactsByNameMap.put("Johnson and Johnson", companyFactsBySymbolMap.get("JNJ"));
+		companyFactsByNameMap.put("johnson and johnson", companyFactsBySymbolMap.get("JNJ"));
 		
 		System.out.println("SIZE: " + companyFactsByNameMap.size() + "   " + duplicateCount);
 	}
