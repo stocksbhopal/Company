@@ -31,6 +31,30 @@ public class IntentUtils {
 		return localDateRange;
 	}
 	
+	
+	private static String removeTrailingWord(String name) {
+		if (name == null || name.length() == 0) {
+			return name;
+		}
+		
+		String nameLower = name.toLowerCase().trim();
+		if (nameLower.endsWith("stock")) {
+			return name.substring(0, name.length() - "stock".length()).trim();
+		}
+		if (nameLower.endsWith("stocks")) {
+			return name.substring(0, name.length() - "stocks".length()).trim();
+			
+		}
+		if (nameLower.endsWith("share")) {
+			return name.substring(0, name.length() - "share".length()).trim();
+			
+		}
+		if (nameLower.endsWith("shares")) {
+			return name.substring(0, name.length() - "shares".length()).trim();			
+		}
+		return name;
+	}
+	
 
     public static CompanyOrSymbol getCompanyOrSymbol(IntentRequest request) {
     	String symbol = "";
@@ -80,8 +104,8 @@ public class IntentUtils {
     			symbol = intent.getSlot(InterfaceIntent.SLOT_SPELLING_ONE).getValue().trim().substring(0, 1) + symbol;
     		}
     	}
-    	symbol = symbol == null ? null : symbol.trim();
-    	companyOrSymbol = companyOrSymbol == null ? null : companyOrSymbol.trim();
+    	symbol = symbol == null ? null : removeTrailingWord(symbol.trim());
+    	companyOrSymbol = companyOrSymbol == null ? null : removeTrailingWord(companyOrSymbol.trim());
     	
     	CompanyOrSymbol cos = new CompanyOrSymbol(companyOrSymbol, symbol);
     	return cos;
