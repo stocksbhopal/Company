@@ -15,8 +15,6 @@ public class CompanyNamePrefix {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
 	@Column
-	private String symbol;
-	@Column
 	private String companyNamePrefix;
 	
 	@ManyToOne
@@ -34,16 +32,6 @@ public class CompanyNamePrefix {
 
 	public void setId(int id) {
 		this.id = id;
-	}
-
-
-	public String getSymbol() {
-		return symbol;
-	}
-
-
-	public void setSymbol(String symbol) {
-		this.symbol = symbol;
 	}
 
 

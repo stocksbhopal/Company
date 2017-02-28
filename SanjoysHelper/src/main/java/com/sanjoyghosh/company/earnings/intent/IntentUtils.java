@@ -1,6 +1,8 @@
 package com.sanjoyghosh.company.earnings.intent;
 
 import java.time.LocalDate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.amazon.speech.slu.Intent;
 import com.amazon.speech.slu.Slot;
@@ -10,19 +12,31 @@ import com.sanjoyghosh.company.utils.LocalDateRange;
 
 public class IntentUtils {
 	
+    private static final Logger logger = Logger.getLogger(IntentUtils.class.getPackage().getName());
+
+	private static void logSlotValue(String intentName, String slot, String slotValue) {
+		logger.log(Level.INFO, intentName + " got for slot: " + slot + ", value: " + slotValue);
+	}
+	
+	
 	public static LocalDateRange getValidDateRange(IntentRequest request) {
 		Intent intent = request.getIntent();
 		Slot slot = intent.getSlot(InterfaceIntent.SLOT_DATE);
 		if (slot == null) {
+			logSlotValue(intent.getName(), InterfaceIntent.SLOT_DATE, "NO_VALUE");
 			return null;
 		}
 		String dateStr = slot.getValue();
 		if (dateStr == null || dateStr.trim().length() == 0) {
+			logSlotValue(intent.getName(), InterfaceIntent.SLOT_DATE, "NULL_OR_EMPTY");
 			return null;
 		}
 		
+		logSlotValue(intent.getName(), InterfaceIntent.SLOT_DATE, dateStr);
 		LocalDateRange localDateRange = AlexaDateUtils.getLocalDateRange(dateStr);
-		if (localDateRange.getEndDate().isBefore(LocalDate.now())) {
+		// Alexa Date is local US date, whereas EC2 date is UTC date.
+		// And so Alexa Date can be up to 1 day behind EC2 date.
+		if (localDateRange.getEndDate().isBefore(LocalDate.now().minusDays(1L))) {
 			return null;
 		}
 		if (localDateRange.getEndDate().isAfter(LocalDate.now().plusDays(30))) {

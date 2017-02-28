@@ -67,7 +67,6 @@ public class EarningsSpeechlet implements Speechlet  {
 	@Override
 	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
 		String intentName = request.getIntent().getName();
-		System.out.println("INTENT: " + intentName);
 		if (intentName.equals("AMAZON.YesIntent")) {
 			String lastIntentName = (String) session.getAttribute(InterfaceIntent.ATTR_LAST_INTENT);
 			if (lastIntentName.equals(InterfaceIntent.INTENT_ADD_COMPANY)) {
