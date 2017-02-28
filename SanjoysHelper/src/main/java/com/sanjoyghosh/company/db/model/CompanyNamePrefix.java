@@ -16,6 +16,8 @@ public class CompanyNamePrefix {
 	private int id;
 	@Column
 	private String companyNamePrefix;
+	@Column
+	private boolean manuallyAdded;
 	
 	@ManyToOne
 	@JoinColumn(name="symbol", referencedColumnName="symbol")
@@ -47,5 +49,15 @@ public class CompanyNamePrefix {
 
 	public Company getCompany() {
 		return company;
+	}
+
+
+	public boolean isManuallyAdded() {
+		return manuallyAdded;
+	}
+
+
+	public void setManuallyAdded(boolean manuallyAdded) {
+		this.manuallyAdded = manuallyAdded;
 	}
 }

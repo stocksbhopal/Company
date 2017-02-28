@@ -49,11 +49,11 @@ public class IntentGetMyStocksWithEarnings implements InterfaceIntent {
 		List<PortfolioItemData> portfolioItemDataList = PortfolioJPA.fetchPortfolioItemDataWithEarnings(
 			PortfolioJPA.MY_PORTFOLIO_NAME, session.getUser().getUserId(), dateRange.getStartDate(), dateRange.getEndDate());
 		if (portfolioItemDataList == null || portfolioItemDataList.size() == 0) {
-			speech = "Sorry you don't have any stocks with earnings in this period.";
+			speech = "Sorry you don't have any stocks with earnings " + dateRange.toAlexaString() + ".";
 		}
 		else {
 			int length = portfolioItemDataList.size();
-			speech = "You have " + length + (length == 1 ? " stock " : " stocks ") + "with earnings in your list. ";
+			speech = "You have " + length + (length == 1 ? " stock " : " stocks ") + "with earnings " + dateRange.toAlexaString() + ". ";
 			int valueChange = (int)getNetValueChange(portfolioItemDataList);
 			speech += "For a net " + (valueChange >= 0 ? "gain" : "loss") + " of " + valueChange + " dollars. ";
 			

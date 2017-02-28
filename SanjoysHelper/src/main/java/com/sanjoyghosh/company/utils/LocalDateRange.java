@@ -31,9 +31,10 @@ public class LocalDateRange {
 	}
 
 
-	@Override
-	public String toString() {
-		return "LocalDateRange [startDate=" + startDate + ", endDate=" + endDate + ", numberOfDays=" + numberOfDays
-				+ "]";
+	public String toAlexaString() {
+		if (numberOfDays == 1) {
+			return "on " + DateUtils.toDateString(startDate);
+		}
+		return "between " + DateUtils.toDateString(startDate) + " and " + DateUtils.toDateString(endDate);
 	}
 }

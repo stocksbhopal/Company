@@ -1,6 +1,7 @@
 package com.sanjoyghosh.company.earnings.intent;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,8 +29,10 @@ public class IntentUtils {
 		}
 		String dateStr = slot.getValue();
 		if (dateStr == null || dateStr.trim().length() == 0) {
-			logSlotValue(intent.getName(), InterfaceIntent.SLOT_DATE, "NULL_OR_EMPTY");
-			return null;
+			logSlotValue(intent.getName(), InterfaceIntent.SLOT_DATE, "NULL_OR_EMPTY:SET_TO_TODAY");
+			LocalDate localDate = LocalDate.now(ZoneId.of("America/New_York"));
+			LocalDateRange dateRange = new LocalDateRange(localDate, localDate, 1);
+			return dateRange;
 		}
 		
 		logSlotValue(intent.getName(), InterfaceIntent.SLOT_DATE, dateStr);
