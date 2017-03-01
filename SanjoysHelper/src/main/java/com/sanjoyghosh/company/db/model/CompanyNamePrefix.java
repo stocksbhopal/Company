@@ -60,4 +60,9 @@ public class CompanyNamePrefix {
 	public void setManuallyAdded(boolean manuallyAdded) {
 		this.manuallyAdded = manuallyAdded;
 	}
+
+
+	public void setCompany(Company company) {
+		this.company = company;
+	}
 }

@@ -1,8 +1,6 @@
 package com.sanjoyghosh.company.utils;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class StringUtils {
 
@@ -268,56 +266,7 @@ public class StringUtils {
 		}
 		return valueStr;
 	}
-	
-	
-	private static final Set<String> companyTypeSet = new HashSet<>();
-	static {
-		companyTypeSet.add("Corp.");
-		companyTypeSet.add("Corporation");
-		companyTypeSet.add("inc.");
-		companyTypeSet.add("Inc");
-		companyTypeSet.add("Inc.");
-		companyTypeSet.add("Incorporated");
-		companyTypeSet.add("Limited");
-		companyTypeSet.add("LLC");
-		companyTypeSet.add("Ltd.");
-		companyTypeSet.add("L.P.");
-		companyTypeSet.add("LP");
-		companyTypeSet.add("LP.");
-		companyTypeSet.add("N.P.");
-		companyTypeSet.add("plc");
-		companyTypeSet.add("S.A.");
-		companyTypeSet.add("(The)");
-	}
-
-	public static String stripTrailingCompanyTypeFromName(String name) {
-		if (name == null || name.length() == 0) {
-			return null;
-		}
-		name = name.trim();
-		if (name.startsWith("the")) {
-			name = name.substring("the".length()).trim();
-		}
 		
-		String[] pieces = name.split(" ");
-		int length = pieces.length;
-		if (length > 1) {
-			length = (companyTypeSet.contains(pieces[length - 1].trim())) ? length - 1 : length;
-			// Check again for companies like Home Depot, Inc. (The)
-			if (length > 1) {
-				length = (companyTypeSet.contains(pieces[length - 1].trim())) ? length - 1 : length;
-			}
-			name = "";
-			// This skips over tiny first words like El, A, An, etc.
-			for (int i = (pieces[0].length() <= 2 ? 1 : 0); i < length; i++) {
-				name += pieces[i] + " ";
-			}
-			name = name.trim();
-			name = name.endsWith(",") ? name.substring(0, name.length() - 1) : name;
-		}
-		return name;
-	}
-	
 	
 	public static void main(String[] args) {
 		String str = toStringWith2DecimalPlaces(1.66);
