@@ -36,7 +36,7 @@ public class IntentGetStockPrice implements InterfaceIntent {
 					String text = "Price of " + cf.getSpeechName() + " is " + price + 
 						", " + (quote.getPriceChange() > 0.00D ? "up " : "down ") + priceChange +
 						", " + (quote.getPriceChange() > 0.00D ? "up " : "down ") + priceChangePercent + " percent";
-					logger.info(LoggerUtils.makeLogString(session, INTENT_GET_STOCK_PRICE + " found company: " + cf.getSpeechName() + " for user input: " + companyOrSymbol));
+					logger.info(LoggerUtils.makeLogString(session, INTENT_GET_STOCK_PRICE + " found company:" + cf.getSymbol().toUpperCase() + ", for user input:" + companyOrSymbol));
 					
 					PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 					outputSpeech.setText(text);
@@ -47,7 +47,7 @@ public class IntentGetStockPrice implements InterfaceIntent {
 				}
 			}
 			else {
-				error = INTENT_GET_STOCK_PRICE + " found no company or symbol " + companyOrSymbol;
+				error = INTENT_GET_STOCK_PRICE + " found no company or symbol:" + companyOrSymbol;
 			}
 		}
 		catch (Exception e) {
