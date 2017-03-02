@@ -15,3 +15,5 @@ insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values 
 insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('T', 'tea', 1);
 insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('FL', 'footlocker', 1);
 insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('JNJ', 'johnson and johnson', 1);
+insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('L', 'lose', 1);
+insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('L', 'loaves', 1);

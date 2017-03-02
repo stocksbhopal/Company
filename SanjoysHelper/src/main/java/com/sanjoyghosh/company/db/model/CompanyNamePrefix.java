@@ -1,5 +1,7 @@
 package com.sanjoyghosh.company.db.model;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,8 +11,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 @Entity
-public class CompanyNamePrefix {
+public class CompanyNamePrefix implements Serializable {
 
+	private static final long serialVersionUID = 1754148470648767804L;
+	
 	@Id()
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;

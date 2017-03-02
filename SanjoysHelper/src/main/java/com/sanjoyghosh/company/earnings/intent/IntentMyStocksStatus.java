@@ -10,7 +10,6 @@ import com.amazon.speech.speechlet.SpeechletException;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.sanjoyghosh.company.api.CompanyPrice;
-import com.sanjoyghosh.company.db.CompanyUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
 
 public class IntentMyStocksStatus implements InterfaceIntent {

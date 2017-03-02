@@ -1,6 +1,6 @@
 package com.sanjoyghosh.company.db;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.db.model.CompanyNamePrefix;
@@ -97,7 +98,7 @@ public class CompanyJPA {
 	}
 
 	
-	private static void loadCompanyNamePrefix() {
+	public static void loadCompanyNamePrefix() {
 		EntityManager em = JPAHelper.getEntityManager();
 		em.getTransaction().begin();
 		
@@ -115,32 +116,42 @@ public class CompanyJPA {
 				cnp.setCompanyNamePrefix(namePrefix);
 				cnp.setManuallyAdded(false);
 				em.persist(cnp);
-				System.out.println(namePrefix);
+				System.out.println("Persisted: " + namePrefix);
 			}
 		}
 		
-		System.out.println("BEFORE BEFORE BEFORE");
+		System.out.println("About to Commit");
 		em.getTransaction().commit();
 	}
-	
-	
-	public static void main(String[] args) {
-		loadCompanyNamePrefix();
-		System.exit(0);
+		
+
+	public static List<Company> fetchCompanyListByNamePrefix(String namePrefix) {
+		try {
+			List<CompanyNamePrefix> cnfList = 
+				JPAHelper.getEntityManager().createQuery("SELECT c FROM CompanyNamePrefix AS c WHERE c.companyNamePrefix = :namePrefix", CompanyNamePrefix.class)
+				.setParameter("namePrefix", namePrefix)
+				.getResultList();
+			List<Company> companyList = new ArrayList<>();
+			for (CompanyNamePrefix cnf : cnfList) {
+				companyList.add(cnf.getCompany());
+			}
+			return companyList;
+		}
+		catch (NoResultException e) {
+			return null;
+		}
 	}
-	
-	
-	public static Collection<Company> fetchCompanies() {
-		return companyByIdMap.values();
-	}
-	
+
 	
 	public static Company fetchCompanyBySymbol(String symbol) {
-		return companyBySymbolMap.get(symbol.trim().toUpperCase());
-	}
-
-
-	public static Company fetchCompanyById(int id) {
-		return companyByIdMap.get(id);
+		try {
+			Company company = JPAHelper.getEntityManager().createQuery("SELECT c FROM Company AS c WHERE c.symbol = :symbol", Company.class)
+				.setParameter("symbol", symbol)
+				.getSingleResult();
+			return company;
+		}
+		catch (NoResultException e) {
+			return null;
+		}
 	}
 }

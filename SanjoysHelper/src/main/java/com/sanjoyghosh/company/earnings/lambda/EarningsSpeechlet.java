@@ -21,15 +21,11 @@ import com.sanjoyghosh.company.earnings.intent.IntentStopCancel;
 import com.sanjoyghosh.company.earnings.intent.IntentUpdatePrices;
 import com.sanjoyghosh.company.earnings.intent.InterfaceIntent;
 import com.sanjoyghosh.company.earnings.intent.LaunchSanjoysHelper;
-import com.sanjoyghosh.company.earnings.utils.CompanyFacts;
-import com.sanjoyghosh.company.earnings.utils.CompanyFactsUtils;
 
 public class EarningsSpeechlet implements Speechlet  {
 
     private static final Map<String, InterfaceIntent> intentInterfaceByIntentNameMap = new HashMap<>();
-    static {
-    	CompanyFacts cf = CompanyFactsUtils.getCompanyFactsForSymbol("AMZN");
-    	
+    static {    	
     	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_GET_MY_STOCKS, new IntentGetMyStocks());
     	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_GET_MY_STOCKS_WITH_EARNINGS, new IntentGetMyStocksWithEarnings());
     	

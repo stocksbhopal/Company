@@ -1,5 +1,6 @@
 package com.sanjoyghosh.company.earnings.intent;
 
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -9,8 +10,8 @@ import com.amazon.speech.speechlet.SpeechletException;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.amazon.speech.ui.Reprompt;
-import com.sanjoyghosh.company.earnings.utils.CompanyFacts;
-import com.sanjoyghosh.company.earnings.utils.CompanyFactsUtils;
+import com.sanjoyghosh.company.db.CompanyJPA;
+import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.source.nasdaq.NasdaqRealtimeQuote;
 import com.sanjoyghosh.company.source.nasdaq.NasdaqRealtimeQuoteReader;
 import com.sanjoyghosh.company.utils.LoggerUtils;
@@ -24,26 +25,32 @@ public class IntentGetStockPrice implements InterfaceIntent {
     private SpeechletResponse respondWithPrice(CompanyOrSymbol companyOrSymbol, Session session) {
     	String error = "";
 		try {
-			CompanyFacts cf = CompanyFactsUtils.getCompanyFactsForName(companyOrSymbol.getCompanyOrSymbol());
-			cf = cf != null ? cf : CompanyFactsUtils.getCompanyFactsForSymbol(companyOrSymbol.getCompanyOrSymbol());
-			cf = cf != null ? cf : CompanyFactsUtils.getCompanyFactsForSymbol(companyOrSymbol.getSymbol());
-			if (cf != null) {
-				NasdaqRealtimeQuote quote = NasdaqRealtimeQuoteReader.fetchNasdaqStockSummary(cf.getSymbol());
+			Company company = null;
+			List<Company> companyList = CompanyJPA.fetchCompanyListByNamePrefix(companyOrSymbol.getCompanyOrSymbol());
+			if (companyList.size() > 1) {
+				logger.log(Level.SEVERE, LoggerUtils.makeLogString(session,  INTENT_GET_STOCK_PRICE + "Found mutiple companies for: " + companyOrSymbol.getCompanyOrSymbol()));
+			}
+			company = companyList.size() > 0 ? companyList.get(0) : null;
+			
+			company = company != null ? company : CompanyJPA.fetchCompanyBySymbol(companyOrSymbol.getCompanyOrSymbol());
+			company = company != null ? company : CompanyJPA.fetchCompanyBySymbol(companyOrSymbol.getSymbol());
+			if (company != null) {
+				NasdaqRealtimeQuote quote = NasdaqRealtimeQuoteReader.fetchNasdaqStockSummary(company.getSymbol());
 				if (quote != null) {
 					String price = StringUtils.toStringWith2DecimalPlaces(quote.getPrice());
 					String priceChange = StringUtils.toStringWith2DecimalPlaces(quote.getPriceChange());
 					String priceChangePercent = StringUtils.toStringWith2DecimalPlaces(quote.getPriceChangePercent());
-					String text = "Price of " + cf.getSpeechName() + " is " + price + 
+					String text = "Price of " + company.getSpeechName() + " is " + price + 
 						", " + (quote.getPriceChange() > 0.00D ? "up " : "down ") + priceChange +
 						", " + (quote.getPriceChange() > 0.00D ? "up " : "down ") + priceChangePercent + " percent";
-					logger.info(LoggerUtils.makeLogString(session, INTENT_GET_STOCK_PRICE + " found company:" + cf.getSymbol().toUpperCase() + ", for user input:" + companyOrSymbol));
+					logger.info(LoggerUtils.makeLogString(session, INTENT_GET_STOCK_PRICE + " found company:" + company.getSymbol().toUpperCase() + ", for user input:" + companyOrSymbol));
 					
 					PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 					outputSpeech.setText(text);
 					return SpeechletResponse.newTellResponse(outputSpeech);
 				}
 				else {
-					error = INTENT_GET_STOCK_PRICE + " found no quote for company named " + cf.getSpeechName();
+					error = INTENT_GET_STOCK_PRICE + " found no quote for company named " + company.getSpeechName();
 				}
 			}
 			else {

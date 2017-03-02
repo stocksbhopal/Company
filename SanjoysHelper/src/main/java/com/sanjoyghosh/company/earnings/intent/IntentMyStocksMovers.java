@@ -2,8 +2,6 @@ package com.sanjoyghosh.company.earnings.intent;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,8 +12,6 @@ import com.amazon.speech.speechlet.SpeechletException;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.sanjoyghosh.company.api.CompanyPrice;
-import com.sanjoyghosh.company.db.CompanyUtils;
-import com.sanjoyghosh.company.db.JPAHelper;
 
 public class IntentMyStocksMovers implements InterfaceIntent {
 
