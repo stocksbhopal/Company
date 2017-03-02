@@ -55,6 +55,12 @@ public class IntentUtils {
 		}
 		
 		String nameLower = name.toLowerCase().trim();
+		if (nameLower.endsWith("inc")) {
+			return name.substring(0, name.length() - "inc".length()).trim();
+		}
+		if (nameLower.endsWith("ink")) {
+			return name.substring(0, name.length() - "ink".length()).trim();
+		}
 		if (nameLower.endsWith("stock")) {
 			return name.substring(0, name.length() - "stock".length()).trim();
 		}
