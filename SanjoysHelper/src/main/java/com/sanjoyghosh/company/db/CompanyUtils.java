@@ -15,7 +15,6 @@ import com.sanjoyghosh.company.api.CompanyEarnings;
 import com.sanjoyghosh.company.api.MarketIndexEnum;
 import com.sanjoyghosh.company.db.model.Activity;
 import com.sanjoyghosh.company.db.model.Company;
-import com.sanjoyghosh.company.db.model.DividendHistory;
 import com.sanjoyghosh.company.db.model.EarningsDate;
 import com.sanjoyghosh.company.db.model.Holding;
 import com.sanjoyghosh.company.db.model.PriceHistory;
@@ -128,23 +127,6 @@ public class CompanyUtils {
 	}
 
 
-
-	public static DividendHistory fetchDividendHistoryForSymbolDate(EntityManager entityManager, String symbol, Timestamp dividendDate) {
-		List<DividendHistory> dividendHistoryList = 
-			entityManager.createQuery("SELECT dh FROM DividendHistory AS dh WHERE dh.symbol = :symbol AND dh.dateOfDividend = :dividendDate", DividendHistory.class)
-			.setParameter("symbol", symbol)
-			.setParameter("dividendDate", dividendDate)
-			.getResultList();
-		return dividendHistoryList == null || dividendHistoryList.size() == 0 ? null : dividendHistoryList.get(0);
-	}
-
-	public static List<DividendHistory> fetchDividendHistoryForSymbol(EntityManager entityManager, String symbol) {
-		List<DividendHistory> dividendHistoryList = 
-			entityManager.createQuery("SELECT dh FROM DividendHistory AS dh WHERE dh.symbol = :symbol ORDER BY dh.dateOfDividend DESC", DividendHistory.class)
-			.setParameter("symbol", symbol)
-			.getResultList();
-		return dividendHistoryList;
-	}
 
 
 
