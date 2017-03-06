@@ -1,5 +1,7 @@
 package com.sanjoyghosh.company.earnings.intent;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -10,10 +12,18 @@ import com.amazon.speech.speechlet.SpeechletException;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.amazon.speech.ui.Reprompt;
+import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.logs.AWSLogsAsync;
+import com.amazonaws.services.logs.AWSLogsAsyncClient;
+import com.amazonaws.services.logs.AWSLogsAsyncClientBuilder;
+import com.amazonaws.services.logs.model.InputLogEvent;
+import com.amazonaws.services.logs.model.PutLogEventsRequest;
 import com.sanjoyghosh.company.db.CompanyJPA;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.source.nasdaq.NasdaqRealtimeQuote;
 import com.sanjoyghosh.company.source.nasdaq.NasdaqRealtimeQuoteReader;
+import com.sanjoyghosh.company.utils.CloudWatchLogger;
 import com.sanjoyghosh.company.utils.LoggerUtils;
 import com.sanjoyghosh.company.utils.StringUtils;
 
@@ -44,6 +54,17 @@ public class IntentGetStockPrice implements InterfaceIntent {
 						", " + (quote.getPriceChange() > 0.00D ? "up " : "down ") + priceChange +
 						", " + (quote.getPriceChange() > 0.00D ? "up " : "down ") + priceChangePercent + " percent";
 					logger.info(LoggerUtils.makeLogString(session, INTENT_GET_STOCK_PRICE + " found company:" + company.getSymbol().toUpperCase() + ", for user input:" + companyOrSymbol));
+
+					InputLogEvent logEvent = new InputLogEvent().withMessage(text).withTimestamp(new Date().getTime());
+					List<InputLogEvent> logEventList = new ArrayList<>();
+					logEventList.add(logEvent);
+					
+					PutLogEventsRequest logRequest = new PutLogEventsRequest();
+					logRequest.setLogStreamName("GetStockPrice");
+					logRequest.setLogGroupName("FinanceHelper");
+					logRequest.setLogEvents(logEventList);
+					
+					CloudWatchLogger.getInstance().getCloudWatchLoggerAsync().putLogEvents(logRequest);
 					
 					PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 					outputSpeech.setText(text);

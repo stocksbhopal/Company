@@ -21,6 +21,7 @@ import com.sanjoyghosh.company.earnings.intent.IntentStopCancel;
 import com.sanjoyghosh.company.earnings.intent.IntentUpdatePrices;
 import com.sanjoyghosh.company.earnings.intent.InterfaceIntent;
 import com.sanjoyghosh.company.earnings.intent.LaunchSanjoysHelper;
+import com.sanjoyghosh.company.utils.CloudWatchLogger;
 
 public class EarningsSpeechlet implements Speechlet  {
 
@@ -47,6 +48,11 @@ public class EarningsSpeechlet implements Speechlet  {
 		intentInterfaceByIntentNameMap.put("AMAZON.CancelIntent", new IntentStopCancel());
     }
         
+    
+    public static void init() {
+    	CloudWatchLogger.init();
+    }
+    
 	
     @Override
 	public void onSessionStarted(SessionStartedRequest request, Session session) throws SpeechletException {
