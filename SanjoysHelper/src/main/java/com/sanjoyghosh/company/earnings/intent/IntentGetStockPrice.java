@@ -19,11 +19,11 @@ import com.amazonaws.services.logs.AWSLogsAsyncClient;
 import com.amazonaws.services.logs.AWSLogsAsyncClientBuilder;
 import com.amazonaws.services.logs.model.InputLogEvent;
 import com.amazonaws.services.logs.model.PutLogEventsRequest;
+import com.sanjoyghosh.company.cloudwatch.logs.CloudWatchLogger;
 import com.sanjoyghosh.company.db.CompanyJPA;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.source.nasdaq.NasdaqRealtimeQuote;
 import com.sanjoyghosh.company.source.nasdaq.NasdaqRealtimeQuoteReader;
-import com.sanjoyghosh.company.utils.CloudWatchLogger;
 import com.sanjoyghosh.company.utils.LoggerUtils;
 import com.sanjoyghosh.company.utils.StringUtils;
 
