@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-@JsonPropertyOrder({"K","V"})
+@JsonPropertyOrder({"k","v"})
 public class KeyValuePair {
 
 	private String	key;
@@ -17,25 +17,25 @@ public class KeyValuePair {
 	}
 
 
-	@JsonProperty("K")
+	@JsonProperty("k")
 	public String getKey() {
 		return key;
 	}
 
 
-	@JsonProperty("V")
+	@JsonProperty("v")
 	public String getValue() {
 		return value;
 	}
 
 
-	@JsonProperty("K")
+	@JsonProperty("k")
 	public void setKey(String key) {
 		this.key = key;
 	}
 
 
-	@JsonProperty("V")
+	@JsonProperty("v")
 	public void setValue(String value) {
 		this.value = value;
 	}

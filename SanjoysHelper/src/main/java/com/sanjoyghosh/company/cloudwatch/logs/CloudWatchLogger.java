@@ -58,4 +58,9 @@ public class CloudWatchLogger {
 			logEventListTwo.add(logEvent);
 		}
 	}
+
+
+	public static CloudWatchLogger getInstance() {
+		return instance;
+	}
 }

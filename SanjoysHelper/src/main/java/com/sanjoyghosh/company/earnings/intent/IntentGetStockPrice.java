@@ -12,30 +12,44 @@ import com.amazon.speech.speechlet.SpeechletException;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.amazon.speech.ui.Reprompt;
-import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.logs.AWSLogsAsync;
-import com.amazonaws.services.logs.AWSLogsAsyncClient;
-import com.amazonaws.services.logs.AWSLogsAsyncClientBuilder;
 import com.amazonaws.services.logs.model.InputLogEvent;
 import com.amazonaws.services.logs.model.PutLogEventsRequest;
 import com.sanjoyghosh.company.cloudwatch.logs.CloudWatchLogger;
+import com.sanjoyghosh.company.cloudwatch.logs.CloudWatchLoggerIntentResult;
 import com.sanjoyghosh.company.db.CompanyJPA;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.source.nasdaq.NasdaqRealtimeQuote;
 import com.sanjoyghosh.company.source.nasdaq.NasdaqRealtimeQuoteReader;
+import com.sanjoyghosh.company.utils.KeyValuePair;
 import com.sanjoyghosh.company.utils.LoggerUtils;
 import com.sanjoyghosh.company.utils.StringUtils;
 
 public class IntentGetStockPrice implements InterfaceIntent {
 
+	public static final int RESULT_INCOMPLETE = 1;
+	public static final int RESULT_SUCCESS = 0;
+	public static final int RESULT_ERROR_NO_QUOTE = -1;
+	public static final int RESULT_ERROR_NO_COMPANY = -2;
+	public static final int RESULT_ERROR_EXCEPTION = -3;
+	
+	
     private static final Logger logger = Logger.getLogger(IntentGetStockPrice.class.getPackage().getName());
 
     
-    private SpeechletResponse respondWithPrice(CompanyOrSymbol companyOrSymbol, Session session) {
+    private CloudWatchLoggerIntentResult makeCloudWatchLoggerResult(
+    	String alexaUserId, String intentName, int result, String response, CompanyOrSymbol companyOrSymbol) {
+    	
+    	List<KeyValuePair> inputs = (companyOrSymbol != null) ? companyOrSymbol.toKeyValuePairList() : null;
+    	CloudWatchLoggerIntentResult loggerResult = new CloudWatchLoggerIntentResult(alexaUserId, intentName, result, response, inputs, new Date());
+    	return loggerResult;
+    }
+    
+    
+    private SpeechletResponse respondWithPrice(CompanyOrSymbol companyOrSymbol, IntentRequest request, Session session) {
     	String error = "";
-		try {
-			Company company = null;
+		Company company = null;
+		CloudWatchLoggerIntentResult loggerResult = null;
+		try {			
 			List<Company> companyList = CompanyJPA.fetchCompanyListByNamePrefix(companyOrSymbol.getCompanyOrSymbol());
 			if (companyList.size() > 1) {
 				logger.log(Level.SEVERE, LoggerUtils.makeLogString(session,  INTENT_GET_STOCK_PRICE + "Found mutiple companies for: " + companyOrSymbol.getCompanyOrSymbol()));
@@ -55,30 +69,28 @@ public class IntentGetStockPrice implements InterfaceIntent {
 						", " + (quote.getPriceChange() > 0.00D ? "up " : "down ") + priceChangePercent + " percent";
 					logger.info(LoggerUtils.makeLogString(session, INTENT_GET_STOCK_PRICE + " found company:" + company.getSymbol().toUpperCase() + ", for user input:" + companyOrSymbol));
 
-					InputLogEvent logEvent = new InputLogEvent().withMessage(text).withTimestamp(new Date().getTime());
-					List<InputLogEvent> logEventList = new ArrayList<>();
-					logEventList.add(logEvent);
-					
-					PutLogEventsRequest logRequest = new PutLogEventsRequest();
-					logRequest.setLogStreamName("GetStockPrice");
-					logRequest.setLogGroupName("FinanceHelper");
-					logRequest.setLogEvents(logEventList);
-					
-					CloudWatchLogger.getInstance().getCloudWatchLoggerAsync().putLogEvents(logRequest);
-					
+					loggerResult = makeCloudWatchLoggerResult(
+						session.getUser().getUserId(), request.getIntent().getName(), RESULT_SUCCESS, company.getSymbol(), companyOrSymbol);
+							
 					PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 					outputSpeech.setText(text);
 					return SpeechletResponse.newTellResponse(outputSpeech);
 				}
 				else {
+					loggerResult = makeCloudWatchLoggerResult(
+						session.getUser().getUserId(), request.getIntent().getName(), RESULT_ERROR_NO_QUOTE, company.getSymbol(), companyOrSymbol);
 					error = INTENT_GET_STOCK_PRICE + " found no quote for company named " + company.getSpeechName();
 				}
 			}
 			else {
+				loggerResult = makeCloudWatchLoggerResult(
+					session.getUser().getUserId(), request.getIntent().getName(), RESULT_ERROR_NO_COMPANY, null, companyOrSymbol);
 				error = INTENT_GET_STOCK_PRICE + " found no company or symbol:" + companyOrSymbol;
 			}
 		}
 		catch (Exception e) {
+			loggerResult = makeCloudWatchLoggerResult(
+				session.getUser().getUserId(), request.getIntent().getName(), RESULT_ERROR_EXCEPTION, (company == null ? null : company.getSymbol()), companyOrSymbol);
 			logger.log(Level.SEVERE, LoggerUtils.makeLogString(session, INTENT_GET_STOCK_PRICE + " exception in respondWithPrice()"), e);
 		}
 		
@@ -89,7 +101,7 @@ public class IntentGetStockPrice implements InterfaceIntent {
     }
     
 
-	private SpeechletResponse respondWithQuestion(Session session) {
+	private SpeechletResponse respondWithQuestion(IntentRequest request, Session session) {
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 		outputSpeech.setText("Price of what company?  Tell me the name or symbol.");
 
@@ -97,7 +109,10 @@ public class IntentGetStockPrice implements InterfaceIntent {
 		PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
 		repromptSpeech.setText("Sorry, need the name or symbol to get the price.");
 		reprompt.setOutputSpeech(repromptSpeech);
-		
+	   	
+		CloudWatchLoggerIntentResult loggerResult = new CloudWatchLoggerIntentResult(
+			session.getUser().getUserId(), request.getIntent().getName(), RESULT_INCOMPLETE, null, null, new Date());
+	    
 		logger.info(LoggerUtils.makeLogString(session, INTENT_GET_STOCK_PRICE + " user did not provide name of company."));
 		return SpeechletResponse.newAskResponse(outputSpeech, reprompt);	    	
 	}
@@ -107,10 +122,10 @@ public class IntentGetStockPrice implements InterfaceIntent {
 	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
 		CompanyOrSymbol companyOrSymbol = IntentUtils.getCompanyOrSymbol(request);		
 		if (companyOrSymbol == null || companyOrSymbol.isEmpty()) {
-			return respondWithQuestion(session);
+			return respondWithQuestion(request, session);
 		}
 		else {
-			return respondWithPrice(companyOrSymbol, session);
+			return respondWithPrice(companyOrSymbol, request, session);
 		}
 	}
 }

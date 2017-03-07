@@ -15,21 +15,21 @@ import com.sanjoyghosh.company.utils.KeyValuePair;
 public class CloudWatchLoggerIntentResult {
 
 	private String				alexaUserId;
-	private String				intentName;
-	private int					intentResult;
-	private String				intentResponse;
-	private List<KeyValuePair>	intentSlots;
+	private String				name;
+	private int					result;
+	private String				response;
+	private List<KeyValuePair>	inputs;
 	private long				timestamp;
 	
 	
-	public CloudWatchLoggerIntentResult(String alexaUserId, String intentName, int intentResult, 
-		String intentResponse, List<KeyValuePair> intentSlots, Date timestamp) {
+	public CloudWatchLoggerIntentResult(String alexaUserId, String name, int result, 
+		String response, List<KeyValuePair> inputs, Date timestamp) {
 
 		this.alexaUserId = alexaUserId;
-		this.intentName = intentName;
-		this.intentResult = intentResult;
-		this.intentResponse = intentResponse;
-		this.intentSlots = intentSlots;
+		this.name = name;
+		this.result = result;
+		this.response = response;
+		this.inputs = inputs;
 		this.timestamp = timestamp.getTime();
 	}
 	
@@ -62,51 +62,51 @@ public class CloudWatchLoggerIntentResult {
 	}
 
 
-	@JsonProperty("in")
-	public String getIntentName() {
-		return intentName;
+	@JsonProperty("n")
+	public String getName() {
+		return name;
 	}
 
 
-	@JsonProperty("in")
-	public void setIntentName(String intentName) {
-		this.intentName = intentName;
+	@JsonProperty("n")
+	public void setName(String name) {
+		this.name = name;
 	}
 
 
-	@JsonProperty("irt")
-	public int getIntentResult() {
-		return intentResult;
+	@JsonProperty("rt")
+	public int getResult() {
+		return result;
 	}
 
 
-	@JsonProperty("irt")
-	public void setIntentResult(int intentResult) {
-		this.intentResult = intentResult;
+	@JsonProperty("rt")
+	public void setResult(int result) {
+		this.result = result;
 	}
 
 
-	@JsonProperty("irp")
-	public String getIntentResponse() {
-		return intentResponse;
+	@JsonProperty("rp")
+	public String getResponse() {
+		return response;
 	}
 
 
-	@JsonProperty("irp")
-	public void setIntentResponse(String intentResponse) {
-		this.intentResponse = intentResponse;
+	@JsonProperty("rp")
+	public void setResponse(String response) {
+		this.response = response;
 	}
 
 
-	@JsonProperty("irs")
-	public List<KeyValuePair> getIntentSlots() {
-		return intentSlots;
+	@JsonProperty("i")
+	public List<KeyValuePair> getInputs() {
+		return inputs;
 	}
 
 
-	@JsonProperty("irs")
-	public void setIntentSlots(List<KeyValuePair> intentSlots) {
-		this.intentSlots = intentSlots;
+	@JsonProperty("i")
+	public void setInputs(List<KeyValuePair> inputs) {
+		this.inputs = inputs;
 	}
 
 

@@ -1,5 +1,10 @@
 package com.sanjoyghosh.company.earnings.intent;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.sanjoyghosh.company.utils.KeyValuePair;
+
 public class CompanyOrSymbol {
 
 	private String companyOrSymbol;		// Prefix of the name of the company or the ticker symbol.
@@ -26,6 +31,20 @@ public class CompanyOrSymbol {
 		return (companyOrSymbol == null || companyOrSymbol.length() == 0) && (symbol == null || symbol.length() == 0);
 	}
 
+	
+	public List<KeyValuePair> toKeyValuePairList() {
+		List<KeyValuePair> kvList = new ArrayList<>();
+		if (companyOrSymbol != null) {
+			KeyValuePair pair = new KeyValuePair("companyOrSymbol", companyOrSymbol);
+			kvList.add(pair);
+		}
+		if (symbol != null) {
+			KeyValuePair pair = new KeyValuePair("symbol", symbol);
+			kvList.add(pair);
+		}
+		return kvList;
+	}
+	
 
 	@Override
 	public String toString() {
