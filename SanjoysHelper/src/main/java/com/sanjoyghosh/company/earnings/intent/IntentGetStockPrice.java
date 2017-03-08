@@ -1,6 +1,5 @@
 package com.sanjoyghosh.company.earnings.intent;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -12,8 +11,6 @@ import com.amazon.speech.speechlet.SpeechletException;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.amazon.speech.ui.Reprompt;
-import com.amazonaws.services.logs.model.InputLogEvent;
-import com.amazonaws.services.logs.model.PutLogEventsRequest;
 import com.sanjoyghosh.company.cloudwatch.logs.CloudWatchLogger;
 import com.sanjoyghosh.company.cloudwatch.logs.CloudWatchLoggerIntentResult;
 import com.sanjoyghosh.company.db.CompanyJPA;
@@ -71,6 +68,7 @@ public class IntentGetStockPrice implements InterfaceIntent {
 
 					loggerResult = makeCloudWatchLoggerResult(
 						session.getUser().getUserId(), request.getIntent().getName(), RESULT_SUCCESS, company.getSymbol(), companyOrSymbol);
+					CloudWatchLogger.getInstance().addLogEvent(loggerResult);
 							
 					PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 					outputSpeech.setText(text);
@@ -94,6 +92,7 @@ public class IntentGetStockPrice implements InterfaceIntent {
 			logger.log(Level.SEVERE, LoggerUtils.makeLogString(session, INTENT_GET_STOCK_PRICE + " exception in respondWithPrice()"), e);
 		}
 		
+		CloudWatchLogger.getInstance().addLogEvent(loggerResult);
 		logger.info(LoggerUtils.makeLogString(session, error));
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 		outputSpeech.setText(error);
@@ -112,7 +111,8 @@ public class IntentGetStockPrice implements InterfaceIntent {
 	   	
 		CloudWatchLoggerIntentResult loggerResult = new CloudWatchLoggerIntentResult(
 			session.getUser().getUserId(), request.getIntent().getName(), RESULT_INCOMPLETE, null, null, new Date());
-	    
+		CloudWatchLogger.getInstance().addLogEvent(loggerResult);
+
 		logger.info(LoggerUtils.makeLogString(session, INTENT_GET_STOCK_PRICE + " user did not provide name of company."));
 		return SpeechletResponse.newAskResponse(outputSpeech, reprompt);	    	
 	}
