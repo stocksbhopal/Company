@@ -18,3 +18,6 @@ insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values 
 insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('L', 'lose', 1);
 insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('L', 'loaves', 1);
 insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('AMZN', 'amazon', 1);
+insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('GOOG', 'google', 1);
+insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('HON', 'honey well', 1);
+
