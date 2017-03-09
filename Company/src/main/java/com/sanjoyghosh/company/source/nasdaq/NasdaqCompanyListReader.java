@@ -32,11 +32,8 @@ public class NasdaqCompanyListReader {
 				if ((symbol.indexOf('^') >= 0) || (symbol.indexOf('.') >= 0)) {
 					continue;
 				}
+
 				String sector = record.get("Sector").trim();
-				if (sector.startsWith("n/a")) {
-					continue;
-				}
-				
 				String name = record.get("Name").trim();
 				String ipoYearStr = record.get("IPOyear").trim();
 				String industry = record.get("industry").trim();
