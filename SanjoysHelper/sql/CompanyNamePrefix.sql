@@ -1,3 +1,7 @@
+insert into Company (symbol, name, ipoyear, industry, sector, exchange, marketcap, marketcapbm)
+select symbol, name, ipoyear, industry, sector, exchange, marketcap, marketcapbm from CompanyStage where symbol not in (select symbol from Company);
+commit;
+
 insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('HAL', 'haliburton', 1);
 insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('NOW', 'service now', 1);
 insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('X', 'us steel', 1);
@@ -20,4 +24,6 @@ insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values 
 insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('AMZN', 'amazon', 1);
 insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('GOOG', 'google', 1);
 insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('HON', 'honey well', 1);
+
+update CompanyNamePrefix set symbol = 'SNAP' where companyNamePrefix = 'snap';
 

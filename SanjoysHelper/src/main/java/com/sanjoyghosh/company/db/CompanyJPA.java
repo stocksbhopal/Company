@@ -124,7 +124,12 @@ public class CompanyJPA {
 		em.getTransaction().commit();
 	}
 		
+	
+	public static void main(String[] args) {
+		CompanyJPA.loadCompanyNamePrefix();
+	}
 
+	
 	public static List<Company> fetchCompanyListByNamePrefix(String namePrefix) {
 		try {
 			List<CompanyNamePrefix> cnfList = 
