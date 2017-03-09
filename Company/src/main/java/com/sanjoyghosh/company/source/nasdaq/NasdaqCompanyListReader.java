@@ -4,21 +4,18 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Map;
 
 import javax.persistence.EntityManager;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 
-import com.sanjoyghosh.company.db.CompanyUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
-import com.sanjoyghosh.company.db.model.Company;
+import com.sanjoyghosh.company.db.model.CompanyStage;
 
 public class NasdaqCompanyListReader {
 
 	private EntityManager entityManager;
-	private Map<String, Company> companyBySymbolMap;
 	
 	
 	public NasdaqCompanyListReader() {}
@@ -35,9 +32,6 @@ public class NasdaqCompanyListReader {
 				if ((symbol.indexOf('^') >= 0) || (symbol.indexOf('.') >= 0)) {
 					continue;
 				}
-				if (companyBySymbolMap.containsKey(symbol)) {
-					continue;
-				}
 				String sector = record.get("Sector").trim();
 				if (sector.startsWith("n/a")) {
 					continue;
@@ -45,9 +39,9 @@ public class NasdaqCompanyListReader {
 				
 				String name = record.get("Name").trim();
 				String ipoYearStr = record.get("IPOyear").trim();
-				String industry = record.get("Industry").trim();
+				String industry = record.get("industry").trim();
 				
-				Company company = new Company();
+				CompanyStage company = new CompanyStage();
 				company.setExchange(exchange);
 				company.setIndustry(industry);
 				company.setIpoYear(ipoYearStr.startsWith("n/a") ? null : Integer.parseInt(ipoYearStr));
@@ -56,7 +50,6 @@ public class NasdaqCompanyListReader {
 				company.setSymbol(symbol);
 				
 				entityManager.persist(company);
-				companyBySymbolMap.put(symbol, company);
 				
 				count++;
 				System.out.println("Done " + symbol + ", " + count + " of " + exchange);
@@ -68,7 +61,6 @@ public class NasdaqCompanyListReader {
 					reader.close();
 				} 
 				catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -78,7 +70,6 @@ public class NasdaqCompanyListReader {
 	
 	private void readAllCompanyListFiles() {
 		entityManager = JPAHelper.getEntityManager();
-		companyBySymbolMap = CompanyUtils.fetchAllCompanyBySymbolMap(entityManager);
 		
 		File nasdaqCompanyListFile = new File("/Users/sanjoyghosh/Downloads/nasdaqcompanylist.csv");
 		if (nasdaqCompanyListFile.exists()) {
@@ -88,7 +79,6 @@ public class NasdaqCompanyListReader {
 				entityManager.getTransaction().commit();
 			} 
 			catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				entityManager.getTransaction().rollback();
 			}
@@ -102,7 +92,6 @@ public class NasdaqCompanyListReader {
 				entityManager.getTransaction().commit();
 			} 
 			catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				entityManager.getTransaction().rollback();
 			}
@@ -111,8 +100,13 @@ public class NasdaqCompanyListReader {
 	
 	
 	public static void main(String[] args) {
-		NasdaqCompanyListReader reader = new NasdaqCompanyListReader();
-		reader.readAllCompanyListFiles();
+		try {
+			NasdaqCompanyListReader reader = new NasdaqCompanyListReader();
+			reader.readAllCompanyListFiles();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 		System.exit(0);
 	}
 }
