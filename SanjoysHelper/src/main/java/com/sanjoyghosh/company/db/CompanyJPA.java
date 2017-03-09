@@ -98,6 +98,20 @@ public class CompanyJPA {
 	}
 
 	
+	public static void loadSpeechName() {
+		EntityManager em = JPAHelper.getEntityManager();
+		
+		List<Company> companyList = em.createQuery("SELECT c FROM Company AS c ORDER BY c.symbol ASC", Company.class).getResultList();
+		for (Company company : companyList) {
+			em.getTransaction().begin();
+			String name = stripTrailingCompanyTypeFromName(company.getName());
+			company.setSpeechName(name);
+			em.persist(company);
+			em.getTransaction().commit();
+		}
+	}
+
+	
 	public static void loadCompanyNamePrefix() {
 		EntityManager em = JPAHelper.getEntityManager();
 		em.getTransaction().begin();
@@ -127,6 +141,8 @@ public class CompanyJPA {
 	
 	public static void main(String[] args) {
 		CompanyJPA.loadCompanyNamePrefix();
+		CompanyJPA.loadSpeechName();
+		System.exit(0);
 	}
 
 	
