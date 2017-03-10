@@ -22,7 +22,7 @@ public class CloudWatchLogger {
 	private static final String STREAM_NAME_PREFIX = "IntentResult-";
 	private static final CloudWatchLogger instance = new CloudWatchLogger(GROUP_NAME);
 	
-    private static final Logger logger = Logger.getLogger(CloudWatchLogger.class.getPackage().getName());
+    private static final Logger logger = Logger.getLogger(CloudWatchLogger.class.getName());
 	
 	
 	private AWSLogs				cloudWatchLogger;

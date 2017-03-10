@@ -15,7 +15,7 @@ import com.sanjoyghosh.company.utils.LoggerUtils;
 
 public class IntentGetMyStocks implements InterfaceIntent {
 
-    private static final Logger logger = Logger.getLogger(IntentGetMyStocks.class.getPackage().getName());
+    private static final Logger logger = Logger.getLogger(IntentGetMyStocks.class.getName());
 
     
 	@Override

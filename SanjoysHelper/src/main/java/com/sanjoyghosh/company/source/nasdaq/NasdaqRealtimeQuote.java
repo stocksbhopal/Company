@@ -2,6 +2,7 @@ package com.sanjoyghosh.company.source.nasdaq;
 
 public class NasdaqRealtimeQuote {
 
+	private String	symbol;
 	private Double	price;
 	private Double	priceChange;
 	private Double	priceChangePercent;
@@ -91,5 +92,11 @@ public class NasdaqRealtimeQuote {
 				+ priceChangePercent + ", previousClose=" + previousClose + ", volumeToday=" + volumeToday
 				+ ", lowToday=" + lowToday + ", highToday=" + highToday + ", low52Week=" + low52Week + ", high52Week="
 				+ high52Week + "]";
+	}
+	public String getSymbol() {
+		return symbol;
+	}
+	public void setSymbol(String symbol) {
+		this.symbol = symbol;
 	}
 }

@@ -14,7 +14,7 @@ import com.sanjoyghosh.company.db.model.PortfolioItem;
 
 public class PortfolioJPA {
 
-//    private static final Logger logger = Logger.getLogger(PortfolioJPA.class.getPackage().getName());
+//    private static final Logger logger = Logger.getLogger(PortfolioJPA.class.getName());
 
 	public static final String MY_PORTFOLIO_NAME = "MyPortfolio";
 

@@ -13,7 +13,7 @@ import com.sanjoyghosh.company.utils.LocalDateRange;
 
 public class IntentUtils {
 	
-    private static final Logger logger = Logger.getLogger(IntentUtils.class.getPackage().getName());
+    private static final Logger logger = Logger.getLogger(IntentUtils.class.getName());
 
 	private static void logSlotValue(String intentName, String slot, String slotValue) {
 		logger.log(Level.INFO, intentName + " got for slot: " + slot + ", value: " + slotValue);

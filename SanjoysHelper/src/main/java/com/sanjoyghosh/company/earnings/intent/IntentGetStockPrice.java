@@ -30,7 +30,7 @@ public class IntentGetStockPrice implements InterfaceIntent {
 	public static final int RESULT_ERROR_EXCEPTION = -3;
 	
 	
-    private static final Logger logger = Logger.getLogger(IntentGetStockPrice.class.getPackage().getName());
+    private static final Logger logger = Logger.getLogger(IntentGetStockPrice.class.getName());
 
     
     private CloudWatchLoggerIntentResult makeCloudWatchLoggerResult(

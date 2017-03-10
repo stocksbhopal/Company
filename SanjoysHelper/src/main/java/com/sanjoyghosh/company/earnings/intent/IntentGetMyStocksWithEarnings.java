@@ -21,7 +21,7 @@ import com.sanjoyghosh.company.utils.LoggerUtils;
 
 public class IntentGetMyStocksWithEarnings implements InterfaceIntent {
 
-    private static final Logger logger = Logger.getLogger(IntentGetMyStocksWithEarnings.class.getPackage().getName());
+    private static final Logger logger = Logger.getLogger(IntentGetMyStocksWithEarnings.class.getName());
 
     
     private double getNetValueChange(List<PortfolioItemData> portfolioItemDataList) {

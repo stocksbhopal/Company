@@ -53,20 +53,10 @@ public class NasdaqRealtimeQuoteReader {
 		
 		NasdaqRealtimeQuote nrq = new NasdaqRealtimeQuote();
 		nrq.setPrice(price);
+		nrq.setSymbol(symbol);
 		nrq.setPriceChange(isUp ? priceChange : -priceChange);
 		nrq.setPriceChangePercent(isUp ? priceChangePercent : -priceChangePercent);
 
 		return nrq;
-	}
-	
-	
-	public static void main(String[] args) {
-		try {
-			NasdaqRealtimeQuote nrq = NasdaqRealtimeQuoteReader.fetchNasdaqStockSummary("armh");
-			System.out.println(nrq);
-		} 
-		catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 }
