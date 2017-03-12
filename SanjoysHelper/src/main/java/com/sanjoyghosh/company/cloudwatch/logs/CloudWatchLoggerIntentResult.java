@@ -11,14 +11,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanjoyghosh.company.utils.KeyValuePair;
 
 
-@JsonPropertyOrder({"uid","in","irt","irp","irs","ts"})
+@JsonPropertyOrder({"n","rt","rp","i","u","t"})
 public class CloudWatchLoggerIntentResult {
 
-	private String				alexaUserId;
 	private String				name;
 	private int					result;
 	private String				response;
 	private List<KeyValuePair>	inputs;
+	private String				alexaUserId;
 	private long				timestamp;
 	
 	
@@ -50,13 +50,13 @@ public class CloudWatchLoggerIntentResult {
 	}
 
 
-	@JsonProperty("uid")
+	@JsonProperty("u")
 	public String getAlexaUserId() {
 		return alexaUserId;
 	}
 
 
-	@JsonProperty("uid")
+	@JsonProperty("u")
 	public void setAlexaUserId(String alexaUserId) {
 		this.alexaUserId = alexaUserId;
 	}
@@ -110,13 +110,13 @@ public class CloudWatchLoggerIntentResult {
 	}
 
 
-	@JsonProperty("ts")
+	@JsonProperty("t")
 	public long getTimestamp() {
 		return timestamp;
 	}
 
 
-	@JsonProperty("ts")
+	@JsonProperty("t")
 	public void setTimestamp(long timestamp) {
 		this.timestamp = timestamp;
 	}

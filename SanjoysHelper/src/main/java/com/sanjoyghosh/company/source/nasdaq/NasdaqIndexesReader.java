@@ -46,7 +46,7 @@ public class NasdaqIndexesReader {
 
 				Elements spans = div.select("span");
 				String index = spans.get(0).text().trim();
-				int value = (int)Math.round(Double.parseDouble(spans.get(1).text().trim()));
+				double value = Double.parseDouble(spans.get(1).text().trim());
 				
 				div = div.nextElementSibling();
 				spans = div.select("span");
@@ -55,20 +55,19 @@ public class NasdaqIndexesReader {
 				String changePercentStr = spans.get(1).text().trim();
 				double changePercent = changeFactor * Double.parseDouble(changePercentStr.substring(2, changePercentStr.length() - 1));
 				
+				NasdaqRealtimeQuote quote = new NasdaqRealtimeQuote();
+				quote.setPrice(value);
+				quote.setPriceChange(change);
+				quote.setPriceChangePercent(changePercent);
+
 				if (index.equals("NASDAQ")) {
-					nasdaqIndexes.setIxic(value);
-					nasdaqIndexes.setIxicChange(change);
-					nasdaqIndexes.setIxicChangePercent(changePercent);
+					nasdaqIndexes.setIxicQuote(quote);
 				}
 				else if (index.equals("DJIA")) {
-					nasdaqIndexes.setDjia(value);
-					nasdaqIndexes.setDjiaChange(change);
-					nasdaqIndexes.setDjiaChangePercent(changePercent);					
+					nasdaqIndexes.setDjiaQuote(quote);
 				}
 				else if (index.equals("S&P")) {
-					nasdaqIndexes.setGspc(value);
-					nasdaqIndexes.setGspcChange(change);
-					nasdaqIndexes.setGspcChangePercent(changePercent);
+					nasdaqIndexes.setIxicQuote(quote);
 				}
 			}
 		} 

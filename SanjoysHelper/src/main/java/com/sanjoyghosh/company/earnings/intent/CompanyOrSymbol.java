@@ -3,6 +3,7 @@ package com.sanjoyghosh.company.earnings.intent;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sanjoyghosh.company.utils.KeyValuePair;
 
 public class CompanyOrSymbol {
@@ -17,14 +18,27 @@ public class CompanyOrSymbol {
 	}
 
 
+	@JsonProperty("cos")
 	public String getCompanyOrSymbol() {
 		return companyOrSymbol;
 	}
 
+	@JsonProperty("cos")
+	public void setCompanyOrSymbol(String companyOrSymbol) {
+		this.companyOrSymbol = companyOrSymbol;
+	}
 
+
+	@JsonProperty("s")
 	public String getSymbol() {
 		return symbol;
 	}
+
+	@JsonProperty("s")
+	public void setSymbol(String symbol) {
+		this.symbol = symbol;
+	}
+
 	
 	
 	public boolean isEmpty() {
@@ -35,11 +49,11 @@ public class CompanyOrSymbol {
 	public List<KeyValuePair> toKeyValuePairList() {
 		List<KeyValuePair> kvList = new ArrayList<>();
 		if (companyOrSymbol != null) {
-			KeyValuePair pair = new KeyValuePair("companyOrSymbol", companyOrSymbol);
+			KeyValuePair pair = new KeyValuePair("cos", companyOrSymbol);
 			kvList.add(pair);
 		}
 		if (symbol != null) {
-			KeyValuePair pair = new KeyValuePair("symbol", symbol);
+			KeyValuePair pair = new KeyValuePair("s", symbol);
 			kvList.add(pair);
 		}
 		return kvList;

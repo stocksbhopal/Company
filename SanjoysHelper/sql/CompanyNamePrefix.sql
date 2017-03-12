@@ -2,6 +2,24 @@ insert into Company (symbol, name, ipoyear, industry, sector, exchange, marketca
 select symbol, name, ipoyear, industry, sector, exchange, marketcap, marketcapbm from CompanyStage where symbol not in (select symbol from Company);
 commit;
 
+insert into Company (symbol, name, speechname, industry, sector, exchange) values ('DJIA', 'Dow Jones Industrial Average', 'the dow jones industrial average', 'n/a', 'n/a', 'n/a');
+insert into Company (symbol, name, speechname, industry, sector, exchange) values ('IXIC', 'NASDAQ Composite', 'nasdaq composite', 'n/a', 'n/a', 'n/a');
+insert into Company (symbol, name, speechname, industry, sector, exchange) values ('GSPC', 'S&P 500', 's and p 500', 'n/a', 'n/a', 'n/a');
+
+
+insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('DJIA', 'the dow', 1);
+insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('DJIA', 'the dow jones', 1);
+insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('DJIA', 'the dow jones industrial average', 1);
+insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('DJIA', 'dow jones', 1);
+insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('DJIA', 'dow jones industrial average', 1);
+insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('IXIC', 'the nasdaq', 1);
+insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('IXIC', 'the nasdaq composite', 1);
+insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('IXIC', 'nasdaq', 1);
+insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('IXIC', 'nasdaq composite', 1);
+insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('GSPC', 'the s and p', 1);
+insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('GSPC', 'the s and p 500', 1);
+insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('GSPC', 's and p', 1);
+insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('GSPC', 's and p 500', 1);
 insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('HAL', 'haliburton', 1);
 insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('NOW', 'service now', 1);
 insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('X', 'us steel', 1);
@@ -24,6 +42,7 @@ insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values 
 insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('AMZN', 'amazon', 1);
 insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('GOOG', 'google', 1);
 insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('HON', 'honey well', 1);
+insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('SWKS', 'sky works', 1);
 
 update CompanyNamePrefix set symbol = 'SNAP' where companyNamePrefix = 'snap';
 
