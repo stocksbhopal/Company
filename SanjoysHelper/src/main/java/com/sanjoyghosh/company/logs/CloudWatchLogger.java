@@ -97,7 +97,6 @@ public class CloudWatchLogger {
 			List<InputLogEvent> logEventList = new ArrayList<>();
 			JPAHelper.getEntityManagerLogs().getTransaction().begin();
 			try {
-				logEventList = new ArrayList<>();
 				for (CloudWatchLoggerIntentResult intentResult : intentResultList) {
 					IntentResultLog intentResultLog = intentResult.toIntentResultLog();
 					JPAHelper.getEntityManagerLogs().persist(intentResultLog);

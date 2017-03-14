@@ -43,6 +43,7 @@ insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values 
 insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('GOOG', 'google', 1);
 insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('HON', 'honey well', 1);
 insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('SWKS', 'sky works', 1);
+insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('MBLY', 'mobile i', 1);
 
 update CompanyNamePrefix set symbol = 'SNAP' where companyNamePrefix = 'snap';
 insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('SNAP', 'snapchat', 1);
