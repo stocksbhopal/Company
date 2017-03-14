@@ -12,7 +12,6 @@ import com.amazon.speech.speechlet.Speechlet;
 import com.amazon.speech.speechlet.SpeechletException;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
-import com.sanjoyghosh.company.cloudwatch.logs.CloudWatchLogger;
 import com.sanjoyghosh.company.earnings.intent.IntentGetMyStocks;
 import com.sanjoyghosh.company.earnings.intent.IntentGetMyStocksWithEarnings;
 import com.sanjoyghosh.company.earnings.intent.IntentGetStockPrice;
@@ -22,6 +21,7 @@ import com.sanjoyghosh.company.earnings.intent.IntentStopCancel;
 import com.sanjoyghosh.company.earnings.intent.IntentUpdatePrices;
 import com.sanjoyghosh.company.earnings.intent.InterfaceIntent;
 import com.sanjoyghosh.company.earnings.intent.LaunchSanjoysHelper;
+import com.sanjoyghosh.company.logs.CloudWatchLogger;
 
 public class EarningsSpeechlet implements Speechlet  {
 

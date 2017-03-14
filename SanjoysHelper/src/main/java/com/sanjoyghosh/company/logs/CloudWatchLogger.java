@@ -1,4 +1,4 @@
-package com.sanjoyghosh.company.cloudwatch.logs;
+package com.sanjoyghosh.company.logs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +15,7 @@ import com.amazonaws.services.logs.model.InputLogEvent;
 import com.amazonaws.services.logs.model.PutLogEventsRequest;
 import com.amazonaws.services.logs.model.PutLogEventsResult;
 import com.amazonaws.services.logs.model.ResourceAlreadyExistsException;
+import com.sanjoyghosh.company.db.JPAHelper;
 
 public class CloudWatchLogger {
 
@@ -25,19 +26,19 @@ public class CloudWatchLogger {
     private static final Logger logger = Logger.getLogger(CloudWatchLogger.class.getName());
 	
 	
-	private AWSLogs				cloudWatchLogger;
-	private String				streamName;
-	private String				nextSequenceToken;
-	private boolean 			useLogEventListOne;
-	private List<InputLogEvent>	logEventListOne;
-	private List<InputLogEvent> logEventListTwo;
+	private AWSLogs								cloudWatchLogger;
+	private String								streamName;
+	private String								nextSequenceToken;
+	private boolean 							useLogEventListOne;
+	private List<CloudWatchLoggerIntentResult>	intentResultListOne;
+	private List<CloudWatchLoggerIntentResult>	intentResultListTwo;
 	
 	
 	@SuppressWarnings("deprecation")
 	private CloudWatchLogger(String groupName) {
 		this.useLogEventListOne = true;
-		this.logEventListOne = new ArrayList<>();
-		this.logEventListTwo = new ArrayList<>();
+		this.intentResultListOne = new ArrayList<>();
+		this.intentResultListTwo = new ArrayList<>();
 
 		cloudWatchLogger = new AWSLogsClient();
 	}
@@ -50,7 +51,7 @@ public class CloudWatchLogger {
 			public void run() {
 				instance.flushLogEventList();
 			}
-		}, 2, 2, TimeUnit.SECONDS);
+		}, 5, 5, TimeUnit.SECONDS);
 	}
 
 
@@ -90,28 +91,46 @@ public class CloudWatchLogger {
 		}
 		
 		// Log the list that is NOT pointed to by useLogEventListOne.
-		List<InputLogEvent> list = useLogEventListOne ? logEventListTwo : logEventListOne;
-		if (list.size() > 0 && ensureGroupAndStream()) {
+		List<CloudWatchLoggerIntentResult> intentResultList = useLogEventListOne ? intentResultListTwo : intentResultListOne;
+		if (intentResultList.size() > 0 && ensureGroupAndStream()) {
+			
+			List<InputLogEvent> logEventList = new ArrayList<>();
+			JPAHelper.getEntityManagerLogs().getTransaction().begin();
+			try {
+				logEventList = new ArrayList<>();
+				for (CloudWatchLoggerIntentResult intentResult : intentResultList) {
+					IntentResultLog intentResultLog = intentResult.toIntentResultLog();
+					JPAHelper.getEntityManagerLogs().persist(intentResultLog);
+					
+					InputLogEvent logEvent = intentResult.toInputLogEvent();
+					logEventList.add(logEvent);
+				}
+				JPAHelper.getEntityManagerLogs().getTransaction().commit();
+			}
+			catch (Exception e) {
+				JPAHelper.getEntityManagerLogs().getTransaction().rollback();
+				logger.log(Level.SEVERE, "Exception persisting CloudWatch Logs", e);
+			}
+			
 			PutLogEventsRequest logRequest = new PutLogEventsRequest();
-			logRequest.setLogEvents(list);
+			logRequest.setLogEvents(logEventList);
 			logRequest.setLogGroupName(GROUP_NAME);
 			logRequest.setLogStreamName(streamName);
 			logRequest.setSequenceToken(nextSequenceToken);
 	
 			PutLogEventsResult logEventsResult = cloudWatchLogger.putLogEvents(logRequest);
 			nextSequenceToken = logEventsResult.getNextSequenceToken();
-			list.clear();
+			intentResultList.clear();
 		}
 	}
 	
 
 	public synchronized void addLogEvent(CloudWatchLoggerIntentResult intentResult) {
-		InputLogEvent logEvent = intentResult.toInputLogEvent();
 		if (useLogEventListOne) {
-			logEventListOne.add(logEvent);
+			intentResultListOne.add(intentResult);
 		}
 		else {
-			logEventListTwo.add(logEvent);
+			intentResultListTwo.add(intentResult);
 		}
 	}
 

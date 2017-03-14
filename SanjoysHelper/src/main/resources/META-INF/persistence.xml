@@ -20,4 +20,21 @@
  
     </persistence-unit>
  
+    <persistence-unit name="com.sanjoyghosh.company.logs" transaction-type="RESOURCE_LOCAL">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <class>com.sanjoyghosh.company.db.model.Company</class>
+        <class>com.sanjoyghosh.company.db.model.EarningsDate</class>
+        
+        <properties>
+            <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
+            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://financehelperlogs.c3wsuilveiez.us-east-1.rds.amazonaws.com:3306/Logs" />
+            <property name="javax.persistence.jdbc.user" value="sanjoy" />
+            <property name="javax.persistence.jdbc.password" value="srinagar6598" />
+ 
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
+            <property name="hibernate.show_sql" value="false" />
+        </properties>
+ 
+    </persistence-unit>
+
 </persistence>

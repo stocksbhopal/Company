@@ -45,4 +45,6 @@ insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values 
 insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('SWKS', 'sky works', 1);
 
 update CompanyNamePrefix set symbol = 'SNAP' where companyNamePrefix = 'snap';
+insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('SNAP', 'snapchat', 1);
+insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('SNAP', 'snap chat', 1);
 

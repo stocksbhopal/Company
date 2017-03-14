@@ -1,7 +1,10 @@
-package com.sanjoyghosh.company.cloudwatch.logs;
+package com.sanjoyghosh.company.logs;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.amazonaws.services.logs.model.InputLogEvent;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -14,23 +17,26 @@ import com.sanjoyghosh.company.utils.KeyValuePair;
 @JsonPropertyOrder({"n","rt","rp","i","u","t"})
 public class CloudWatchLoggerIntentResult {
 
+    private static final Logger logger = Logger.getLogger(CloudWatchLoggerIntentResult.class.getName());
+
+    
 	private String				name;
 	private int					result;
 	private String				response;
 	private List<KeyValuePair>	inputs;
 	private String				alexaUserId;
-	private long				timestamp;
+	private long				eventTime;
 	
 	
 	public CloudWatchLoggerIntentResult(String alexaUserId, String name, int result, 
-		String response, List<KeyValuePair> inputs, Date timestamp) {
+		String response, List<KeyValuePair> inputs, Date eventTime) {
 
 		this.alexaUserId = alexaUserId;
 		this.name = name;
 		this.result = result;
 		this.response = response;
 		this.inputs = inputs;
-		this.timestamp = timestamp.getTime();
+		this.eventTime = eventTime.getTime();
 	}
 	
 	
@@ -40,13 +46,33 @@ public class CloudWatchLoggerIntentResult {
 			message = new ObjectMapper().writeValueAsString(this);
 		} 
 		catch (JsonProcessingException e) {
-			e.printStackTrace();
+			logger.log(Level.SEVERE, "Exception JSON serializing InputLogEvent", e);
 		}
 		
 		InputLogEvent logEvent = new InputLogEvent();
 		logEvent.setMessage(message);
-		logEvent.setTimestamp(timestamp);
+		logEvent.setTimestamp(eventTime);
 		return logEvent;
+	}
+	
+	
+	public IntentResultLog toIntentResultLog() {
+		String inputsStr = null;
+		try {
+			inputsStr = new ObjectMapper().writeValueAsString(inputs);
+		} 
+		catch (JsonProcessingException e) {
+			logger.log(Level.SEVERE, "Exception JSON serializing Inputs", e);
+		}
+
+		IntentResultLog intentResult = new IntentResultLog();
+		intentResult.setAlexaUserId(alexaUserId);
+		intentResult.setEventTime(new Timestamp(eventTime));
+		intentResult.setInputs(inputsStr);
+		intentResult.setName(name);
+		intentResult.setResponse(response);
+		intentResult.setResult(result);
+		return intentResult;
 	}
 
 
@@ -111,13 +137,13 @@ public class CloudWatchLoggerIntentResult {
 
 
 	@JsonProperty("t")
-	public long getTimestamp() {
-		return timestamp;
+	public long getEventTime() {
+		return eventTime;
 	}
 
 
 	@JsonProperty("t")
-	public void setTimestamp(long timestamp) {
-		this.timestamp = timestamp;
+	public void setEventTime(long eventTime) {
+		this.eventTime = eventTime;
 	}
 }
