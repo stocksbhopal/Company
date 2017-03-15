@@ -127,8 +127,9 @@ public class IntentUtils {
     			symbol = intent.getSlot(InterfaceIntent.SLOT_SPELLING_ONE).getValue().trim().substring(0, 1) + symbol;
     		}
     	}
-    	symbol = symbol == null ? null : removeTrailingWord(symbol.trim());
-    	companyOrSymbol = companyOrSymbol == null ? null : removeTrailingWord(companyOrSymbol.trim());
+    	// Take the apostrophe out for McDonald's and Dick's Sporting Goods
+    	symbol = symbol == null ? null : removeTrailingWord(symbol.trim()).replaceAll("'", "");
+    	companyOrSymbol = companyOrSymbol == null ? null : removeTrailingWord(companyOrSymbol.trim()).replaceAll("'", "");
     	
     	CompanyOrSymbol cos = new CompanyOrSymbol(companyOrSymbol, symbol);
     	return cos;
