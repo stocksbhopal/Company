@@ -49,3 +49,7 @@ update CompanyNamePrefix set symbol = 'SNAP' where companyNamePrefix = 'snap';
 insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('SNAP', 'snapchat', 1);
 insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('SNAP', 'snap chat', 1);
 
+// Take out the useless Comcast Companies.
+delete from CompanyNamePrefix where symbol = 'CCV';
+delete from CompanyNamePrefix where symbol = 'CCZ';
+
