@@ -45,11 +45,16 @@ public class CloudWatchLogger {
 	
 	
 	public static void init() {
-		ScheduledThreadPoolExecutor poolExecutor = new ScheduledThreadPoolExecutor(1);
+		ScheduledThreadPoolExecutor poolExecutor = new ScheduledThreadPoolExecutor(5);
 		poolExecutor.scheduleWithFixedDelay(new Runnable() {			
 			@Override
 			public void run() {
-				instance.flushLogEventList();
+				try {
+					instance.flushLogEventList();
+				}
+				catch (Throwable e) {
+					logger.log(Level.SEVERE, "Exception in flushLogEventList()", e);
+				}
 			}
 		}, 5, 5, TimeUnit.SECONDS);
 	}
@@ -106,7 +111,7 @@ public class CloudWatchLogger {
 				}
 				JPAHelper.getEntityManagerLogs().getTransaction().commit();
 			}
-			catch (Exception e) {
+			catch (Throwable e) {
 				JPAHelper.getEntityManagerLogs().getTransaction().rollback();
 				logger.log(Level.SEVERE, "Exception persisting CloudWatch Logs", e);
 			}
