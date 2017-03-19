@@ -13,8 +13,8 @@ public class CompanyOrSymbol {
 	
 	
 	public CompanyOrSymbol(String companyOrSymbol, String symbol) {
-		this.companyOrSymbol = companyOrSymbol;
-		this.symbol = symbol;
+		this.companyOrSymbol = companyOrSymbol.toLowerCase();
+		this.symbol = symbol.toUpperCase();
 	}
 
 

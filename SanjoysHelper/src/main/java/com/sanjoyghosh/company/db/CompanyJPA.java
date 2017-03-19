@@ -1,6 +1,5 @@
 package com.sanjoyghosh.company.db;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -146,17 +145,13 @@ public class CompanyJPA {
 	}
 
 	
-	public static List<Company> fetchCompanyListByNamePrefix(String namePrefix) {
+	public static List<CompanyNamePrefix> fetchCompanyListByNamePrefix(String namePrefix) {
 		try {
 			List<CompanyNamePrefix> cnfList = 
 				JPAHelper.getEntityManager().createQuery("SELECT c FROM CompanyNamePrefix AS c WHERE c.companyNamePrefix = :namePrefix", CompanyNamePrefix.class)
-				.setParameter("namePrefix", namePrefix)
+				.setParameter("namePrefix", namePrefix.toLowerCase())
 				.getResultList();
-			List<Company> companyList = new ArrayList<>();
-			for (CompanyNamePrefix cnf : cnfList) {
-				companyList.add(cnf.getCompany());
-			}
-			return companyList;
+			return cnfList;
 		}
 		catch (NoResultException e) {
 			return null;
@@ -167,7 +162,7 @@ public class CompanyJPA {
 	public static Company fetchCompanyBySymbol(String symbol) {
 		try {
 			Company company = JPAHelper.getEntityManager().createQuery("SELECT c FROM Company AS c WHERE c.symbol = :symbol", Company.class)
-				.setParameter("symbol", symbol)
+				.setParameter("symbol", symbol.toUpperCase())
 				.getSingleResult();
 			return company;
 		}

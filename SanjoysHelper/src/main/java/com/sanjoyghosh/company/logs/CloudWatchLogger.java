@@ -100,19 +100,19 @@ public class CloudWatchLogger {
 		if (intentResultList.size() > 0 && ensureGroupAndStream()) {
 			
 			List<InputLogEvent> logEventList = new ArrayList<>();
-			JPAHelper.getEntityManagerLogs().getTransaction().begin();
+			JPAHelper.getEntityManager().getTransaction().begin();
 			try {
 				for (CloudWatchLoggerIntentResult intentResult : intentResultList) {
 					IntentResultLog intentResultLog = intentResult.toIntentResultLog();
-					JPAHelper.getEntityManagerLogs().persist(intentResultLog);
+					JPAHelper.getEntityManager().persist(intentResultLog);
 					
 					InputLogEvent logEvent = intentResult.toInputLogEvent();
 					logEventList.add(logEvent);
 				}
-				JPAHelper.getEntityManagerLogs().getTransaction().commit();
+				JPAHelper.getEntityManager().getTransaction().commit();
 			}
 			catch (Throwable e) {
-				JPAHelper.getEntityManagerLogs().getTransaction().rollback();
+				JPAHelper.getEntityManager().getTransaction().rollback();
 				logger.log(Level.SEVERE, "Exception persisting CloudWatch Logs", e);
 			}
 			

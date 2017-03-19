@@ -13,6 +13,7 @@ import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.amazon.speech.ui.Reprompt;
 import com.sanjoyghosh.company.db.CompanyJPA;
 import com.sanjoyghosh.company.db.model.Company;
+import com.sanjoyghosh.company.db.model.CompanyNamePrefix;
 import com.sanjoyghosh.company.logs.CloudWatchLogger;
 import com.sanjoyghosh.company.logs.CloudWatchLoggerIntentResult;
 import com.sanjoyghosh.company.source.nasdaq.NasdaqIndexes;
@@ -44,13 +45,22 @@ public class IntentGetStockPrice implements InterfaceIntent {
     }
     
     
-    private SpeechletResponse makeTellResponse(NasdaqRealtimeQuote quote, Company company, CompanyOrSymbol companyOrSymbol, IntentRequest request, Session session) {
+    private SpeechletResponse makeTellResponse(NasdaqRealtimeQuote quote, CompanyNamePrefix companyNamePrefix, Company company, CompanyOrSymbol companyOrSymbol, IntentRequest request, Session session) {
 		String price = StringUtils.toStringWith2DecimalPlaces(quote.getPrice());
 		String priceChange = StringUtils.toStringWith2DecimalPlaces(quote.getPriceChange());
 		String priceChangePercent = StringUtils.toStringWith2DecimalPlaces(quote.getPriceChangePercent());
-		String text = "Price of " + company.getSpeechName() + " is " + price + 
+		String text = null;
+		if (companyNamePrefix != null && companyNamePrefix.isManuallyAdded()) {
+			text = "Price of " + companyOrSymbol.getCompanyOrSymbol() + ", whose registered name is " + company.getName() + ", is " + price + 
 			", " + (quote.getPriceChange() > 0.00D ? "up " : "down ") + priceChange +
 			", " + (quote.getPriceChange() > 0.00D ? "up " : "down ") + priceChangePercent + " percent";
+		}
+		else {
+			text = "Price of " + company.getName() + " is " + price + 
+			", " + (quote.getPriceChange() > 0.00D ? "up " : "down ") + priceChange +
+			", " + (quote.getPriceChange() > 0.00D ? "up " : "down ") + priceChangePercent + " percent";
+			
+		}
 		logger.info(LoggerUtils.makeLogString(session, INTENT_GET_STOCK_PRICE + " found company:" + company.getSymbol().toUpperCase() + ", for user input:" + companyOrSymbol));
 
 		CloudWatchLoggerIntentResult loggerResult = makeCloudWatchLoggerResult(
@@ -66,39 +76,51 @@ public class IntentGetStockPrice implements InterfaceIntent {
     private SpeechletResponse respondWithPrice(CompanyOrSymbol companyOrSymbol, IntentRequest request, Session session) {
     	String error = "";
 		Company company = null;
+		CompanyNamePrefix companyNamePrefix = null;
 		CloudWatchLoggerIntentResult loggerResult = null;
 		try {			
-			List<Company> companyList = CompanyJPA.fetchCompanyListByNamePrefix(companyOrSymbol.getCompanyOrSymbol());
-			if (companyList.size() > 1) {
-				logger.log(Level.SEVERE, LoggerUtils.makeLogString(session,  INTENT_GET_STOCK_PRICE + "Found mutiple companies for: " + companyOrSymbol.getCompanyOrSymbol()));
+			List<CompanyNamePrefix> cnfList = CompanyJPA.fetchCompanyListByNamePrefix(companyOrSymbol.getCompanyOrSymbol());
+			if (cnfList.size() > 1) {
+				logger.log(Level.SEVERE, LoggerUtils.makeLogString(session,  INTENT_GET_STOCK_PRICE + "Found mutiple companies for name prefix: " + companyOrSymbol.getCompanyOrSymbol()));
 			}
-			company = companyList.size() > 0 ? companyList.get(0) : null;
+			companyNamePrefix = cnfList.size() > 0 ? cnfList.get(0) : null;
+			company = companyNamePrefix == null ? null : companyNamePrefix.getCompany();
 			
 			company = company != null ? company : CompanyJPA.fetchCompanyBySymbol(companyOrSymbol.getCompanyOrSymbol());
 			company = company != null ? company : CompanyJPA.fetchCompanyBySymbol(companyOrSymbol.getSymbol());
+			
+			if (company == null) {
+				cnfList = CompanyJPA.fetchCompanyListByNamePrefix(companyOrSymbol.getSymbol());
+				if (cnfList.size() > 1) {
+					logger.log(Level.SEVERE, LoggerUtils.makeLogString(session,  INTENT_GET_STOCK_PRICE + "Found mutiple companies for symbol: " + companyOrSymbol.getSymbol()));
+				}
+				companyNamePrefix = cnfList.size() > 0 ? cnfList.get(0) : null;
+				company = companyNamePrefix == null ? null : companyNamePrefix.getCompany();
+			}
+
 			if (company != null) {
 				String symbol = company.getSymbol();
 				if (symbol.equals("DJIA") || symbol.equals("IXIC") || symbol.equals("GSPC")) {
 					NasdaqIndexes indexes = NasdaqIndexesReader.readNasdaqIndexes();
 					if (indexes != null) {
 						NasdaqRealtimeQuote quote = symbol.equals("DJIA") ? indexes.getDjiaQuote() : symbol.equals("IXIC") ? indexes.getIxicQuote() : indexes.getGspcQuote();
-						return makeTellResponse(quote, company, companyOrSymbol, request, session);
+						return makeTellResponse(quote, null, company, companyOrSymbol, request, session);
 					}
 					else {
 						loggerResult = makeCloudWatchLoggerResult(
 							session.getUser().getUserId(), request.getIntent().getName(), RESULT_ERROR_NO_QUOTE, company.getSymbol(), companyOrSymbol);
-						error = INTENT_GET_STOCK_PRICE + " found no quote for index named " + company.getSpeechName();						
+						error = INTENT_GET_STOCK_PRICE + " found no quote for index named " + company.getName();						
 					}
 				}
 				else {
 					NasdaqRealtimeQuote quote = NasdaqRealtimeQuoteReader.fetchNasdaqStockSummary(company.getSymbol());
 					if (quote != null) {
-						return makeTellResponse(quote, company, companyOrSymbol, request, session);
+						return makeTellResponse(quote, companyNamePrefix, company, companyOrSymbol, request, session);
 					}
 					else {
 						loggerResult = makeCloudWatchLoggerResult(
 							session.getUser().getUserId(), request.getIntent().getName(), RESULT_ERROR_NO_QUOTE, company.getSymbol(), companyOrSymbol);
-						error = INTENT_GET_STOCK_PRICE + " found no quote for company named " + company.getSpeechName();
+						error = INTENT_GET_STOCK_PRICE + " found no quote for company named " + company.getName();
 					}
 				}
 			}
