@@ -46,6 +46,16 @@ insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values 
 insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('MBLY', 'mobile i', 1);
 
 update CompanyNamePrefix set symbol = 'SNAP' where companyNamePrefix = 'snap';
+update CompanyNamePrefix set companyNamePrefix = 'CA' where symbol = 'CA';
+update CompanyNamePrefix set companyNamePrefix = 'HP' where symbol = 'HPQ';
+update CompanyNamePrefix set companyNamePrefix = 'KT' where symbol = 'KT';
+update CompanyNamePrefix set companyNamePrefix = 'The9' where symbol = 'NCTY';
+delete from CompanyNamePrefix where symbol = 'OIBR';
+update CompanyNamePrefix set companyNamePrefix = 'YY' where symbol = 'YY';
+update CompanyNamePrefix set companyNamePrefix = 'CF' where symbol = 'CFCO';
+update CompanyNamePrefix set companyNamePrefix = 'CF' where symbol = 'CFCOU';
+update CompanyNamePrefix set companyNamePrefix = 'CF' where symbol = 'CFCOW';
+
 insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('SNAP', 'snapchat', 1);
 insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('SNAP', 'snap chat', 1);
 

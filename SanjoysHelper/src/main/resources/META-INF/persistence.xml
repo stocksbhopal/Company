@@ -10,7 +10,7 @@
         
         <properties>
             <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
-            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://ec2-34-195-18-116.compute-1.amazonaws.com:3306/Company" />
+            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://ec2-52-44-163-130.compute-1.amazonaws.com:3306/Company" />
             <property name="javax.persistence.jdbc.user" value="sanjoy" />
             <property name="javax.persistence.jdbc.password" value="srinagar6598" />
  
