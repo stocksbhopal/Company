@@ -5,15 +5,20 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.db.model.CompanyNamePrefix;
+import com.sanjoyghosh.company.earnings.intent.CompanyOrSymbol;
 
 public class CompanyJPA {
 	
+    private static final Logger logger = Logger.getLogger(CompanyJPA.class.getName());
+
 	private static Map<Integer, Company> companyByIdMap;
 	private static Map<String, Company> companyBySymbolMap;
 	
@@ -144,6 +149,48 @@ public class CompanyJPA {
 		System.exit(0);
 	}
 
+	
+	public static Company fetchCompanyByNameOrSymbol(CompanyOrSymbol companyOrSymbol) {
+		String cs = companyOrSymbol.getCompanyOrSymbol();
+		String css = companyOrSymbol.getCompanyOrSymbolSpelt();
+
+		if (cs != null) {
+			List<CompanyNamePrefix> cnpList = fetchCompanyListByNamePrefix(cs);
+			if (cnpList != null && cnpList.size() > 0) {
+				if (cnpList.size() > 1) {
+					logger.log(Level.WARNING, "Found more than 1 company for: " + cs);
+				}
+				return cnpList.get(0).getCompany();
+			}
+		}
+		
+		if (css != null) {
+			Company company = fetchCompanyBySymbol(css);
+			if (company != null) {
+				return company;
+			}
+		}
+		
+		if (cs != null) {
+			Company company = fetchCompanyBySymbol(cs);
+			if (company != null) {
+				return company;
+			}
+		}
+		
+		if (css != null) {
+			List<CompanyNamePrefix> cnpList = fetchCompanyListByNamePrefix(css);
+			if (cnpList != null && cnpList.size() > 0) {
+				if (cnpList.size() > 1) {
+					logger.log(Level.WARNING, "Found more than 1 company for: " + cs);
+				}
+				return cnpList.get(0).getCompany();
+			}
+		}
+		
+		return null;
+	}
+	
 	
 	public static List<CompanyNamePrefix> fetchCompanyListByNamePrefix(String namePrefix) {
 		try {

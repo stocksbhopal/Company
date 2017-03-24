@@ -80,6 +80,7 @@ public class IntentUtils {
 	
 
     public static CompanyOrSymbol getCompanyOrSymbol(IntentRequest request) {
+    	String intentValue = "";
     	String symbol = "";
     	String companyOrSymbol = "";
     	
@@ -87,49 +88,18 @@ public class IntentUtils {
     	if (intent.getSlot(InterfaceIntent.SLOT_COMPANY) != null && 
     		intent.getSlot(InterfaceIntent.SLOT_COMPANY).getValue() != null && 
     		intent.getSlot(InterfaceIntent.SLOT_COMPANY).getValue().trim().length() > 0) {
-    		companyOrSymbol = intent.getSlot(InterfaceIntent.SLOT_COMPANY).getValue();
+    		intentValue = intent.getSlot(InterfaceIntent.SLOT_COMPANY).getValue();
     	}
-    	else {
-    		if (intent.getSlot(InterfaceIntent.SLOT_SPELLING_SIX) != null && 
-    			intent.getSlot(InterfaceIntent.SLOT_SPELLING_SIX).getValue() != null &&
-    			intent.getSlot(InterfaceIntent.SLOT_SPELLING_SIX).getValue().trim().length() > 0) {
-    			companyOrSymbol = intent.getSlot(InterfaceIntent.SLOT_SPELLING_SIX).getValue().trim();
-    			symbol = intent.getSlot(InterfaceIntent.SLOT_SPELLING_SIX).getValue().trim().substring(0, 1) + symbol;
-    		}
-    		if (intent.getSlot(InterfaceIntent.SLOT_SPELLING_FIVE) != null && 
-    			intent.getSlot(InterfaceIntent.SLOT_SPELLING_FIVE).getValue() != null &&
-    			intent.getSlot(InterfaceIntent.SLOT_SPELLING_FIVE).getValue().trim().length() > 0) {
-    			companyOrSymbol = intent.getSlot(InterfaceIntent.SLOT_SPELLING_FIVE).getValue().trim() + " " + companyOrSymbol;
-    			symbol = intent.getSlot(InterfaceIntent.SLOT_SPELLING_FIVE).getValue().trim().substring(0, 1) + symbol;
-    		}
-    		if (intent.getSlot(InterfaceIntent.SLOT_SPELLING_FOUR) != null && 
-    			intent.getSlot(InterfaceIntent.SLOT_SPELLING_FOUR).getValue() != null &&
-    			intent.getSlot(InterfaceIntent.SLOT_SPELLING_FOUR).getValue().trim().length() > 0) {
-    			companyOrSymbol = intent.getSlot(InterfaceIntent.SLOT_SPELLING_FOUR).getValue().trim() + " " + companyOrSymbol;
-    			symbol = intent.getSlot(InterfaceIntent.SLOT_SPELLING_FOUR).getValue().trim().substring(0, 1) + symbol;
-    		}
-    		if (intent.getSlot(InterfaceIntent.SLOT_SPELLING_THREE) != null && 
-    			intent.getSlot(InterfaceIntent.SLOT_SPELLING_THREE).getValue() != null &&
-    			intent.getSlot(InterfaceIntent.SLOT_SPELLING_THREE).getValue().trim().length() > 0) {
-    			companyOrSymbol = intent.getSlot(InterfaceIntent.SLOT_SPELLING_THREE).getValue().trim() + " " + companyOrSymbol;
-    			symbol = intent.getSlot(InterfaceIntent.SLOT_SPELLING_THREE).getValue().trim().substring(0, 1) + symbol;
-    		}
-    		if (intent.getSlot(InterfaceIntent.SLOT_SPELLING_TWO) != null && 
-    			intent.getSlot(InterfaceIntent.SLOT_SPELLING_TWO).getValue() != null &&
-    			intent.getSlot(InterfaceIntent.SLOT_SPELLING_TWO).getValue().trim().length() > 0) {
-    			companyOrSymbol = intent.getSlot(InterfaceIntent.SLOT_SPELLING_TWO).getValue().trim() + " " + companyOrSymbol;
-    			symbol = intent.getSlot(InterfaceIntent.SLOT_SPELLING_TWO).getValue().trim().substring(0, 1) + symbol;
-    		}
-    		if (intent.getSlot(InterfaceIntent.SLOT_SPELLING_ONE) != null && 
-    			intent.getSlot(InterfaceIntent.SLOT_SPELLING_ONE).getValue() != null &&
-    			intent.getSlot(InterfaceIntent.SLOT_SPELLING_ONE).getValue().trim().length() > 0) {
-    			companyOrSymbol = intent.getSlot(InterfaceIntent.SLOT_SPELLING_ONE).getValue().trim() + " " + companyOrSymbol;
-    			symbol = intent.getSlot(InterfaceIntent.SLOT_SPELLING_ONE).getValue().trim().substring(0, 1) + symbol;
-    		}
-    	}
+    	
     	// Take the apostrophe out for McDonald's and Dick's Sporting Goods
+    	intentValue = removeTrailingWord(intentValue.trim().replaceAll("'", "")).trim();
+    	companyOrSymbol = intentValue;
+    	
+    	String[] pieces = intentValue.split(" ");
+    	for (String piece : pieces) {
+    		symbol += piece.charAt(0);
+    	}
     	symbol = symbol == null ? null : removeTrailingWord(symbol.trim()).replaceAll("'", "");
-    	companyOrSymbol = companyOrSymbol == null ? null : removeTrailingWord(companyOrSymbol.trim()).replaceAll("'", "");
     	
     	CompanyOrSymbol cos = new CompanyOrSymbol(companyOrSymbol, symbol);
     	return cos;

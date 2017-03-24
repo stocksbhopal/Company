@@ -8,52 +8,52 @@ import com.sanjoyghosh.company.utils.KeyValuePair;
 
 public class CompanyOrSymbol {
 
-	private String companyOrSymbol;		// Prefix of the name of the company or the ticker symbol.
-	private String symbol;				// Ticker symbol for the company.
+	private String companyOrSymbol;			// Prefix of the name of the company or the ticker symbol.
+	private String companyOrSymbolSpelt;	// Prefix of the name of the company or the ticker symbol spelt by letter.
 	
 	
-	public CompanyOrSymbol(String companyOrSymbol, String symbol) {
+	public CompanyOrSymbol(String companyOrSymbol, String companyOrSymbolSpelt) {
 		this.companyOrSymbol = companyOrSymbol.toLowerCase();
-		this.symbol = symbol.toUpperCase();
+		this.companyOrSymbolSpelt = companyOrSymbolSpelt.toUpperCase();
 	}
 
 
-	@JsonProperty("cos")
+	@JsonProperty("cs")
 	public String getCompanyOrSymbol() {
 		return companyOrSymbol;
 	}
 
-	@JsonProperty("cos")
+	@JsonProperty("cs")
 	public void setCompanyOrSymbol(String companyOrSymbol) {
 		this.companyOrSymbol = companyOrSymbol;
 	}
 
 
-	@JsonProperty("s")
-	public String getSymbol() {
-		return symbol;
+	@JsonProperty("css")
+	public String getCompanyOrSymbolSpelt() {
+		return companyOrSymbolSpelt;
 	}
 
-	@JsonProperty("s")
-	public void setSymbol(String symbol) {
-		this.symbol = symbol;
+	@JsonProperty("css")
+	public void setCompanyOrSymbolSpelt(String companyOrSymbolSpelt) {
+		this.companyOrSymbolSpelt = companyOrSymbolSpelt;
 	}
 
 	
 	
 	public boolean isEmpty() {
-		return (companyOrSymbol == null || companyOrSymbol.length() == 0) && (symbol == null || symbol.length() == 0);
+		return (companyOrSymbol == null || companyOrSymbol.length() == 0) && (companyOrSymbolSpelt == null || companyOrSymbolSpelt.length() == 0);
 	}
 
 	
 	public List<KeyValuePair> toKeyValuePairList() {
 		List<KeyValuePair> kvList = new ArrayList<>();
 		if (companyOrSymbol != null) {
-			KeyValuePair pair = new KeyValuePair("cos", companyOrSymbol);
+			KeyValuePair pair = new KeyValuePair("cs", companyOrSymbol);
 			kvList.add(pair);
 		}
-		if (symbol != null) {
-			KeyValuePair pair = new KeyValuePair("s", symbol);
+		if (companyOrSymbolSpelt != null) {
+			KeyValuePair pair = new KeyValuePair("css", companyOrSymbolSpelt);
 			kvList.add(pair);
 		}
 		return kvList;
@@ -65,14 +65,14 @@ public class CompanyOrSymbol {
 		if (isEmpty()) {
 			return "";
 		}
-		else if ((companyOrSymbol != null && companyOrSymbol.length() > 0) && (symbol != null && symbol.length() > 0)) {
-			return companyOrSymbol + " or " + symbol;
+		else if ((companyOrSymbol != null && companyOrSymbol.length() > 0) && (companyOrSymbolSpelt != null && companyOrSymbolSpelt.length() > 0)) {
+			return companyOrSymbol + " or " + companyOrSymbolSpelt;
 		}
 		else if (companyOrSymbol != null && companyOrSymbol.length() > 0) {
 			return companyOrSymbol;
 		}
 		else {
-			return symbol;
+			return companyOrSymbolSpelt;
 		}
 	}
 }

@@ -79,25 +79,7 @@ public class IntentGetStockPrice implements InterfaceIntent {
 		CompanyNamePrefix companyNamePrefix = null;
 		CloudWatchLoggerIntentResult loggerResult = null;
 		try {			
-			List<CompanyNamePrefix> cnfList = CompanyJPA.fetchCompanyListByNamePrefix(companyOrSymbol.getCompanyOrSymbol());
-			if (cnfList.size() > 1) {
-				logger.log(Level.SEVERE, LoggerUtils.makeLogString(session,  INTENT_GET_STOCK_PRICE + "Found mutiple companies for name prefix: " + companyOrSymbol.getCompanyOrSymbol()));
-			}
-			companyNamePrefix = cnfList.size() > 0 ? cnfList.get(0) : null;
-			company = companyNamePrefix == null ? null : companyNamePrefix.getCompany();
-			
-			company = company != null ? company : CompanyJPA.fetchCompanyBySymbol(companyOrSymbol.getCompanyOrSymbol());
-			company = company != null ? company : CompanyJPA.fetchCompanyBySymbol(companyOrSymbol.getSymbol());
-			
-			if (company == null) {
-				cnfList = CompanyJPA.fetchCompanyListByNamePrefix(companyOrSymbol.getSymbol());
-				if (cnfList.size() > 1) {
-					logger.log(Level.SEVERE, LoggerUtils.makeLogString(session,  INTENT_GET_STOCK_PRICE + "Found mutiple companies for symbol: " + companyOrSymbol.getSymbol()));
-				}
-				companyNamePrefix = cnfList.size() > 0 ? cnfList.get(0) : null;
-				company = companyNamePrefix == null ? null : companyNamePrefix.getCompany();
-			}
-
+			company = CompanyJPA.fetchCompanyByNameOrSymbol(companyOrSymbol);
 			if (company != null) {
 				String symbol = company.getSymbol();
 				if (symbol.equals("DJIA") || symbol.equals("IXIC") || symbol.equals("GSPC")) {
