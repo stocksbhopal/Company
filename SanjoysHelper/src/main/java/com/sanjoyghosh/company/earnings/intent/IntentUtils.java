@@ -80,28 +80,26 @@ public class IntentUtils {
 	
 
     public static CompanyOrSymbol getCompanyOrSymbol(IntentRequest request) {
-    	String intentValue = "";
-    	String symbol = "";
     	String companyOrSymbol = "";
+    	String companyOrSymbolSpelt = "";
     	
     	Intent intent = request.getIntent();
     	if (intent.getSlot(InterfaceIntent.SLOT_COMPANY) != null && 
     		intent.getSlot(InterfaceIntent.SLOT_COMPANY).getValue() != null && 
     		intent.getSlot(InterfaceIntent.SLOT_COMPANY).getValue().trim().length() > 0) {
-    		intentValue = intent.getSlot(InterfaceIntent.SLOT_COMPANY).getValue();
+    		companyOrSymbol = intent.getSlot(InterfaceIntent.SLOT_COMPANY).getValue();
     	}
     	
     	// Take the apostrophe out for McDonald's and Dick's Sporting Goods
-    	intentValue = removeTrailingWord(intentValue.trim().replaceAll("'", "")).trim();
-    	companyOrSymbol = intentValue;
+    	companyOrSymbol = removeTrailingWord(companyOrSymbol.trim().replaceAll("'", "")).trim();
     	
-    	String[] pieces = intentValue.split(" ");
+    	String[] pieces = companyOrSymbol.split(" ");
     	for (String piece : pieces) {
-    		symbol += piece.charAt(0);
+    		companyOrSymbolSpelt += piece.charAt(0);
     	}
-    	symbol = symbol == null ? null : removeTrailingWord(symbol.trim()).replaceAll("'", "");
+    	companyOrSymbolSpelt = companyOrSymbolSpelt.trim();
     	
-    	CompanyOrSymbol cos = new CompanyOrSymbol(companyOrSymbol, symbol);
+    	CompanyOrSymbol cos = new CompanyOrSymbol(companyOrSymbol, companyOrSymbolSpelt);
     	return cos;
     }
 }
