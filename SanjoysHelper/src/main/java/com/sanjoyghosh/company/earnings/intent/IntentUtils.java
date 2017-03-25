@@ -102,4 +102,27 @@ public class IntentUtils {
     	CompanyOrSymbol cos = new CompanyOrSymbol(companyOrSymbol, companyOrSymbolSpelt);
     	return cos;
     }
+    
+    
+    public static Double getQuantity(IntentRequest request) {
+    	String quantityStr = null;
+    	Intent intent = request.getIntent();
+    	if (intent.getSlot(InterfaceIntent.SLOT_QUANTITY) != null && 
+    		intent.getSlot(InterfaceIntent.SLOT_QUANTITY).getValue() != null && 
+    		intent.getSlot(InterfaceIntent.SLOT_QUANTITY).getValue().trim().length() > 0) {
+    		quantityStr = intent.getSlot(InterfaceIntent.SLOT_QUANTITY).getValue();
+    	}
+    	if (quantityStr == null) {
+    		return null;
+    	}
+    	
+    	try {
+    		Double quantity = Double.parseDouble(quantityStr);
+    		return quantity;
+    	}
+    	catch (Exception e) {
+    		logger.log(Level.SEVERE, intent.getName() + " given bad value for quantity: " + quantityStr, e);
+    	}
+    	return null;
+    }
 }
