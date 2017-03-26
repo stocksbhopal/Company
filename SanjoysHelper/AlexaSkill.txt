@@ -199,3 +199,127 @@ GetStockPriceSpellSix the price of {spellingOne} {spellingTwo} {spellingThree} {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{
+  "intents": [
+    {
+      "intent": "AMAZON.HelpIntent"
+    },
+    {
+      "intent": "AMAZON.StopIntent"
+    },
+    {
+      "intent": "AMAZON.CancelIntent"
+    },
+    {
+      "intent": "CreateStockOnList",
+      "slots": [
+        {
+          "name": "quantity",
+          "type": "AMAZON.NUMBER"
+        },
+        {
+          "name": "company",
+          "type": "AMAZON.Corporation"
+        }
+      ]
+    },
+    {
+      "intent": "ReadStockOnList",
+      "slots": [
+        {
+          "name": "company",
+          "type": "AMAZON.Corporation"
+        }
+      ]
+    },
+    {
+      "intent": "UpdateStockOnList",
+      "slots": [
+        {
+          "name": "quantity",
+          "type": "AMAZON.NUMBER"
+        },
+        {
+          "name": "company",
+          "type": "AMAZON.Corporation"
+        }
+      ]
+    },
+    {
+      "intent": "DeleteStockOnList",
+            "slots": [
+        {
+          "name": "quantity",
+          "type": "AMAZON.NUMBER"
+        },
+        {
+          "name": "company",
+          "type": "AMAZON.Corporation"
+        }
+      ]
+    },
+    {
+      "intent": "ListStocksOnList"
+    },
+    {
+      "intent": "GetStockPrice",
+      "slots": [
+        {
+          "name": "company",
+          "type": "AMAZON.Corporation"
+        }
+      ]
+    }
+  ]
+}
+
+CreateStockOnList to put {quantity} shares of {company}
+CreateStockOnList to put {quantity} shares of {company} on the list
+
+ReadStockOnList if i have shares of {company}
+ReadStockOnList if i have shares of {company} on the list
+
+UpdateStockOnList to change the number of shares of {company} to {quantity}
+UpdateStockOnList to change the number of shares of {company} on the list to {quantity}
+
+DeleteStockOnList to remove shares of {company} 
+DeleteStockOnList to remove shares of {company} from the list
+
+ListStocksOnList to list the stocks
+ListStocksOnList to list the stocks on the list
+
+GetStockPrice price of {company}
+GetStockPrice the price of {company}
+
