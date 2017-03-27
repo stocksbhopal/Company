@@ -149,13 +149,21 @@ public class IntentGetStockPrice implements InterfaceIntent {
 	
 	@Override
 	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
-		EntityManager em = JPAHelper.getEntityManager();
-		AllSlotValues companyOrSymbol = IntentUtils.getCompanyOrSymbol(request);		
-		if (companyOrSymbol == null || companyOrSymbol.isEmpty()) {
-			return respondWithQuestion(request, session);
+		EntityManager em = null;
+		try {
+			em = JPAHelper.getEntityManager();
+			AllSlotValues companyOrSymbol = IntentUtils.getCompanyOrSymbol(request);		
+			if (companyOrSymbol == null || companyOrSymbol.isEmpty()) {
+				return respondWithQuestion(request, session);
+			}
+			else {
+				return respondWithPrice(em, companyOrSymbol, request, session);
+			}
 		}
-		else {
-			return respondWithPrice(em, companyOrSymbol, request, session);
+		finally {
+			if (em != null) {
+				em.close();
+			}
 		}
 	}
 }

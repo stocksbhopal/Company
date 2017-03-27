@@ -7,6 +7,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.persistence.EntityManager;
+
 import com.amazonaws.services.logs.AWSLogs;
 import com.amazonaws.services.logs.AWSLogsClient;
 import com.amazonaws.services.logs.model.CreateLogGroupRequest;
@@ -99,23 +101,30 @@ public class CloudWatchLogger {
 		List<CloudWatchLoggerIntentResult> intentResultList = useLogEventListOne ? intentResultListTwo : intentResultListOne;
 		if (intentResultList.size() > 0 && ensureGroupAndStream()) {
 			
+			EntityManager em = null;
 			List<InputLogEvent> logEventList = new ArrayList<>();
 			try {
-				JPAHelper.getEntityManager().getTransaction().begin();
+				em = JPAHelper.getEntityManager();
+				em.getTransaction().begin();
 				for (CloudWatchLoggerIntentResult intentResult : intentResultList) {
 					IntentResultLog intentResultLog = intentResult.toIntentResultLog();
-					JPAHelper.getEntityManager().persist(intentResultLog);
+					em.persist(intentResultLog);
 					
 					InputLogEvent logEvent = intentResult.toInputLogEvent();
 					logEventList.add(logEvent);
 				}
-				JPAHelper.getEntityManager().getTransaction().commit();
+				em.getTransaction().commit();
 			}
 			catch (Throwable e) {
-				if (JPAHelper.getEntityManager().getTransaction().isActive()) {
-					JPAHelper.getEntityManager().getTransaction().rollback();
+				if (em.getTransaction().isActive()) {
+					em.getTransaction().rollback();
 				}
 				logger.log(Level.SEVERE, "Exception persisting CloudWatch Logs", e);
+			}
+			finally {
+				if (em != null) {
+					em.close();
+				}
 			}
 			
 			PutLogEventsRequest logRequest = new PutLogEventsRequest();
