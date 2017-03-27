@@ -14,7 +14,12 @@ public interface InterfaceIntent {
     public static final String SLOT_DATE = "date";
     public static final String SLOT_QUANTITY = "quantity";
 
-    public static final String INTENT_ADD_STOCK_TO_LIST = "AddStockToList";
+    public static final String INTENT_CREATE_STOCK_ON_LIST = "CreateStockOnList";
+    public static final String INTENT_READ_STOCK_ON_LIST = "ReadStockOnList";
+    public static final String INTENT_UPDATE_STOCK_ON_LIST = "UpdateStockOnList";
+    public static final String INTENT_DELETE_STOCK_ON_LIST = "DeleteStockOnList";
+    public static final String INTENT_LIST_STOCKS_ON_LIST = "ListStocksOnList";
+    
     public static final String INTENT_GET_STOCK_PRICE = "GetStockPrice";
 
     public static final String INTENT_GET_MY_STOCKS = "GetMyStocks";

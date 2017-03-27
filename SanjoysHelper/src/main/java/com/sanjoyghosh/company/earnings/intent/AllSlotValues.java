@@ -4,15 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sanjoyghosh.company.db.model.Company;
+import com.sanjoyghosh.company.db.model.CompanyNamePrefix;
 import com.sanjoyghosh.company.utils.KeyValuePair;
 
-public class CompanyOrSymbol {
+public class AllSlotValues {
 
 	private String companyOrSymbol;			// Prefix of the name of the company or the ticker symbol.
 	private String companyOrSymbolSpelt;	// Prefix of the name of the company or the ticker symbol spelt by letter.
+	private CompanyNamePrefix companyNamePrefix;	// Check companyNamePrefix first and then company.
+	private Company company;
+	private Double quantity;
 	
 	
-	public CompanyOrSymbol(String companyOrSymbol, String companyOrSymbolSpelt) {
+	public AllSlotValues(String companyOrSymbol, String companyOrSymbolSpelt) {
 		this.companyOrSymbol = companyOrSymbol.toLowerCase();
 		this.companyOrSymbolSpelt = companyOrSymbolSpelt.toUpperCase();
 	}

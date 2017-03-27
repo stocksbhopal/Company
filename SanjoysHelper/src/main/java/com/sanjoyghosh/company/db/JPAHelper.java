@@ -6,18 +6,17 @@ import javax.persistence.Persistence;
 
 public class JPAHelper {
 
-	private static EntityManager entityManager;
+	private static EntityManagerFactory entityManagerFactory;
 	
 	
-	private static void createEntityManager() {
-		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("com.sanjoyghosh.company.db.model");
-		entityManager = entityManagerFactory.createEntityManager();
+	private static void createEntityManagerFactory() {
+		entityManagerFactory = Persistence.createEntityManagerFactory("com.sanjoyghosh.company.db.model");
 	}
 
 	public static EntityManager getEntityManager() {
-		if (entityManager == null) {
-			createEntityManager();
+		if (entityManagerFactory == null) {
+			createEntityManagerFactory();
 		}
-		return entityManager;
+		return entityManagerFactory.createEntityManager();
 	}
 }

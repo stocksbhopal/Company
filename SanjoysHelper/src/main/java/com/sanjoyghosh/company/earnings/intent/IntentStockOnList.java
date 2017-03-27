@@ -9,14 +9,14 @@ import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.sanjoyghosh.company.utils.LoggerUtils;
 
-public class IntentAddStockToList implements InterfaceIntent {
+public class IntentStockOnList implements InterfaceIntent {
 
-    private static final Logger logger = Logger.getLogger(IntentAddStockToList.class.getName());
+    private static final Logger logger = Logger.getLogger(IntentStockOnList.class.getName());
 
     
     @Override
 	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
-    	CompanyOrSymbol companyOrSymbol = IntentUtils.getCompanyOrSymbol(request);
+    	AllSlotValues companyOrSymbol = IntentUtils.getCompanyOrSymbol(request);
     	Double quantity = IntentUtils.getQuantity(request);
     	
     	String quantityStr = quantity == null ? "null" : String.valueOf(quantity);

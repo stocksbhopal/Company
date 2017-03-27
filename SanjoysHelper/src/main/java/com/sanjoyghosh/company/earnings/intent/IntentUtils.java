@@ -79,7 +79,7 @@ public class IntentUtils {
 	}
 	
 
-    public static CompanyOrSymbol getCompanyOrSymbol(IntentRequest request) {
+    public static AllSlotValues getCompanyOrSymbol(IntentRequest request) {
     	String companyOrSymbol = "";
     	String companyOrSymbolSpelt = "";
     	
@@ -99,7 +99,7 @@ public class IntentUtils {
     	}
     	companyOrSymbolSpelt = companyOrSymbolSpelt.trim();
     	
-    	CompanyOrSymbol cos = new CompanyOrSymbol(companyOrSymbol, companyOrSymbolSpelt);
+    	AllSlotValues cos = new AllSlotValues(companyOrSymbol, companyOrSymbolSpelt);
     	return cos;
     }
     

@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.persistence.EntityManager;
+
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.Session;
 import com.amazon.speech.speechlet.SpeechletException;
@@ -12,6 +14,7 @@ import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.amazon.speech.ui.Reprompt;
 import com.sanjoyghosh.company.db.CompanyJPA;
+import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.db.model.CompanyNamePrefix;
 import com.sanjoyghosh.company.logs.CloudWatchLogger;
@@ -37,7 +40,7 @@ public class IntentGetStockPrice implements InterfaceIntent {
 
     
     private CloudWatchLoggerIntentResult makeCloudWatchLoggerResult(
-    	String alexaUserId, String intentName, int result, String response, CompanyOrSymbol companyOrSymbol) {
+    	String alexaUserId, String intentName, int result, String response, AllSlotValues companyOrSymbol) {
     	
     	List<KeyValuePair> inputs = (companyOrSymbol != null) ? companyOrSymbol.toKeyValuePairList() : null;
     	CloudWatchLoggerIntentResult loggerResult = new CloudWatchLoggerIntentResult(alexaUserId, intentName, result, response, inputs, new Date());
@@ -45,7 +48,7 @@ public class IntentGetStockPrice implements InterfaceIntent {
     }
     
     
-    private SpeechletResponse makeTellResponse(NasdaqRealtimeQuote quote, CompanyNamePrefix companyNamePrefix, Company company, CompanyOrSymbol companyOrSymbol, IntentRequest request, Session session) {
+    private SpeechletResponse makeTellResponse(NasdaqRealtimeQuote quote, CompanyNamePrefix companyNamePrefix, Company company, AllSlotValues companyOrSymbol, IntentRequest request, Session session) {
 		String price = StringUtils.toStringWith2DecimalPlaces(quote.getPrice());
 		String priceChange = StringUtils.toStringWith2DecimalPlaces(quote.getPriceChange());
 		String priceChangePercent = StringUtils.toStringWith2DecimalPlaces(quote.getPriceChangePercent());
@@ -73,13 +76,13 @@ public class IntentGetStockPrice implements InterfaceIntent {
     }
     
     
-    private SpeechletResponse respondWithPrice(CompanyOrSymbol companyOrSymbol, IntentRequest request, Session session) {
+    private SpeechletResponse respondWithPrice(EntityManager em, AllSlotValues companyOrSymbol, IntentRequest request, Session session) {
     	String error = "";
 		Company company = null;
 		CompanyNamePrefix companyNamePrefix = null;
 		CloudWatchLoggerIntentResult loggerResult = null;
 		try {			
-			company = CompanyJPA.fetchCompanyByNameOrSymbol(companyOrSymbol);
+			company = CompanyJPA.fetchCompanyByNameOrSymbol(em, companyOrSymbol);
 			if (company != null) {
 				String symbol = company.getSymbol();
 				if (symbol.equals("DJIA") || symbol.equals("IXIC") || symbol.equals("GSPC")) {
@@ -146,12 +149,13 @@ public class IntentGetStockPrice implements InterfaceIntent {
 	
 	@Override
 	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
-		CompanyOrSymbol companyOrSymbol = IntentUtils.getCompanyOrSymbol(request);		
+		EntityManager em = JPAHelper.getEntityManager();
+		AllSlotValues companyOrSymbol = IntentUtils.getCompanyOrSymbol(request);		
 		if (companyOrSymbol == null || companyOrSymbol.isEmpty()) {
 			return respondWithQuestion(request, session);
 		}
 		else {
-			return respondWithPrice(companyOrSymbol, request, session);
+			return respondWithPrice(em, companyOrSymbol, request, session);
 		}
 	}
 }

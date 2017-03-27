@@ -12,7 +12,7 @@ import com.amazon.speech.speechlet.Speechlet;
 import com.amazon.speech.speechlet.SpeechletException;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
-import com.sanjoyghosh.company.earnings.intent.IntentAddStockToList;
+import com.sanjoyghosh.company.earnings.intent.IntentStockOnList;
 import com.sanjoyghosh.company.earnings.intent.IntentGetMyStocks;
 import com.sanjoyghosh.company.earnings.intent.IntentGetMyStocksWithEarnings;
 import com.sanjoyghosh.company.earnings.intent.IntentGetStockPrice;
@@ -31,8 +31,13 @@ public class EarningsSpeechlet implements Speechlet  {
     	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_GET_MY_STOCKS, new IntentGetMyStocks());
     	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_GET_MY_STOCKS_WITH_EARNINGS, new IntentGetMyStocksWithEarnings());
 
-    	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_ADD_STOCK_TO_LIST, new IntentAddStockToList());
-		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_GET_STOCK_PRICE, new IntentGetStockPrice());
+    	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_CREATE_STOCK_ON_LIST, new IntentStockOnList());
+    	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_READ_STOCK_ON_LIST, new IntentStockOnList());
+    	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_UPDATE_STOCK_ON_LIST, new IntentStockOnList());
+    	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_DELETE_STOCK_ON_LIST, new IntentStockOnList());
+    	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_LIST_STOCKS_ON_LIST, new IntentStockOnList());
+
+    	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_GET_STOCK_PRICE, new IntentGetStockPrice());
 		
 		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_MY_STOCKS_STATUS, new IntentMyStocksStatus());
 		

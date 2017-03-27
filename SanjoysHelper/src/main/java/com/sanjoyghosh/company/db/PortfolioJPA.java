@@ -66,8 +66,8 @@ public class PortfolioJPA {
 	}
 	
 	
-	public static void makePortfolioItem(Portfolio portfolio, String symbol, Double quantity) {
-	    Company company = CompanyJPA.fetchCompanyBySymbol(symbol);
+	public static void makePortfolioItem(EntityManager em, Portfolio portfolio, String symbol, Double quantity) {
+	    Company company = CompanyJPA.fetchCompanyBySymbol(em, symbol);
 	    if (company != null) {
 	    	PortfolioItem portfolioItem = portfolio.getPortfolioItemBySymbolMap().get(company.getSymbol());
 	    	if (portfolioItem == null) {

@@ -6,6 +6,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 
+import javax.persistence.EntityManager;
+
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 
@@ -33,7 +35,7 @@ public class FidelityPortfolioReader {
 	}
 
 	
-	public void readFidelityHoldingsFiles(File fidelityFile) {
+	public void readFidelityHoldingsFiles(EntityManager em, File fidelityFile) {
 		Reader reader = null;
 		try {
 			reader = new FileReader(fidelityFile);
@@ -43,7 +45,7 @@ public class FidelityPortfolioReader {
 					String symbol = record.get("Symbol");
 					System.out.println("FIDELITY Symbol: " + symbol);
 				    Double quantity = Double.parseDouble(record.get("Quantity").trim());
-				    PortfolioJPA.makePortfolioItem(portfolio, symbol, quantity);
+				    PortfolioJPA.makePortfolioItem(em, portfolio, symbol, quantity);
 				}
 			}
 		} 

@@ -6,6 +6,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 
+import javax.persistence.EntityManager;
+
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 
@@ -33,7 +35,7 @@ public class MerrillLynchPortfolioReader {
 	}
 	
 	
-	public void readMerrillLynchHoldingsFile(File merrillLynchFile) {
+	public void readMerrillLynchHoldingsFile(EntityManager em, File merrillLynchFile) {
 		Reader reader = null;
 		try {
 			reader = new FileReader(merrillLynchFile);
@@ -43,7 +45,7 @@ public class MerrillLynchPortfolioReader {
 				    String symbol = record.get("Symbol").trim();
 					System.out.println("MERRILL Symbol: " + symbol);
 				    Double quantity = Double.parseDouble(record.get("Quantity").replaceAll(",", "").trim());
-				    PortfolioJPA.makePortfolioItem(portfolio, symbol, quantity);
+				    PortfolioJPA.makePortfolioItem(em, portfolio, symbol, quantity);
 				}
 			}
 		} 
