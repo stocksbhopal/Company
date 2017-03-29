@@ -79,16 +79,17 @@ public class IntentUtils {
 	}
 	
 
-    public static AllSlotValues getCompanyOrSymbol(IntentRequest request) {
+    public static boolean getCompanyOrSymbol(IntentRequest request, AllSlotValues slotValues) {
+       	Intent intent = request.getIntent();
+    	if (intent.getSlot(InterfaceIntent.SLOT_COMPANY) == null ||
+    		intent.getSlot(InterfaceIntent.SLOT_COMPANY).getValue() == null ||
+    		intent.getSlot(InterfaceIntent.SLOT_COMPANY).getValue().trim().length() == 0) {
+    		return false;
+    	}
+    	
     	String companyOrSymbol = "";
     	String companyOrSymbolSpelt = "";
-    	
-    	Intent intent = request.getIntent();
-    	if (intent.getSlot(InterfaceIntent.SLOT_COMPANY) != null && 
-    		intent.getSlot(InterfaceIntent.SLOT_COMPANY).getValue() != null && 
-    		intent.getSlot(InterfaceIntent.SLOT_COMPANY).getValue().trim().length() > 0) {
-    		companyOrSymbol = intent.getSlot(InterfaceIntent.SLOT_COMPANY).getValue();
-    	}
+		companyOrSymbol = intent.getSlot(InterfaceIntent.SLOT_COMPANY).getValue();
     	
     	// Take the apostrophe out for McDonald's and Dick's Sporting Goods
     	companyOrSymbol = removeTrailingWord(companyOrSymbol.trim().replaceAll("'", "")).trim();
@@ -98,31 +99,35 @@ public class IntentUtils {
     		companyOrSymbolSpelt += piece.charAt(0);
     	}
     	companyOrSymbolSpelt = companyOrSymbolSpelt.trim();
-    	
-    	AllSlotValues cos = new AllSlotValues(companyOrSymbol, companyOrSymbolSpelt);
-    	return cos;
+
+    	slotValues.setCompanyOrSymbol(companyOrSymbol);
+    	slotValues.setCompanyOrSymbolSpelt(companyOrSymbolSpelt);
+       	return true;
     }
     
     
-    public static Double getQuantity(IntentRequest request) {
-    	String quantityStr = null;
+    public static boolean getQuantity(IntentRequest request, AllSlotValues slotValues) {
     	Intent intent = request.getIntent();
-    	if (intent.getSlot(InterfaceIntent.SLOT_QUANTITY) != null && 
-    		intent.getSlot(InterfaceIntent.SLOT_QUANTITY).getValue() != null && 
-    		intent.getSlot(InterfaceIntent.SLOT_QUANTITY).getValue().trim().length() > 0) {
-    		quantityStr = intent.getSlot(InterfaceIntent.SLOT_QUANTITY).getValue();
-    	}
+    	if (intent.getSlot(InterfaceIntent.SLOT_QUANTITY) == null ||
+        	intent.getSlot(InterfaceIntent.SLOT_QUANTITY).getValue() == null ||
+        	intent.getSlot(InterfaceIntent.SLOT_QUANTITY).getValue().trim().length() == 0) {
+    		return false;
+        }
+
+    	String quantityStr = null;
+    	quantityStr = intent.getSlot(InterfaceIntent.SLOT_QUANTITY).getValue();
     	if (quantityStr == null) {
-    		return null;
+    		return false;
     	}
     	
     	try {
     		Double quantity = Double.parseDouble(quantityStr);
-    		return quantity;
+    		slotValues.setQuantity(quantity);
+    		return true;
     	}
     	catch (Exception e) {
     		logger.log(Level.SEVERE, intent.getName() + " given bad value for quantity: " + quantityStr, e);
     	}
-    	return null;
+    	return false;
     }
 }

@@ -85,9 +85,9 @@ public class CompanyJPA {
 	}
 
 	
-	public static Company fetchCompanyByNameOrSymbol(EntityManager em, AllSlotValues companyOrSymbol) {
-		String cs = companyOrSymbol.getCompanyOrSymbol();
-		String css = companyOrSymbol.getCompanyOrSymbolSpelt();
+	public static Company fetchCompanyByNameOrSymbol(EntityManager em, AllSlotValues slotValues) {
+		String cs = slotValues.getCompanyOrSymbol();
+		String css = slotValues.getCompanyOrSymbolSpelt();
 
 		if (cs != null) {
 			List<CompanyNamePrefix> cnpList = fetchCompanyListByNamePrefix(em, cs);

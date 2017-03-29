@@ -19,8 +19,7 @@ public class PortfolioJPA {
 	public static final String MY_PORTFOLIO_NAME = "MyPortfolio";
 
 	
-	public static Portfolio fetchPortfolio(String name, String alexaUserId) {
-		EntityManager em = JPAHelper.getEntityManager();
+	public static Portfolio fetchPortfolio(EntityManager em, String name, String alexaUserId) {
 		try {
 			Portfolio portfolio = em.createQuery("SELECT p FROM Portfolio p WHERE name = :name AND alexaUserId = :alexaUserId", Portfolio.class)
 				.setParameter("name", name)
@@ -33,8 +32,7 @@ public class PortfolioJPA {
 	}
 
 	
-	public static Portfolio deletePortfolioItemList(String name, String alexaUserId) {
-		EntityManager em = JPAHelper.getEntityManager();
+	public static Portfolio deletePortfolioItemList(EntityManager em, String name, String alexaUserId) {
 		try {
 			em.createQuery("DELETE FROM PortfolioItem WHERE portfolioId IN (SELECT id FROM Portfolio WHERE name = :name AND alexaUserId = :alexaUserId)")
 				.setParameter("name", name)
@@ -46,8 +44,8 @@ public class PortfolioJPA {
 	}
 	
 	
-	public static Portfolio fetchOrCreatePortfolio(String alexaUserId) {
-		Portfolio portfolio = PortfolioJPA.fetchPortfolio(MY_PORTFOLIO_NAME, alexaUserId);
+	public static Portfolio fetchOrCreatePortfolio(EntityManager em, String alexaUserId) {
+		Portfolio portfolio = PortfolioJPA.fetchPortfolio(em, MY_PORTFOLIO_NAME, alexaUserId);
 		if (portfolio == null) {
 			portfolio = new Portfolio();
 			portfolio.setName(MY_PORTFOLIO_NAME);
@@ -88,7 +86,8 @@ public class PortfolioJPA {
 
 	@SuppressWarnings("unchecked")
 	public static List<PortfolioItemData> fetchPortfolioItemDataWithEarnings(
-		String portfolioName, String portfolioAlexaUserId, LocalDate startDate, LocalDate endDate) {
+		EntityManager em, String portfolioName, String portfolioAlexaUserId, LocalDate startDate, LocalDate endDate) {
+		
 		String sql = 
 			"SELECT DISTINCT c.symbol, c.speechName, pi.quantity " +
 			"FROM Company AS c, Portfolio AS p, PortfolioItem AS pi, EarningsDate AS e " +
@@ -100,7 +99,7 @@ public class PortfolioJPA {
 				"AND e.earningsDate >= :startDate AND e.earningsDate <= :endDate " +
 			"ORDER BY c.speechName ASC";
 		try {
-			List<Object[]> list = JPAHelper.getEntityManager().createNativeQuery(sql)
+			List<Object[]> list = em.createNativeQuery(sql)
 					.setParameter("portfolioName", portfolioName)
 					.setParameter("portfolioAlexaUserId", portfolioAlexaUserId)
 					.setParameter("startDate", startDate)

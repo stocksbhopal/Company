@@ -13,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
 @Entity
 @Cacheable(false)
@@ -33,6 +34,7 @@ public class Portfolio {
 	@OneToMany(mappedBy="portfolio", cascade=CascadeType.ALL)
 	private List<PortfolioItem> portfolioItemList;
 	
+	@Transient
 	private transient Map<String, PortfolioItem> portfolioItemBySymbolMap = new HashMap<>();
 	
 	
@@ -89,6 +91,10 @@ public class Portfolio {
 	}
 
 
+	/**
+	 * Do NOT get this list and add to it with a List.add().
+	 * That will not put the new item in the Map<>.
+	 */
 	public List<PortfolioItem> getPortfolioItemList() {
 		return portfolioItemList;
 	}
@@ -96,6 +102,9 @@ public class Portfolio {
 
 	public void setPortfolioItemList(List<PortfolioItem> portfolioItemList) {
 		this.portfolioItemList = portfolioItemList;
+		for (PortfolioItem portfolioItem : portfolioItemList) {
+			portfolioItemBySymbolMap.put(portfolioItem.getCompany().getSymbol(), portfolioItem);
+		}
 	}
 
 
@@ -108,5 +117,16 @@ public class Portfolio {
 
 	public Map<String, PortfolioItem> getPortfolioItemBySymbolMap() {
 		return portfolioItemBySymbolMap;
+	}
+	
+	
+	public PortfolioItem getPortfolioItemBySymbol(String symbol) {
+		return portfolioItemBySymbolMap.get(symbol);
+	}
+	
+	
+	public void addPortfolioItem(PortfolioItem portfolioItem) {
+		portfolioItemList.add(portfolioItem);
+		portfolioItemBySymbolMap.put(portfolioItem.getCompany().getSymbol(), portfolioItem);
 	}
 }

@@ -6,12 +6,15 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javax.persistence.EntityManager;
+
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.Session;
 import com.amazon.speech.speechlet.SpeechletException;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.amazon.speech.ui.Reprompt;
+import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.PortfolioItemData;
 import com.sanjoyghosh.company.db.PortfolioJPA;
 import com.sanjoyghosh.company.source.nasdaq.NasdaqRealtimeQuote;
@@ -44,10 +47,10 @@ public class IntentGetMyStocksWithEarnings implements InterfaceIntent {
     }
     
     
-    private SpeechletResponse respondWithEarningsInfo(IntentRequest request, Session session, LocalDateRange dateRange) {
+    private SpeechletResponse respondWithEarningsInfo(EntityManager em, IntentRequest request, Session session, LocalDateRange dateRange) {
 		String speech = "";
 		List<PortfolioItemData> portfolioItemDataList = PortfolioJPA.fetchPortfolioItemDataWithEarnings(
-			PortfolioJPA.MY_PORTFOLIO_NAME, session.getUser().getUserId(), dateRange.getStartDate(), dateRange.getEndDate());
+			em, PortfolioJPA.MY_PORTFOLIO_NAME, session.getUser().getUserId(), dateRange.getStartDate(), dateRange.getEndDate());
 		if (portfolioItemDataList == null || portfolioItemDataList.size() == 0) {
 			speech = "Sorry you don't have any stocks with earnings " + dateRange.toAlexaString() + ".";
 		}
@@ -97,13 +100,22 @@ public class IntentGetMyStocksWithEarnings implements InterfaceIntent {
 	@Override
 	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
 		SpeechletResponse response = null;
-		LocalDateRange dateRange = IntentUtils.getValidDateRange(request);
-		if (dateRange == null) {
-			response = respondToInvalidTimeFrame(request, session);
+		EntityManager em = null;
+		try {
+			em = JPAHelper.getEntityManager();
+			LocalDateRange dateRange = IntentUtils.getValidDateRange(request);
+			if (dateRange == null) {
+				response = respondToInvalidTimeFrame(request, session);
+			}
+			else {
+				response = respondWithEarningsInfo(em, request, session, dateRange);
+			}
+			return response;
 		}
-		else {
-			response = respondWithEarningsInfo(request, session, dateRange);
+		finally {
+			if (em != null) {
+				em.close();
+			}
 		}
-		return response;
 	}
 }

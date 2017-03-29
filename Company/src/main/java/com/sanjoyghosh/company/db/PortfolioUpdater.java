@@ -16,8 +16,8 @@ public class PortfolioUpdater {
 	public static void main(String[] args) {
 		EntityManager em = JPAHelper.getEntityManager();
 		em.getTransaction().begin();
-		PortfolioJPA.deletePortfolioItemList(PortfolioJPA.MY_PORTFOLIO_NAME, MY_ALEXA_USER_ID);
-		Portfolio portfolio = PortfolioJPA.fetchOrCreatePortfolio(PortfolioUpdater.MY_ALEXA_USER_ID);
+		PortfolioJPA.deletePortfolioItemList(em, PortfolioJPA.MY_PORTFOLIO_NAME, MY_ALEXA_USER_ID);
+		Portfolio portfolio = PortfolioJPA.fetchOrCreatePortfolio(em, PortfolioUpdater.MY_ALEXA_USER_ID);
 		
 		FidelityPortfolioReader fidelityReader = new FidelityPortfolioReader(portfolio);
 		File[] fidelityFiles = fidelityReader.getFidelityHoldingsFiles();
