@@ -29,10 +29,11 @@ public class IntentStockOnList implements InterfaceIntent {
     	boolean needsQuantity = 
     		intentName.equals(InterfaceIntent.INTENT_CREATE_STOCK_ON_LIST) ||
     		intentName.equals(InterfaceIntent.INTENT_UPDATE_STOCK_ON_LIST);
+    	String alexaUserId = session.getUser().getUserId();
+
     	AllSlotValues slotValues = new AllSlotValues();
     	boolean hasCompanyOrSymbol = IntentUtils.getCompanyOrSymbol(request, slotValues);
     	boolean hasQuantity = IntentUtils.getQuantity(request, slotValues);
-
     	if (!hasCompanyOrSymbol) {
     		
     	}
@@ -49,9 +50,14 @@ public class IntentStockOnList implements InterfaceIntent {
 	    	}
 	    	
 			if (intentName.equals(InterfaceIntent.INTENT_CREATE_STOCK_ON_LIST)) {
-				return createStockOnList(em, request, session, company, (int)slotValues.getQuantity().doubleValue());
+				return createStockOnList(em, request, alexaUserId, company, (int)slotValues.getQuantity().doubleValue());
 			}
-				
+			if (intentName.equals(InterfaceIntent.INTENT_READ_STOCK_ON_LIST)) {
+				return readStockOnList(em, request, alexaUserId, company);
+			}
+			if (intentName.equals(InterfaceIntent.INTENT_LIST_STOCKS_ON_LIST)) {
+				return listStocksOnList(em, session.getUser().getUserId());
+			}
 		}
 		finally {
 			if (em != null) {
@@ -64,8 +70,24 @@ public class IntentStockOnList implements InterfaceIntent {
 	}
 
 
-	private SpeechletResponse createStockOnList(EntityManager em, IntentRequest request, Session session, Company company, int quantity) {
-		Portfolio portfolio = PortfolioJPA.fetchOrCreatePortfolio(em, session.getUser().getUserId());
+	private SpeechletResponse readStockOnList(EntityManager em, IntentRequest request, String alexaUserId, Company company) {
+		Portfolio portfolio = PortfolioJPA.fetchOrCreatePortfolio(em, alexaUserId);
+		PortfolioItem portfolioItem = portfolio.getPortfolioItemBySymbol(company.getSymbol());
+		String text = "";
+		if (portfolioItem == null) {
+			text = "You have no shares of " + company.getName() + " on your list.";
+		}
+		else {
+			text = "You have " + (int)portfolioItem.getQuantity() + " shares of " + company.getName() + " on your list.";
+		}
+		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
+		outputSpeech.setText(text);
+		return SpeechletResponse.newTellResponse(outputSpeech);
+	}
+
+
+	private SpeechletResponse createStockOnList(EntityManager em, IntentRequest request, String alexaUserId, Company company, int quantity) {
+		Portfolio portfolio = PortfolioJPA.fetchOrCreatePortfolio(em, alexaUserId);
 		PortfolioItem portfolioItem = portfolio.getPortfolioItemBySymbol(company.getSymbol());
 		if (portfolioItem != null) {
 			
@@ -94,7 +116,23 @@ public class IntentStockOnList implements InterfaceIntent {
 		}
 				
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
-		outputSpeech.setText("Put " + quantity + " shares of " + company.getName() + " to the list");
+		outputSpeech.setText("Put " + quantity + " shares of " + company.getName() + " on the list");
+		return SpeechletResponse.newTellResponse(outputSpeech);
+	}
+
+
+	private SpeechletResponse listStocksOnList(EntityManager em, String alexaUserId) {
+		Portfolio portfolio = PortfolioJPA.fetchOrCreatePortfolio(em, alexaUserId);
+		String text = "Sorry, you have no stocks in your list.";
+		if (!portfolio.isEmpty()) {
+			text = "You have ";
+			for (PortfolioItem item : portfolio.getPortfolioItemList()) {
+				text += (int)item.getQuantity() + " shares of " + item.getCompany().getName() + ", ";
+			}
+			text += " in your list.";
+		}
+		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
+		outputSpeech.setText(text);
 		return SpeechletResponse.newTellResponse(outputSpeech);
 	}
 }

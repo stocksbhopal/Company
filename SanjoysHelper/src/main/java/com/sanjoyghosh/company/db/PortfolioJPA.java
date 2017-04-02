@@ -3,7 +3,6 @@ package com.sanjoyghosh.company.db;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -55,10 +54,7 @@ public class PortfolioJPA {
 			portfolio.setPortfolioItemList(new ArrayList<PortfolioItem>());
 		}
 		else {
-			Map<String, PortfolioItem> portfolioItemBySymbolMap = portfolio.getPortfolioItemBySymbolMap();
-			for (PortfolioItem portfolioItem : portfolio.getPortfolioItemList()) {
-				portfolioItemBySymbolMap.put(portfolioItem.getCompany().getSymbol(), portfolioItem);
-			}
+			portfolio.restorePortfolioItemBySymbolMap();
 		}
 		return portfolio;
 	}
@@ -67,15 +63,14 @@ public class PortfolioJPA {
 	public static void makePortfolioItem(EntityManager em, Portfolio portfolio, String symbol, Double quantity) {
 	    Company company = CompanyJPA.fetchCompanyBySymbol(em, symbol);
 	    if (company != null) {
-	    	PortfolioItem portfolioItem = portfolio.getPortfolioItemBySymbolMap().get(company.getSymbol());
+	    	PortfolioItem portfolioItem = portfolio.getPortfolioItemBySymbol(company.getSymbol());
 	    	if (portfolioItem == null) {
 	    		portfolioItem = new PortfolioItem();
 	    		portfolioItem.setCompany(company);
 	    		portfolioItem.setCreateDate(LocalDate.now());
 	    		portfolioItem.setPortfolio(portfolio);
 	    		
-	    		portfolio.getPortfolioItemBySymbolMap().put(company.getSymbol(), portfolioItem);
-	    		portfolio.getPortfolioItemList().add(portfolioItem);
+	    		portfolio.addPortfolioItem(portfolioItem);
 	    	}
     		portfolioItem.setQuantity(quantity + portfolioItem.getQuantity());
     		portfolioItem.setValidateDate(LocalDate.now());

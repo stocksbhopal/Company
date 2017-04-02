@@ -1,6 +1,7 @@
 package com.sanjoyghosh.company.db.model;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,20 +92,9 @@ public class Portfolio {
 	}
 
 
-	/**
-	 * Do NOT get this list and add to it with a List.add().
-	 * That will not put the new item in the Map<>.
-	 */
-	public List<PortfolioItem> getPortfolioItemList() {
-		return portfolioItemList;
-	}
-
-
 	public void setPortfolioItemList(List<PortfolioItem> portfolioItemList) {
 		this.portfolioItemList = portfolioItemList;
-		for (PortfolioItem portfolioItem : portfolioItemList) {
-			portfolioItemBySymbolMap.put(portfolioItem.getCompany().getSymbol(), portfolioItem);
-		}
+		restorePortfolioItemBySymbolMap();
 	}
 
 
@@ -115,11 +105,6 @@ public class Portfolio {
 	}
 
 
-	public Map<String, PortfolioItem> getPortfolioItemBySymbolMap() {
-		return portfolioItemBySymbolMap;
-	}
-	
-	
 	public PortfolioItem getPortfolioItemBySymbol(String symbol) {
 		return portfolioItemBySymbolMap.get(symbol);
 	}
@@ -128,5 +113,23 @@ public class Portfolio {
 	public void addPortfolioItem(PortfolioItem portfolioItem) {
 		portfolioItemList.add(portfolioItem);
 		portfolioItemBySymbolMap.put(portfolioItem.getCompany().getSymbol(), portfolioItem);
+	}
+	
+	
+	public void restorePortfolioItemBySymbolMap() {
+		portfolioItemBySymbolMap.clear();
+		for (PortfolioItem portfolioItem : portfolioItemList) {
+			portfolioItemBySymbolMap.put(portfolioItem.getCompany().getSymbol(), portfolioItem);
+		}		
+	}
+
+
+	public List<PortfolioItem> getPortfolioItemList() {
+		return Collections.unmodifiableList(portfolioItemList);
+	}
+	
+	
+	public boolean isEmpty() {
+		return portfolioItemList == null || portfolioItemList.size() == 0;
 	}
 }
