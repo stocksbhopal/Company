@@ -38,7 +38,7 @@ public class IntentGetMyStocks implements InterfaceIntent {
 					speech += ((int)portfolioItem.getQuantity()) + " shares of " + portfolioItem.getCompany().getSpeechName() + ", ";
 				}
 			}
-			logger.info(LoggerUtils.makeLogString(session, speech));
+			logger.info(LoggerUtils.makeLogString(session.getUser().getUserId(), speech));
 			PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 			outputSpeech.setText(speech);
 			return SpeechletResponse.newTellResponse(outputSpeech);	

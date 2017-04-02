@@ -2,6 +2,8 @@ package com.sanjoyghosh.company.earnings.lambda;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.LaunchRequest;
@@ -12,12 +14,12 @@ import com.amazon.speech.speechlet.Speechlet;
 import com.amazon.speech.speechlet.SpeechletException;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
-import com.sanjoyghosh.company.earnings.intent.IntentStockOnList;
 import com.sanjoyghosh.company.earnings.intent.IntentGetMyStocks;
 import com.sanjoyghosh.company.earnings.intent.IntentGetMyStocksWithEarnings;
 import com.sanjoyghosh.company.earnings.intent.IntentGetStockPrice;
 import com.sanjoyghosh.company.earnings.intent.IntentMyStocksMovers;
 import com.sanjoyghosh.company.earnings.intent.IntentMyStocksStatus;
+import com.sanjoyghosh.company.earnings.intent.IntentStockOnList;
 import com.sanjoyghosh.company.earnings.intent.IntentStopCancel;
 import com.sanjoyghosh.company.earnings.intent.IntentUpdatePrices;
 import com.sanjoyghosh.company.earnings.intent.InterfaceIntent;
@@ -25,6 +27,8 @@ import com.sanjoyghosh.company.earnings.intent.LaunchSanjoysHelper;
 import com.sanjoyghosh.company.logs.CloudWatchLogger;
 
 public class EarningsSpeechlet implements Speechlet  {
+
+    private static final Logger logger = Logger.getLogger(EarningsSpeechlet.class.getName());
 
     private static final Map<String, InterfaceIntent> intentInterfaceByIntentNameMap = new HashMap<>();
     static {    	
@@ -36,6 +40,7 @@ public class EarningsSpeechlet implements Speechlet  {
     	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_UPDATE_STOCK_ON_LIST, new IntentStockOnList());
     	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_DELETE_STOCK_ON_LIST, new IntentStockOnList());
     	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_LIST_STOCKS_ON_LIST, new IntentStockOnList());
+    	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_CLEAR_STOCKS_ON_LIST, new IntentStockOnList());
 
     	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_GET_STOCK_PRICE, new IntentGetStockPrice());
 		
@@ -70,9 +75,18 @@ public class EarningsSpeechlet implements Speechlet  {
 	@Override
 	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
 		String intentName = request.getIntent().getName();
-		if (intentName.equals("AMAZON.YesIntent")) {
-			String lastIntentName = (String) session.getAttribute(InterfaceIntent.ATTR_LAST_INTENT);
-			if (lastIntentName.equals(InterfaceIntent.INTENT_ADD_COMPANY)) {
+		if (intentName.equals("AMAZON.YesIntent") || intentName.equals("AMAZON.NoIntent")) {
+			try {
+				String lastIntentName = (String) session.getAttribute(InterfaceIntent.ATTR_LAST_INTENT);
+				if (lastIntentName != null) {
+					InterfaceIntent interfaceIntent = intentInterfaceByIntentNameMap.get(lastIntentName);
+					if (interfaceIntent != null) {
+						return interfaceIntent.onIntent(request, session);
+					}				
+				}
+			}
+			catch (Exception e) {
+				logger.log(Level.SEVERE, "Exception in confirmation", e);
 			}
 		}
 		if (intentName.equals("AMAZON.HelpIntent")) {

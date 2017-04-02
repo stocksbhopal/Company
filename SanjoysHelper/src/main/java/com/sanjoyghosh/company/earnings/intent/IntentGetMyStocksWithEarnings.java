@@ -76,7 +76,7 @@ public class IntentGetMyStocksWithEarnings implements InterfaceIntent {
 				}
 			}
 		}
-		logger.info(LoggerUtils.makeLogString(session, speech));
+		logger.info(LoggerUtils.makeLogString(session.getUser().getUserId(), speech));
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 		outputSpeech.setText(speech);
 		return SpeechletResponse.newTellResponse(outputSpeech);
@@ -92,7 +92,7 @@ public class IntentGetMyStocksWithEarnings implements InterfaceIntent {
 		repromptSpeech.setText("Sorry, need a time frame less than 31 days ahead, like today or next week.");
 		reprompt.setOutputSpeech(repromptSpeech);
 		
-		logger.info(LoggerUtils.makeLogString(session, request.getIntent().getName() + " user did not provide a proper time frame."));
+		logger.info(LoggerUtils.makeLogString(session.getUser().getUserId(), request.getIntent().getName() + " user did not provide a proper time frame."));
 		return SpeechletResponse.newAskResponse(outputSpeech, reprompt);	    				    	
     }
     

@@ -7,8 +7,9 @@ import com.amazon.speech.speechlet.SpeechletResponse;
 
 public interface InterfaceIntent {
 
-    public static final String ATTR_LAST_INTENT = "ATTR_LAST_INTENT";
-    public static final String ATTR_SYMBOL = "ATTR_SYMBOL";
+    public static final String ATTR_LAST_INTENT = "LAST_INTENT";
+    public static final String ATTR_SYMBOL = "SYMBOL";
+    public static final String ATTR_QUANTITY = "QUANTITY";
 
     public static final String SLOT_COMPANY = "company";    
     public static final String SLOT_DATE = "date";
@@ -19,6 +20,7 @@ public interface InterfaceIntent {
     public static final String INTENT_UPDATE_STOCK_ON_LIST = "UpdateStockOnList";
     public static final String INTENT_DELETE_STOCK_ON_LIST = "DeleteStockOnList";
     public static final String INTENT_LIST_STOCKS_ON_LIST = "ListStocksOnList";
+    public static final String INTENT_CLEAR_STOCKS_ON_LIST = "ClearStocksOnList";
     
     public static final String INTENT_GET_STOCK_PRICE = "GetStockPrice";
 

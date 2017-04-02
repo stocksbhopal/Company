@@ -66,7 +66,8 @@ public class IntentGetStockPrice implements InterfaceIntent {
 			", " + (quote.getPriceChange() > 0.00D ? "up " : "down ") + priceChangePercent + " percent";
 			
 		}
-		logger.info(LoggerUtils.makeLogString(session, request.getIntent().getName() + " found company:" + company.getSymbol().toUpperCase() + ", for user input:" + slotValues));
+		logger.info(LoggerUtils.makeLogString(session.getUser().getUserId(), 
+			request.getIntent().getName() + " found company:" + company.getSymbol().toUpperCase() + ", for user input:" + slotValues));
 
 		CloudWatchLoggerIntentResult loggerResult = makeCloudWatchLoggerResult(
 			session.getUser().getUserId(), request.getIntent().getName(), RESULT_SUCCESS, company.getSymbol(), slotValues);
@@ -121,11 +122,11 @@ public class IntentGetStockPrice implements InterfaceIntent {
 		catch (Exception e) {
 			loggerResult = makeCloudWatchLoggerResult(
 				session.getUser().getUserId(), request.getIntent().getName(), RESULT_ERROR_EXCEPTION, (company == null ? null : company.getSymbol()), slotValues);
-			logger.log(Level.SEVERE, LoggerUtils.makeLogString(session, intentName + " exception in respondWithPrice()"), e);
+			logger.log(Level.SEVERE, LoggerUtils.makeLogString(session.getUser().getUserId(), intentName + " exception in respondWithPrice()"), e);
 		}
 		
 		CloudWatchLogger.getInstance().addLogEvent(loggerResult);
-		logger.info(LoggerUtils.makeLogString(session, error));
+		logger.info(LoggerUtils.makeLogString(session.getUser().getUserId(), error));
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 		outputSpeech.setText(error);
 		return SpeechletResponse.newTellResponse(outputSpeech);		    	
@@ -145,7 +146,7 @@ public class IntentGetStockPrice implements InterfaceIntent {
 			session.getUser().getUserId(), request.getIntent().getName(), RESULT_INCOMPLETE, null, null, new Date());
 		CloudWatchLogger.getInstance().addLogEvent(loggerResult);
 
-		logger.info(LoggerUtils.makeLogString(session, request.getIntent().getName() + " user did not provide name of company."));
+		logger.info(LoggerUtils.makeLogString(session.getUser().getUserId(), request.getIntent().getName() + " user did not provide name of company."));
 		return SpeechletResponse.newAskResponse(outputSpeech, reprompt);	    	
 	}
 
@@ -156,7 +157,7 @@ public class IntentGetStockPrice implements InterfaceIntent {
 		try {
 			em = JPAHelper.getEntityManager();
 			AllSlotValues slotValues = new AllSlotValues();
-			if (!IntentUtils.getCompanyOrSymbol(request, slotValues)) {	
+			if (!IntentUtils.getCompanyOrSymbol(request, session, slotValues)) {	
 				return respondWithQuestion(request, session);
 			}
 			else {

@@ -8,6 +8,9 @@ import java.util.logging.Logger;
 import com.amazon.speech.slu.Intent;
 import com.amazon.speech.slu.Slot;
 import com.amazon.speech.speechlet.IntentRequest;
+import com.amazon.speech.speechlet.Session;
+import com.amazon.speech.speechlet.SpeechletResponse;
+import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.sanjoyghosh.company.utils.AlexaDateUtils;
 import com.sanjoyghosh.company.utils.LocalDateRange;
 
@@ -79,7 +82,14 @@ public class IntentUtils {
 	}
 	
 
-    public static boolean getCompanyOrSymbol(IntentRequest request, AllSlotValues slotValues) {
+    public static boolean getCompanyOrSymbol(IntentRequest request, Session session, AllSlotValues slotValues) {
+    	String symbol = (String) session.getAttribute(InterfaceIntent.ATTR_SYMBOL);
+    	if (symbol != null) {
+    		slotValues.setCompanyOrSymbol(symbol);
+    		slotValues.setCompanyOrSymbolSpelt("");
+    		return true;
+    	}
+    	
        	Intent intent = request.getIntent();
     	if (intent.getSlot(InterfaceIntent.SLOT_COMPANY) == null ||
     		intent.getSlot(InterfaceIntent.SLOT_COMPANY).getValue() == null ||
@@ -106,7 +116,13 @@ public class IntentUtils {
     }
     
     
-    public static boolean getQuantity(IntentRequest request, AllSlotValues slotValues) {
+    public static boolean getQuantity(IntentRequest request, Session session, AllSlotValues slotValues) {
+    	Double quantity = (Double) session.getAttribute(InterfaceIntent.ATTR_QUANTITY);
+    	if (quantity != null) {
+    		slotValues.setQuantity(quantity);
+    		return true;
+    	}
+    	
     	Intent intent = request.getIntent();
     	if (intent.getSlot(InterfaceIntent.SLOT_QUANTITY) == null ||
         	intent.getSlot(InterfaceIntent.SLOT_QUANTITY).getValue() == null ||
@@ -121,7 +137,7 @@ public class IntentUtils {
     	}
     	
     	try {
-    		Double quantity = Double.parseDouble(quantityStr);
+    		quantity = Double.parseDouble(quantityStr);
     		slotValues.setQuantity(quantity);
     		return true;
     	}
@@ -129,5 +145,12 @@ public class IntentUtils {
     		logger.log(Level.SEVERE, intent.getName() + " given bad value for quantity: " + quantityStr, e);
     	}
     	return false;
+    }
+    
+    
+    public static SpeechletResponse makeTellResponse(String text) {
+		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
+		outputSpeech.setText(text);
+		return SpeechletResponse.newTellResponse(outputSpeech);			
     }
 }
