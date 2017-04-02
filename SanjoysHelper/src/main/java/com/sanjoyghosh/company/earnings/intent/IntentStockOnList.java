@@ -104,14 +104,15 @@ public class IntentStockOnList implements InterfaceIntent {
 					em.getTransaction().begin();					
 					em.remove(portfolioItem);
 					em.getTransaction().commit();
+					return IntentUtils.makeTellResponse("Deleted the shares of " + company.getName() + " from the list.");				
 				}
 				catch (Exception e) {
 					logger.log(Level.SEVERE, "Exception in deleting PortfolioItem", e);
 					if (em.getTransaction().isActive()) {
 						em.getTransaction().rollback();
 					}
+					return IntentUtils.makeTellResponse("Sorry, there was a problem deleting shares of " + company.getName() + " on your list.");
 				}
-				return IntentUtils.makeTellResponse("Deleted the shares of " + company.getName() + " from the list.");				
 			}
 			else {
 				return IntentUtils.makeTellResponse("Ignoring the request to delete the shares of " + company.getName() + " from the list.");				
@@ -183,6 +184,7 @@ public class IntentStockOnList implements InterfaceIntent {
 
 
 	private SpeechletResponse updateStockOnList(EntityManager em, boolean isConfirmation, String intentName, Session session, Company company, int quantity) {
+		
 		Portfolio portfolio = PortfolioJPA.fetchOrCreatePortfolio(em, session.getUser().getUserId());
 		PortfolioItem portfolioItem = portfolio.getPortfolioItemBySymbol(company.getSymbol());
 		if (portfolioItem == null) {
@@ -198,14 +200,15 @@ public class IntentStockOnList implements InterfaceIntent {
 					portfolioItem.setValidateDate(LocalDate.now());
 					em.persist(portfolio);
 					em.getTransaction().commit();
+					return IntentUtils.makeTellResponse("Updated the number of shares of " + company.getName() + " to " + quantity + ".");				
 				}
 				catch (Exception e) {
 					logger.log(Level.SEVERE, "Exception in updating the quantity in PortfolioItem", e);
 					if (em.getTransaction().isActive()) {
 						em.getTransaction().rollback();
 					}
+					return IntentUtils.makeTellResponse("Sorry, could not update the number of shares of " + company.getName() + " on your list.");
 				}
-				return IntentUtils.makeTellResponse("Updated the number of shares of " + company.getName() + " to " + quantity + ".");				
 			}
 			else {
 				return IntentUtils.makeTellResponse("Ignoring the request to change the number of shares.");				
@@ -243,7 +246,8 @@ public class IntentStockOnList implements InterfaceIntent {
 		Portfolio portfolio = PortfolioJPA.fetchOrCreatePortfolio(em, alexaUserId);
 		PortfolioItem portfolioItem = portfolio.getPortfolioItemBySymbol(company.getSymbol());
 		if (portfolioItem != null) {
-			
+			return IntentUtils.makeTellResponse("Sorry, you have already have " + (int) portfolioItem.getQuantity() + 
+				" shares of " + company.getName() + " on your list.");
 		}
 		
 		try {
@@ -257,28 +261,29 @@ public class IntentStockOnList implements InterfaceIntent {
 			portfolio.addPortfolioItem(portfolioItem);
 			em.persist(portfolio);
 			em.getTransaction().commit();
+			return IntentUtils.makeTellResponse("Put " + quantity + " shares of " + company.getName() + " on the list");
 		}
 		catch (Exception e) {
 			logger.log(Level.SEVERE, "Exception in adding PortfolioItem to Portfolio", e);
 			if (em.getTransaction().isActive()) {
 				em.getTransaction().rollback();
 			}
-		}
-				
-		return IntentUtils.makeTellResponse("Put " + quantity + " shares of " + company.getName() + " on the list");
+			return IntentUtils.makeTellResponse("Sorry, could not add " + quantity + " shares of " + company.getName() + " to your list.");
+		}	
 	}
 
 
 	private SpeechletResponse listStocksOnList(EntityManager em, String alexaUserId) {
-		Portfolio portfolio = PortfolioJPA.fetchOrCreatePortfolio(em, alexaUserId);
-		String text = "Sorry, you have no stocks in your list.";
-		if (!portfolio.isEmpty()) {
-			text = "You have ";
-			for (PortfolioItem item : portfolio.getPortfolioItemList()) {
-				text += (int)item.getQuantity() + " shares of " + item.getCompany().getName() + ", ";
-			}
-			text += " in your list.";
+		Portfolio portfolio = PortfolioJPA.fetchPortfolio(em, PortfolioJPA.MY_PORTFOLIO_NAME, alexaUserId);
+		if (portfolio == null || portfolio.isEmpty()) {
+			return IntentUtils.makeTellResponse("Sorry, you have no stocks in your list.");
 		}
+
+		String text = "You have ";
+		for (PortfolioItem item : portfolio.getPortfolioItemList()) {
+			text += (int)item.getQuantity() + " shares of " + item.getCompany().getName() + ", ";
+		}
+		text += " in your list.";
 		return IntentUtils.makeTellResponse(text);
 	}
 }

@@ -74,9 +74,9 @@ public class EarningsSpeechlet implements Speechlet  {
 	
 	@Override
 	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
-		String intentName = request.getIntent().getName();
-		if (intentName.equals("AMAZON.YesIntent") || intentName.equals("AMAZON.NoIntent")) {
-			try {
+		try {
+			String intentName = request.getIntent().getName();
+			if (intentName.equals("AMAZON.YesIntent") || intentName.equals("AMAZON.NoIntent")) {
 				String lastIntentName = (String) session.getAttribute(InterfaceIntent.ATTR_LAST_INTENT);
 				if (lastIntentName != null) {
 					InterfaceIntent interfaceIntent = intentInterfaceByIntentNameMap.get(lastIntentName);
@@ -85,22 +85,27 @@ public class EarningsSpeechlet implements Speechlet  {
 					}				
 				}
 			}
-			catch (Exception e) {
-				logger.log(Level.SEVERE, "Exception in confirmation", e);
+			if (intentName.equals("AMAZON.HelpIntent")) {
+				return LaunchSanjoysHelper.onLaunch(session);
 			}
+	
+			InterfaceIntent interfaceIntent = intentInterfaceByIntentNameMap.get(intentName);
+			if (interfaceIntent != null) {
+				return interfaceIntent.onIntent(request, session);
+			}
+	
+			PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
+			outputSpeech.setText("Finance Helper has no idea what to do with this intent: " + intentName);
+			return SpeechletResponse.newTellResponse(outputSpeech);
 		}
-		if (intentName.equals("AMAZON.HelpIntent")) {
-			return LaunchSanjoysHelper.onLaunch(session);
+		catch (SpeechletException e) {
+			logger.log(Level.SEVERE, "SpeechletException in EarningsSpeechlet.onIntent()", e);
+			throw e;
 		}
-
-		InterfaceIntent interfaceIntent = intentInterfaceByIntentNameMap.get(intentName);
-		if (interfaceIntent != null) {
-			return interfaceIntent.onIntent(request, session);
+		catch (Throwable e) {
+			logger.log(Level.SEVERE, "Exception in EarningsSpeechlet.onIntent()", e);
+			throw new SpeechletException(e);
 		}
-
-		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
-		outputSpeech.setText("Finance Helper has no idea what to do with this intent: " + intentName);
-		return SpeechletResponse.newTellResponse(outputSpeech);
 	}
 
 	
