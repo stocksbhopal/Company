@@ -44,6 +44,9 @@ insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values 
 insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('HON', 'honey well', 1);
 insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('SWKS', 'sky works', 1);
 insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('MBLY', 'mobile i', 1);
+insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('C', 'city group', 1);
+insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('C', 'citi bank', 1);
+
 
 update CompanyNamePrefix set symbol = 'SNAP' where companyNamePrefix = 'snap';
 update CompanyNamePrefix set companyNamePrefix = 'CA' where symbol = 'CA';
