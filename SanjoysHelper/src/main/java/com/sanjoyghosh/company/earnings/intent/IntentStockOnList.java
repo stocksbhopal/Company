@@ -82,8 +82,7 @@ public class IntentStockOnList implements InterfaceIntent {
 			}
 		}
 		
-		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
-		return SpeechletResponse.newTellResponse(outputSpeech);
+		return IntentUtils.makeTellResponse("Sorry " + getClass().getName() + " does not know what to do with intent: " + request.getIntent().getName());
 	}
 
 

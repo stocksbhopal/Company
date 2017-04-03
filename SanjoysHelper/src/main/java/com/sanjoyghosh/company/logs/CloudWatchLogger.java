@@ -1,5 +1,7 @@
 package com.sanjoyghosh.company.logs;
 
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -21,14 +23,15 @@ import com.sanjoyghosh.company.db.JPAHelper;
 
 public class CloudWatchLogger {
 
-	private static final String GROUP_NAME = "FinanceHelper";
+	private static final String GROUP_NAME_PREFIX = "FinanceHelper-";
 	private static final String STREAM_NAME_PREFIX = "IntentResult-";
-	private static final CloudWatchLogger instance = new CloudWatchLogger(GROUP_NAME);
+	private static CloudWatchLogger instance = null;
 	
     private static final Logger logger = Logger.getLogger(CloudWatchLogger.class.getName());
 	
 	
 	private AWSLogs								cloudWatchLogger;
+	private String								groupName;
 	private String								streamName;
 	private String								nextSequenceToken;
 	private boolean 							useLogEventListOne;
@@ -37,7 +40,13 @@ public class CloudWatchLogger {
 	
 	
 	@SuppressWarnings("deprecation")
-	private CloudWatchLogger(String groupName) {
+	private CloudWatchLogger(String groupNamePrefix) {
+		try {
+			this.groupName = groupNamePrefix + Inet4Address.getLocalHost().getHostName();
+		} 
+		catch (UnknownHostException e) {
+			logger.log(Level.SEVERE, "Exception in getting local host name", e);
+		}
 		this.useLogEventListOne = true;
 		this.intentResultListOne = new ArrayList<>();
 		this.intentResultListTwo = new ArrayList<>();
@@ -52,7 +61,7 @@ public class CloudWatchLogger {
 			@Override
 			public void run() {
 				try {
-					instance.flushLogEventList();
+					getInstance().flushLogEventList();
 				}
 				catch (Throwable e) {
 					logger.log(Level.SEVERE, "Exception in flushLogEventList()", e);
@@ -64,12 +73,12 @@ public class CloudWatchLogger {
 
 	public synchronized boolean ensureGroupAndStream() {
 		try {
-			CreateLogGroupRequest groupRequest = new CreateLogGroupRequest(GROUP_NAME);
+			CreateLogGroupRequest groupRequest = new CreateLogGroupRequest(groupName);
 			cloudWatchLogger.createLogGroup(groupRequest);
 		}
 		catch (ResourceAlreadyExistsException e) {}
 		catch (Exception e) {
-			logger.log(Level.SEVERE, "Failed to create log group: " + GROUP_NAME, e);
+			logger.log(Level.SEVERE, "Failed to create log group: " + groupName, e);
 			return false;
 		}
 		
@@ -77,7 +86,7 @@ public class CloudWatchLogger {
 			streamName = STREAM_NAME_PREFIX + System.currentTimeMillis();
 		}
 		try {
-			CreateLogStreamRequest streamRequest = new CreateLogStreamRequest(GROUP_NAME, streamName);
+			CreateLogStreamRequest streamRequest = new CreateLogStreamRequest(groupName, streamName);
 			cloudWatchLogger.createLogStream(streamRequest);
 			nextSequenceToken = null;
 		}
@@ -129,7 +138,7 @@ public class CloudWatchLogger {
 			
 			PutLogEventsRequest logRequest = new PutLogEventsRequest();
 			logRequest.setLogEvents(logEventList);
-			logRequest.setLogGroupName(GROUP_NAME);
+			logRequest.setLogGroupName(groupName);
 			logRequest.setLogStreamName(streamName);
 			logRequest.setSequenceToken(nextSequenceToken);
 	
@@ -150,7 +159,10 @@ public class CloudWatchLogger {
 	}
 
 
-	public static CloudWatchLogger getInstance() {
+	public synchronized static CloudWatchLogger getInstance() {
+		if (instance == null) {
+			instance = new CloudWatchLogger(GROUP_NAME_PREFIX);
+		}
 		return instance;
 	}
 }
