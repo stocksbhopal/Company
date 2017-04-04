@@ -1,6 +1,8 @@
 package com.sanjoyghosh.company.earnings.intent;
 
 import java.time.LocalDate;
+import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,11 +20,17 @@ import com.sanjoyghosh.company.db.PortfolioJPA;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.db.model.Portfolio;
 import com.sanjoyghosh.company.db.model.PortfolioItem;
+import com.sanjoyghosh.company.logs.CloudWatchLogger;
+import com.sanjoyghosh.company.logs.CloudWatchLoggerIntentResult;
 
 public class IntentStockOnList implements InterfaceIntent {
 
     private static final Logger logger = Logger.getLogger(IntentStockOnList.class.getName());
    
+    public static final int RESULT_SUCCESS = 0;
+    public static final int RESULT_ERROR_EXCEPTION = -1;
+    public static final int RESULT_ERROR_STOCK_ALREADY_ON_LIST = -2;
+    
     
     @Override
 	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
@@ -56,10 +64,10 @@ public class IntentStockOnList implements InterfaceIntent {
 	    	}
 	    	
 			if (intentName.equals(InterfaceIntent.INTENT_CREATE_STOCK_ON_LIST)) {
-				return createStockOnList(em, alexaUserId, company, (int)slotValues.getQuantity().doubleValue());
+				return createStockOnList(em, alexaUserId, intentName, company, (int)slotValues.getQuantity().doubleValue(), slotValues);
 			}
 			if (intentName.equals(InterfaceIntent.INTENT_READ_STOCK_ON_LIST)) {
-				return readStockOnList(em, alexaUserId, company);
+				return readStockOnList(em, alexaUserId, intentName, company, slotValues);
 			}
 			// intentName might have been changed for AMAZON.YesIntent and AMAZON.NoIntent.  So get it from the request.
 			if (intentName.equals(InterfaceIntent.INTENT_UPDATE_STOCK_ON_LIST)) {
@@ -69,7 +77,7 @@ public class IntentStockOnList implements InterfaceIntent {
 				return deleteStockOnList(em, isConfirmation, request.getIntent().getName(), session, company);
 			}
 			if (intentName.equals(InterfaceIntent.INTENT_LIST_STOCKS_ON_LIST)) {
-				return listStocksOnList(em, session.getUser().getUserId());
+				return listStocksOnList(em, session.getUser().getUserId(), intentName);
 			}
 			// intentName might have been changed for AMAZON.YesIntent and AMAZON.NoIntent.  So get it from the request.
 			if (intentName.equals(InterfaceIntent.INTENT_CLEAR_STOCKS_ON_LIST)) {
@@ -231,22 +239,22 @@ public class IntentStockOnList implements InterfaceIntent {
 	}
 
 
-	private SpeechletResponse readStockOnList(EntityManager em, String alexaUserId, Company company) {
+	private SpeechletResponse readStockOnList(EntityManager em, String alexaUserId, String intentName, Company company, AllSlotValues slotValues) {
 		Portfolio portfolio = PortfolioJPA.fetchOrCreatePortfolio(em, alexaUserId);
 		PortfolioItem portfolioItem = portfolio.getPortfolioItemBySymbol(company.getSymbol());
-		String text = (portfolioItem == null) ?
+		String speechText = (portfolioItem == null) ?
 			"You have no shares of " + company.getName() + " on your list." :
 			"You have " + (int)portfolioItem.getQuantity() + " shares of " + company.getName() + " on your list.";
-		return IntentUtils.makeTellResponse(text);
+		return IntentUtils.makeTellResponse(alexaUserId, intentName, RESULT_SUCCESS, "", slotValues, speechText, speechText);
 	}
 
 
-	private SpeechletResponse createStockOnList(EntityManager em, String alexaUserId, Company company, int quantity) {
+	private SpeechletResponse createStockOnList(EntityManager em, String alexaUserId, String intentName, Company company, int quantity, AllSlotValues slotValues) {
 		Portfolio portfolio = PortfolioJPA.fetchOrCreatePortfolio(em, alexaUserId);
 		PortfolioItem portfolioItem = portfolio.getPortfolioItemBySymbol(company.getSymbol());
 		if (portfolioItem != null) {
-			return IntentUtils.makeTellResponse("Sorry, you have already have " + (int) portfolioItem.getQuantity() + 
-				" shares of " + company.getName() + " on your list.");
+			String speechText = "Sorry, you have already have " + (int) portfolioItem.getQuantity() + " shares of " + company.getName() + " on your list.";
+			return IntentUtils.makeTellResponse(alexaUserId, intentName, RESULT_ERROR_STOCK_ALREADY_ON_LIST, "", slotValues, speechText, speechText);
 		}
 		
 		try {
@@ -260,29 +268,40 @@ public class IntentStockOnList implements InterfaceIntent {
 			portfolio.addPortfolioItem(portfolioItem);
 			em.persist(portfolio);
 			em.getTransaction().commit();
-			return IntentUtils.makeTellResponse("Put " + quantity + " shares of " + company.getName() + " on the list");
+			
+			String speechText = "Put " + quantity + " shares of " + company.getName() + " on the list";
+			return IntentUtils.makeTellResponse(alexaUserId, intentName, RESULT_SUCCESS, "", slotValues, speechText, speechText);
 		}
 		catch (Exception e) {
 			logger.log(Level.SEVERE, "Exception in adding PortfolioItem to Portfolio", e);
 			if (em.getTransaction().isActive()) {
 				em.getTransaction().rollback();
 			}
-			return IntentUtils.makeTellResponse("Sorry, could not add " + quantity + " shares of " + company.getName() + " to your list.");
+			
+			String speechText = "Sorry, could not add " + quantity + " shares of " + company.getName() + " to your list.";
+			return IntentUtils.makeTellResponse(alexaUserId, intentName, RESULT_ERROR_EXCEPTION, "", slotValues, speechText, speechText, e);
 		}	
 	}
 
 
-	private SpeechletResponse listStocksOnList(EntityManager em, String alexaUserId) {
+	private SpeechletResponse listStocksOnList(EntityManager em, String alexaUserId, String intentName) {
+		int numStocks = 0;
+		String speechText = "";
 		Portfolio portfolio = PortfolioJPA.fetchPortfolio(em, PortfolioJPA.MY_PORTFOLIO_NAME, alexaUserId);
 		if (portfolio == null || portfolio.isEmpty()) {
-			return IntentUtils.makeTellResponse("Sorry, you have no stocks in your list.");
+			speechText = "Sorry, you have no stocks in your list.";
 		}
-
-		String text = "You have ";
-		for (PortfolioItem item : portfolio.getPortfolioItemList()) {
-			text += (int)item.getQuantity() + " shares of " + item.getCompany().getName() + ", ";
-		}
-		text += " in your list.";
-		return IntentUtils.makeTellResponse(text);
+		else {
+			List<PortfolioItem> portfolioItemList = portfolio.getPortfolioItemList();
+			numStocks = portfolioItemList.size();
+			speechText = "You have ";
+			for (PortfolioItem item : portfolioItemList) {
+				speechText += (int)item.getQuantity() + " shares of " + item.getCompany().getName() + ", ";
+			}
+			speechText += " in your list.";
+		}		
+		
+		String loggerMessage = "returned " + numStocks + " stocks.";
+		return IntentUtils.makeTellResponse(alexaUserId, intentName, RESULT_SUCCESS, String.valueOf(numStocks), null, speechText, loggerMessage);
 	}
 }

@@ -149,7 +149,19 @@ public class CloudWatchLogger {
 	}
 	
 
-	public synchronized void addLogEvent(CloudWatchLoggerIntentResult intentResult) {
+	public synchronized void addLogEvent(CloudWatchLoggerIntentResult intentResult, String juliLoggerMessage) {
+		addLogEvent(intentResult, juliLoggerMessage, null);
+	}
+
+
+	public synchronized void addLogEvent(CloudWatchLoggerIntentResult intentResult, String juliLoggerMessage, Throwable e) {
+		if (juliLoggerMessage != null && e != null) {
+			logger.log(Level.SEVERE, juliLoggerMessage, e);
+		}
+		else if (juliLoggerMessage != null) {
+			logger.info(juliLoggerMessage);
+		}
+		
 		if (useLogEventListOne) {
 			intentResultListOne.add(intentResult);
 		}
@@ -158,7 +170,7 @@ public class CloudWatchLogger {
 		}
 	}
 
-
+	
 	public synchronized static CloudWatchLogger getInstance() {
 		if (instance == null) {
 			instance = new CloudWatchLogger(GROUP_NAME_PREFIX);

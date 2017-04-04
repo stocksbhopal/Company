@@ -2,8 +2,6 @@ package com.sanjoyghosh.company.earnings.intent;
 
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
 
@@ -24,7 +22,6 @@ import com.sanjoyghosh.company.source.nasdaq.NasdaqIndexesReader;
 import com.sanjoyghosh.company.source.nasdaq.NasdaqRealtimeQuote;
 import com.sanjoyghosh.company.source.nasdaq.NasdaqRealtimeQuoteReader;
 import com.sanjoyghosh.company.utils.KeyValuePair;
-import com.sanjoyghosh.company.utils.LoggerUtils;
 import com.sanjoyghosh.company.utils.StringUtils;
 
 public class IntentGetStockPrice implements InterfaceIntent {
@@ -35,9 +32,6 @@ public class IntentGetStockPrice implements InterfaceIntent {
 	public static final int RESULT_ERROR_NO_COMPANY = -2;
 	public static final int RESULT_ERROR_EXCEPTION = -3;
 	
-	
-    private static final Logger logger = Logger.getLogger(IntentGetStockPrice.class.getName());
-
     
     private CloudWatchLoggerIntentResult makeCloudWatchLoggerResult(
     	String alexaUserId, String intentName, int result, String response, AllSlotValues slotValues) {
@@ -66,12 +60,12 @@ public class IntentGetStockPrice implements InterfaceIntent {
 			", " + (quote.getPriceChange() > 0.00D ? "up " : "down ") + priceChangePercent + " percent";
 			
 		}
-		logger.info(LoggerUtils.makeLogString(session.getUser().getUserId(), 
-			request.getIntent().getName() + " found company:" + company.getSymbol().toUpperCase() + ", for user input:" + slotValues));
 
+		String intentName = request.getIntent().getName();
+		String juliLoggerMessage = intentName + ": found company:" + company.getSymbol().toUpperCase() + ", for user input:" + slotValues;
 		CloudWatchLoggerIntentResult loggerResult = makeCloudWatchLoggerResult(
-			session.getUser().getUserId(), request.getIntent().getName(), RESULT_SUCCESS, company.getSymbol(), slotValues);
-		CloudWatchLogger.getInstance().addLogEvent(loggerResult);
+			session.getUser().getUserId(), intentName, RESULT_SUCCESS, company.getSymbol(), slotValues);
+		CloudWatchLogger.getInstance().addLogEvent(loggerResult, juliLoggerMessage);
 				
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 		outputSpeech.setText(text);
@@ -122,11 +116,9 @@ public class IntentGetStockPrice implements InterfaceIntent {
 		catch (Exception e) {
 			loggerResult = makeCloudWatchLoggerResult(
 				session.getUser().getUserId(), request.getIntent().getName(), RESULT_ERROR_EXCEPTION, (company == null ? null : company.getSymbol()), slotValues);
-			logger.log(Level.SEVERE, LoggerUtils.makeLogString(session.getUser().getUserId(), intentName + " exception in respondWithPrice()"), e);
 		}
 		
-		CloudWatchLogger.getInstance().addLogEvent(loggerResult);
-		logger.info(LoggerUtils.makeLogString(session.getUser().getUserId(), error));
+		CloudWatchLogger.getInstance().addLogEvent(loggerResult, intentName + ": Exception in respondWithPrice()");
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 		outputSpeech.setText(error);
 		return SpeechletResponse.newTellResponse(outputSpeech);		    	
@@ -142,11 +134,11 @@ public class IntentGetStockPrice implements InterfaceIntent {
 		repromptSpeech.setText("Sorry, need the name or symbol to get the price.");
 		reprompt.setOutputSpeech(repromptSpeech);
 	   	
+		String intentName = request.getIntent().getName();
 		CloudWatchLoggerIntentResult loggerResult = new CloudWatchLoggerIntentResult(
-			session.getUser().getUserId(), request.getIntent().getName(), RESULT_INCOMPLETE, null, null, new Date());
-		CloudWatchLogger.getInstance().addLogEvent(loggerResult);
-
-		logger.info(LoggerUtils.makeLogString(session.getUser().getUserId(), request.getIntent().getName() + " user did not provide name of company."));
+			session.getUser().getUserId(), intentName, RESULT_INCOMPLETE, null, null, new Date());
+		CloudWatchLogger.getInstance().addLogEvent(loggerResult, intentName + ": user did not provide name of company.");
+		
 		return SpeechletResponse.newAskResponse(outputSpeech, reprompt);	    	
 	}
 

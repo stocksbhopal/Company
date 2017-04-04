@@ -14,7 +14,6 @@ import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.PortfolioJPA;
 import com.sanjoyghosh.company.db.model.Portfolio;
 import com.sanjoyghosh.company.db.model.PortfolioItem;
-import com.sanjoyghosh.company.utils.LoggerUtils;
 
 public class IntentGetMyStocks implements InterfaceIntent {
 
@@ -38,7 +37,7 @@ public class IntentGetMyStocks implements InterfaceIntent {
 					speech += ((int)portfolioItem.getQuantity()) + " shares of " + portfolioItem.getCompany().getSpeechName() + ", ";
 				}
 			}
-			logger.info(LoggerUtils.makeLogString(session.getUser().getUserId(), speech));
+			logger.info(speech);
 			PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 			outputSpeech.setText(speech);
 			return SpeechletResponse.newTellResponse(outputSpeech);	

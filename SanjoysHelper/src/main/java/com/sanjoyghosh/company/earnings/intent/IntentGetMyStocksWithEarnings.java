@@ -20,7 +20,6 @@ import com.sanjoyghosh.company.db.PortfolioJPA;
 import com.sanjoyghosh.company.source.nasdaq.NasdaqRealtimeQuote;
 import com.sanjoyghosh.company.source.nasdaq.NasdaqRealtimeQuoteReader;
 import com.sanjoyghosh.company.utils.LocalDateRange;
-import com.sanjoyghosh.company.utils.LoggerUtils;
 
 public class IntentGetMyStocksWithEarnings implements InterfaceIntent {
 
@@ -76,7 +75,7 @@ public class IntentGetMyStocksWithEarnings implements InterfaceIntent {
 				}
 			}
 		}
-		logger.info(LoggerUtils.makeLogString(session.getUser().getUserId(), speech));
+		logger.info(speech);
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 		outputSpeech.setText(speech);
 		return SpeechletResponse.newTellResponse(outputSpeech);
@@ -92,7 +91,7 @@ public class IntentGetMyStocksWithEarnings implements InterfaceIntent {
 		repromptSpeech.setText("Sorry, need a time frame less than 31 days ahead, like today or next week.");
 		reprompt.setOutputSpeech(repromptSpeech);
 		
-		logger.info(LoggerUtils.makeLogString(session.getUser().getUserId(), request.getIntent().getName() + " user did not provide a proper time frame."));
+		logger.info(request.getIntent().getName() + " user did not provide a proper time frame.");
 		return SpeechletResponse.newAskResponse(outputSpeech, reprompt);	    				    	
     }
     

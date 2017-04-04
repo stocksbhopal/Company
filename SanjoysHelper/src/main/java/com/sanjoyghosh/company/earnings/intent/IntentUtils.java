@@ -2,6 +2,7 @@ package com.sanjoyghosh.company.earnings.intent;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -11,6 +12,8 @@ import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.Session;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
+import com.sanjoyghosh.company.logs.CloudWatchLogger;
+import com.sanjoyghosh.company.logs.CloudWatchLoggerIntentResult;
 import com.sanjoyghosh.company.utils.AlexaDateUtils;
 import com.sanjoyghosh.company.utils.LocalDateRange;
 
@@ -148,9 +151,43 @@ public class IntentUtils {
     }
     
     
-    public static SpeechletResponse makeTellResponse(String text) {
+    public static SpeechletResponse makeTellResponse(
+    	String alexaUserId, 
+    	String intentName, 
+    	int result, 
+    	String resultText,
+    	AllSlotValues slotValues,
+    	String speechText, 
+    	String loggerMessage) {
+    	
+		String juliLoggerMessage = intentName + ": " + loggerMessage;
+    	CloudWatchLoggerIntentResult loggerResult = new CloudWatchLoggerIntentResult(alexaUserId, intentName, result, 
+    		resultText, slotValues == null ? null : slotValues.toKeyValuePairList(), new Date());
+    	CloudWatchLogger.getInstance().addLogEvent(loggerResult, juliLoggerMessage);
+
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
-		outputSpeech.setText(text);
+		outputSpeech.setText(speechText);
+		return SpeechletResponse.newTellResponse(outputSpeech);			
+    }
+
+
+    public static SpeechletResponse makeTellResponse(
+    	String alexaUserId, 
+    	String intentName, 
+    	int result, 
+    	String resultText,
+    	AllSlotValues slotValues,
+    	String speechText, 
+    	String loggerMessage,
+    	Throwable e) {
+    	
+		String juliLoggerMessage = intentName + ": " + loggerMessage;
+    	CloudWatchLoggerIntentResult loggerResult = new CloudWatchLoggerIntentResult(alexaUserId, intentName, result, 
+    		resultText, slotValues == null ? null : slotValues.toKeyValuePairList(), new Date());
+    	CloudWatchLogger.getInstance().addLogEvent(loggerResult, juliLoggerMessage, e);
+
+		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
+		outputSpeech.setText(speechText);
 		return SpeechletResponse.newTellResponse(outputSpeech);			
     }
 }

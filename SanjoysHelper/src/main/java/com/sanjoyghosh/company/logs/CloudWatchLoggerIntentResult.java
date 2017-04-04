@@ -58,11 +58,13 @@ public class CloudWatchLoggerIntentResult {
 	
 	public IntentResultLog toIntentResultLog() {
 		String inputsStr = null;
-		try {
-			inputsStr = new ObjectMapper().writeValueAsString(inputs);
-		} 
-		catch (JsonProcessingException e) {
-			logger.log(Level.SEVERE, "Exception JSON serializing Inputs", e);
+		if (inputs != null) {
+			try {
+				inputsStr = new ObjectMapper().writeValueAsString(inputs);
+			} 
+			catch (JsonProcessingException e) {
+				logger.log(Level.SEVERE, "Exception JSON serializing Inputs", e);
+			}
 		}
 
 		IntentResultLog intentResult = new IntentResultLog();
