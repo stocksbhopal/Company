@@ -67,4 +67,4 @@ insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values 
 // Take out the useless Comcast Companies.
 delete from CompanyNamePrefix where symbol = 'CCV';
 delete from CompanyNamePrefix where symbol = 'CCZ';
-
+delete from CompanyNamePrefix where symbol = 'TLLP' and companyNamePrefix = 'tesoro';
