@@ -58,6 +58,8 @@ update CompanyNamePrefix set companyNamePrefix = 'YY' where symbol = 'YY';
 update CompanyNamePrefix set companyNamePrefix = 'CF' where symbol = 'CFCO';
 update CompanyNamePrefix set companyNamePrefix = 'CF' where symbol = 'CFCOU';
 update CompanyNamePrefix set companyNamePrefix = 'CF' where symbol = 'CFCOW';
+update CompanyNamePrefix set companyNamePrefix = 'BP' where symbol = 'BP';
+
 
 insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('SNAP', 'snapchat', 1);
 insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values ('SNAP', 'snap chat', 1);
