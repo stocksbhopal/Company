@@ -12,6 +12,7 @@ import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.Session;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
+import com.amazon.speech.ui.Reprompt;
 import com.sanjoyghosh.company.logs.CloudWatchLogger;
 import com.sanjoyghosh.company.logs.CloudWatchLoggerIntentResult;
 import com.sanjoyghosh.company.utils.AlexaDateUtils;
@@ -155,12 +156,33 @@ public class IntentUtils {
     	String alexaUserId, 
     	String intentName, 
     	int result, 
+    	AllSlotValues slotValues,
+    	String speechText) {
+    	
+		return makeTellResponse(alexaUserId, intentName, result, "", slotValues, speechText);			
+    }
+
+    
+    public static SpeechletResponse makeAskResponse(
+    	String alexaUserId, 
+    	String intentName, 
+    	int result, 
+    	AllSlotValues slotValues,
+    	String speechText) {
+    	
+    	return makeAskResponse(alexaUserId, intentName, result, "", slotValues, speechText);
+    }
+    
+    
+    public static SpeechletResponse makeTellResponse(
+    	String alexaUserId, 
+    	String intentName, 
+    	int result, 
     	String resultText,
     	AllSlotValues slotValues,
-    	String speechText, 
-    	String loggerMessage) {
+    	String speechText) {
     	
-		String juliLoggerMessage = intentName + ": " + loggerMessage;
+		String juliLoggerMessage = intentName + ": " + speechText;
     	CloudWatchLoggerIntentResult loggerResult = new CloudWatchLoggerIntentResult(alexaUserId, intentName, result, 
     		resultText, slotValues == null ? null : slotValues.toKeyValuePairList(), new Date());
     	CloudWatchLogger.getInstance().addLogEvent(loggerResult, juliLoggerMessage);
@@ -171,17 +193,53 @@ public class IntentUtils {
     }
 
 
+    public static SpeechletResponse makeAskResponse(
+    	String alexaUserId, 
+    	String intentName, 
+    	int result, 
+    	String resultText,
+    	AllSlotValues slotValues,
+    	String speechText) {
+    	
+		String juliLoggerMessage = intentName + ": " + speechText;
+    	CloudWatchLoggerIntentResult loggerResult = new CloudWatchLoggerIntentResult(alexaUserId, intentName, result, 
+    		resultText, slotValues == null ? null : slotValues.toKeyValuePairList(), new Date());
+    	CloudWatchLogger.getInstance().addLogEvent(loggerResult, juliLoggerMessage);
+
+		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
+		outputSpeech.setText(speechText);
+		
+		Reprompt reprompt = new Reprompt();
+		PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
+		repromptSpeech.setText("Sorry, " + speechText);
+		reprompt.setOutputSpeech(repromptSpeech);
+
+		return SpeechletResponse.newAskResponse(outputSpeech, reprompt);			
+    }
+
+    
+    public static SpeechletResponse makeTellResponse(
+    	String alexaUserId, 
+    	String intentName, 
+    	int result, 
+    	AllSlotValues slotValues,
+    	String speechText,
+    	Throwable e) {
+    	
+		return makeTellResponse(alexaUserId, intentName, result, "", slotValues, speechText, e);			
+    }
+
+    
     public static SpeechletResponse makeTellResponse(
     	String alexaUserId, 
     	String intentName, 
     	int result, 
     	String resultText,
     	AllSlotValues slotValues,
-    	String speechText, 
-    	String loggerMessage,
+    	String speechText,
     	Throwable e) {
     	
-		String juliLoggerMessage = intentName + ": " + loggerMessage;
+		String juliLoggerMessage = intentName + ": " + speechText;
     	CloudWatchLoggerIntentResult loggerResult = new CloudWatchLoggerIntentResult(alexaUserId, intentName, result, 
     		resultText, slotValues == null ? null : slotValues.toKeyValuePairList(), new Date());
     	CloudWatchLogger.getInstance().addLogEvent(loggerResult, juliLoggerMessage, e);
