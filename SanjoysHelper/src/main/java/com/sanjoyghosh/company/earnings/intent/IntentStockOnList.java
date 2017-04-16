@@ -248,7 +248,7 @@ public class IntentStockOnList implements InterfaceIntent {
 		Portfolio portfolio = PortfolioJPA.fetchOrCreatePortfolio(em, alexaUserId);
 		PortfolioItem portfolioItem = portfolio.getPortfolioItemBySymbol(company.getSymbol());
 		if (portfolioItem != null) {
-			String speechText = "Sorry, you have already have " + (int) portfolioItem.getQuantity() + " shares of " + company.getName() + " on your list.";
+			String speechText = "Sorry, you already have " + (int) portfolioItem.getQuantity() + " shares of " + company.getName() + " on your list.";
 			return IntentUtils.makeTellResponse(alexaUserId, intentName, RESULT_SUCCESS, company.getSymbol(), slotValues, speechText);
 		}
 		

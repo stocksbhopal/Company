@@ -23,12 +23,11 @@ import com.sanjoyghosh.company.utils.JsoupUtils;
 
 public class YahooEarningsCalendarReader {
 
-	private EntityManager entityManager;
 	private Map<String, Company> companyBySymbolMap;
 	private DateTimeFormatter dateFormatter = DateTimeFormatter.BASIC_ISO_DATE;
 	
 		
-	private void readEarningsCalendarFor(LocalDate date) throws IOException {   
+	private void readEarningsCalendarFor(LocalDate date, EntityManager entityManager) throws IOException {   
     	String yepUrl = "http://biz.yahoo.com/research/earncal/" + date.format(dateFormatter) + ".html";
     	
 		Document doc = null;
@@ -74,12 +73,11 @@ public class YahooEarningsCalendarReader {
 
 	    		if (!hasEarningsDate) {
 		    		EarningsDate earningsDate = new EarningsDate();
-		    		
 		    		earningsDate.setCompanyId(company.getId());
 		    		earningsDate.setSymbol(symbol);
 		    		earningsDate.setEarningsDate(date);
 		    		earningsDate.setBeforeMarketOrAfterMarket(releaseTime);
-		    		
+
 		    		entityManager.persist(earningsDate);
 		    		continue;
 	    		}
@@ -88,21 +86,22 @@ public class YahooEarningsCalendarReader {
     }
 
 	
-	public void readEarningsCalendarforWeek() {
-		entityManager = JPAHelper.getEntityManager();
+	private void readEarningsCalendarforMonth(EntityManager entityManager) {
 		companyBySymbolMap = CompanyUtils.fetchAllCompanyBySymbolMap(entityManager);
-
 		LocalDate date = LocalDate.now();
 		for (int i = 0; i < 31; i++) {
 			try {
-				System.out.println("Getting earnings for " + DateUtils.toDateString(date));
-				
+				System.out.println("Getting earnings for " + DateUtils.toDateString(date));				
 		    	entityManager.getTransaction().begin();		    	
-				readEarningsCalendarFor(date);
+				readEarningsCalendarFor(date, entityManager);
 			    entityManager.getTransaction().commit();
 			} 
 			catch (IOException e) {
 				e.printStackTrace();
+				if (entityManager.getTransaction().isActive()) {
+					entityManager.getTransaction().rollback();
+				}
+				return;
 			}
 			date = date.plusDays(1);
 		}		
@@ -110,8 +109,30 @@ public class YahooEarningsCalendarReader {
 	
 	
 	public static void main(String[] args) {
-		YahooEarningsCalendarReader reader = new YahooEarningsCalendarReader();
-		reader.readEarningsCalendarforWeek();		
+		EntityManager entityManager = null;
+		
+		try {
+			entityManager = JPAHelper.getEntityManager("ec2-52-44-163-130.compute-1.amazonaws.com");
+			YahooEarningsCalendarReader reader = new YahooEarningsCalendarReader();
+			reader.readEarningsCalendarforMonth(entityManager);		
+		}
+		finally {
+			if (entityManager != null) {
+				entityManager.close();
+			}
+		}
+
+		try {
+			entityManager = JPAHelper.getEntityManager("ec2-34-195-18-116.compute-1.amazonaws.com");
+			YahooEarningsCalendarReader reader = new YahooEarningsCalendarReader();
+			reader.readEarningsCalendarforMonth(entityManager);		
+		}
+		finally {
+			if (entityManager != null) {
+				entityManager.close();
+			}
+		}
+		
 		System.exit(0);
 	}
 }
