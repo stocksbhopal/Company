@@ -1,4 +1,4 @@
-package com.sanjoyghosh.company.source.yahoo;
+package com.sanjoyghosh.company.source.nasdaq;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -17,18 +17,17 @@ import com.sanjoyghosh.company.db.CompanyUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.db.model.EarningsDate;
-import com.sanjoyghosh.company.source.nasdaq.NasdaqCompanyUpdater;
 import com.sanjoyghosh.company.utils.DateUtils;
 import com.sanjoyghosh.company.utils.JsoupUtils;
 
-public class YahooEarningsCalendarReader {
+public class NasdaqEarningsCalendarReader {
 
 	private Map<String, Company> companyBySymbolMap;
-	private DateTimeFormatter dateFormatter = DateTimeFormatter.BASIC_ISO_DATE;
+	private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MMM-dd");
 	
 		
-	private void readEarningsCalendarFor(LocalDate date, EntityManager entityManager) throws IOException {   
-    	String yepUrl = "http://biz.yahoo.com/research/earncal/" + date.format(dateFormatter) + ".html";
+	private int readEarningsCalendarFor(LocalDate date, EntityManager entityManager) throws IOException {   
+    	String yepUrl = "http://www.nasdaq.com/earnings/earnings-calendar.aspx?date=" + date.format(dateFormatter);
     	
 		Document doc = null;
 		try {
@@ -36,30 +35,43 @@ public class YahooEarningsCalendarReader {
 		}
 		catch (HttpStatusException e) {
 			System.err.println("No doc for: " + yepUrl + ", status: " + e.getStatusCode());
-			return;
+			return -1;
 		}
 		
-	    Elements trElements = doc.select("table[cellpadding=2").select("tr");
-	    for (int i = 0; i < trElements.size(); i++) {
-	    	Element trElement = trElements.get(i);
-	    	Elements aElements = trElement.select("a[href^=http://finance.yahoo.com/q?s]");
-	    	Elements smallElements = trElement.select("small");
-	    	if (!aElements.isEmpty()) {
-	    		String symbol = aElements.text();
+		int count = 0;
+	    Elements aElements = doc.select("table[class=USMN_EarningsCalendar").select("a");
+	    for (int i = 0; i < aElements.size(); i++) {
+	    	Element aElement = aElements.get(i);
+	    	String id = aElement.attr("id");
+	    	if (id.startsWith("two_column_main_content_CompanyTable_companyname")) {
+	    		int numEarningsEstimates = Integer.parseInt(
+	    			aElement.parent().nextElementSibling().nextElementSibling().nextElementSibling().nextElementSibling().text());
+
+	    		String amBm = "BM";
+	    		Elements prevChildren = aElement.parent().previousElementSibling().children();
+	    		if (prevChildren.size() > 0) {
+	    			String amBmTitle = prevChildren.get(0).attr("title");
+	    			amBm = amBmTitle.equals("Pre-market Quotes") ? "BM" : "AM";
+	    		}
+	    		
+	    		String symbol = aElement.text();
+	    		int pos0 = symbol.indexOf("Market Cap:");
+	    		int pos1 = symbol.lastIndexOf('(', pos0);
+	    		int pos2 = symbol.lastIndexOf(')', pos0);
+	    		symbol = symbol.substring(pos1 + 1, pos2);
 	    		if ((symbol.indexOf('^') >= 0) || (symbol.indexOf('.') >= 0)) {
 	    			continue;
 	    		}
 	    		Company company = companyBySymbolMap.get(symbol);
 	    		if (company == null) {
+	    			System.out.println("NO COMPANY FOUND FOR: " + aElement.text());
 	    			continue;
 	    		}
-
+	    		
+	    		company.setNumEarningsEstimates(numEarningsEstimates);
 	    		NasdaqCompanyUpdater.updateCompany(company);
 	    		entityManager.persist(company);
-	    		
-	    		String releaseTime = smallElements.text();
-	    		releaseTime = (releaseTime != null && releaseTime.indexOf("After Market Close") >= 0) ? "AM" : "BM";
-	    		
+	    			    		
 	    		boolean hasEarningsDate = false;
 	    		List<EarningsDate> earningsDateList = CompanyUtils.fetchEarningsDateListForSymbolDate(entityManager, symbol, date);
 	    		for (EarningsDate earningsDate : earningsDateList) {
@@ -76,13 +88,14 @@ public class YahooEarningsCalendarReader {
 		    		earningsDate.setCompanyId(company.getId());
 		    		earningsDate.setSymbol(symbol);
 		    		earningsDate.setEarningsDate(date);
-		    		earningsDate.setBeforeMarketOrAfterMarket(releaseTime);
-
+		    		earningsDate.setBeforeMarketOrAfterMarket(amBm);
+		    		
 		    		entityManager.persist(earningsDate);
-		    		continue;
+		    		count++;
 	    		}
 	    	}
 	    }   
+	    return count;
     }
 
 	
@@ -91,10 +104,10 @@ public class YahooEarningsCalendarReader {
 		LocalDate date = LocalDate.now();
 		for (int i = 0; i < 31; i++) {
 			try {
-				System.out.println("Getting earnings for " + DateUtils.toDateString(date));				
 		    	entityManager.getTransaction().begin();		    	
-				readEarningsCalendarFor(date, entityManager);
+				int count = readEarningsCalendarFor(date, entityManager);
 			    entityManager.getTransaction().commit();
+				System.out.println("Got " + count + " earnings for " + DateUtils.toDateString(date));				
 			} 
 			catch (IOException e) {
 				e.printStackTrace();
@@ -113,8 +126,11 @@ public class YahooEarningsCalendarReader {
 		
 		try {
 			entityManager = JPAHelper.getEntityManager("ec2-52-44-163-130.compute-1.amazonaws.com");
-			YahooEarningsCalendarReader reader = new YahooEarningsCalendarReader();
+			NasdaqEarningsCalendarReader reader = new NasdaqEarningsCalendarReader();
 			reader.readEarningsCalendarforMonth(entityManager);		
+		}
+		catch (Exception e) {
+			e.printStackTrace();
 		}
 		finally {
 			if (entityManager != null) {
@@ -124,8 +140,11 @@ public class YahooEarningsCalendarReader {
 
 		try {
 			entityManager = JPAHelper.getEntityManager("ec2-34-195-18-116.compute-1.amazonaws.com");
-			YahooEarningsCalendarReader reader = new YahooEarningsCalendarReader();
+			NasdaqEarningsCalendarReader reader = new NasdaqEarningsCalendarReader();
 			reader.readEarningsCalendarforMonth(entityManager);		
+		}
+		catch (Exception e) {
+			e.printStackTrace();
 		}
 		finally {
 			if (entityManager != null) {

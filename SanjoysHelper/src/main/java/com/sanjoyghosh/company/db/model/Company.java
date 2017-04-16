@@ -48,6 +48,8 @@ public class Company implements Serializable {
 	private String jpmOpinion;
 	@Column
 	private String jpmAnalyst;
+	@Column
+	private Integer numEarningsEstimates;
 	
 	
 	public Company() {}
@@ -259,5 +261,15 @@ public class Company implements Serializable {
 
 	public void setSpeechName(String speechName) {
 		this.speechName = speechName;
+	}
+
+
+	public Integer getNumEarningsEstimates() {
+		return numEarningsEstimates;
+	}
+
+
+	public void setNumEarningsEstimates(Integer numEarningsEstimates) {
+		this.numEarningsEstimates = numEarningsEstimates;
 	}	
 }
