@@ -67,11 +67,7 @@ public class NasdaqEarningsCalendarReader {
 	    			System.out.println("NO COMPANY FOUND FOR: " + aElement.text());
 	    			continue;
 	    		}
-	    		
-	    		company.setNumEarningsEstimates(numEarningsEstimates);
-	    		NasdaqCompanyUpdater.updateCompany(company);
-	    		entityManager.persist(company);
-	    			    		
+	    			    			    		
 	    		boolean hasEarningsDate = false;
 	    		List<EarningsDate> earningsDateList = CompanyUtils.fetchEarningsDateListForSymbolDate(entityManager, symbol, date);
 	    		for (EarningsDate earningsDate : earningsDateList) {
@@ -88,9 +84,13 @@ public class NasdaqEarningsCalendarReader {
 		    		earningsDate.setCompanyId(company.getId());
 		    		earningsDate.setSymbol(symbol);
 		    		earningsDate.setEarningsDate(date);
-		    		earningsDate.setBeforeMarketOrAfterMarket(amBm);
-		    		
+		    		earningsDate.setBeforeMarketOrAfterMarket(amBm);	
 		    		entityManager.persist(earningsDate);
+		    		
+		    		company.setNumEarningsEstimates(numEarningsEstimates);
+		    		NasdaqCompanyUpdater.updateCompany(company);
+		    		entityManager.persist(company);
+
 		    		count++;
 	    		}
 	    	}
