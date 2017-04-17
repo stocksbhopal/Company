@@ -15,13 +15,10 @@ import com.sanjoyghosh.company.db.model.CompanyStage;
 
 public class NasdaqCompanyListReader {
 
-	private EntityManager entityManager;
-	
-	
 	public NasdaqCompanyListReader() {}
 		
 	
-	private void readCompanyListFile(File companyListFile, String exchange) throws IOException {
+	private void readCompanyListFile(File companyListFile, String exchange, EntityManager entityManager) throws IOException {
 		Reader reader = null;
 		try {
 			int count = 0;
@@ -36,7 +33,7 @@ public class NasdaqCompanyListReader {
 				String sector = record.get("Sector").trim();
 				String name = record.get("Name").trim();
 				String ipoYearStr = record.get("IPOyear").trim();
-				String industry = record.get("industry").trim();
+				String industry = record.get("Industry").trim();
 				
 				CompanyStage company = new CompanyStage();
 				company.setExchange(exchange);
@@ -65,19 +62,20 @@ public class NasdaqCompanyListReader {
 	}
 	
 	
-	private void readAllCompanyListFiles() {
-		entityManager = JPAHelper.getEntityManager();
-		
+	private void readAllCompanyListFiles(EntityManager entityManager) {
 		File nasdaqCompanyListFile = new File("/Users/sanjoyghosh/Downloads/nasdaqcompanylist.csv");
 		if (nasdaqCompanyListFile.exists()) {
 			entityManager.getTransaction().begin();
 			try {
-				readCompanyListFile(nasdaqCompanyListFile, "nasdaq");
+				entityManager.createQuery("DELETE FROM CompanyStage WHERE exchange = 'nasdaq'").executeUpdate();
+				readCompanyListFile(nasdaqCompanyListFile, "nasdaq", entityManager);
 				entityManager.getTransaction().commit();
 			} 
-			catch (IOException e) {
+			catch (Exception e) {
 				e.printStackTrace();
-				entityManager.getTransaction().rollback();
+				if (entityManager.getTransaction().isActive()) {
+					entityManager.getTransaction().rollback();
+				}
 			}
 		}
 
@@ -85,25 +83,38 @@ public class NasdaqCompanyListReader {
 		if (nyseCompanyListFile.exists()) {
 			entityManager.getTransaction().begin();
 			try {
-				readCompanyListFile(nyseCompanyListFile, "nyse");
+				entityManager.createQuery("DELETE FROM CompanyStage WHERE exchange = 'nyse'").executeUpdate();
+				readCompanyListFile(nyseCompanyListFile, "nyse", entityManager);
 				entityManager.getTransaction().commit();
 			} 
-			catch (IOException e) {
+			catch (Exception e) {
 				e.printStackTrace();
-				entityManager.getTransaction().rollback();
+				if (entityManager.getTransaction().isActive()) {
+					entityManager.getTransaction().rollback();
+				}
 			}
 		}
 	}
 	
 	
 	public static void main(String[] args) {
-		try {
-			NasdaqCompanyListReader reader = new NasdaqCompanyListReader();
-			reader.readAllCompanyListFiles();
+		EntityManager entityManager = null;
+		for (String mySQLHost : JPAHelper.getMySQLHostList()) {
+			try {
+				entityManager = JPAHelper.getEntityManager(mySQLHost);
+				NasdaqCompanyListReader reader = new NasdaqCompanyListReader();
+				reader.readAllCompanyListFiles(entityManager);		
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+			finally {
+				if (entityManager != null) {
+					entityManager.close();
+				}
+			}
 		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+
 		System.exit(0);
 	}
 }

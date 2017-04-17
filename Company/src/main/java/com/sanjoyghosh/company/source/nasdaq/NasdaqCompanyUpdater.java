@@ -1,16 +1,11 @@
 package com.sanjoyghosh.company.source.nasdaq;
 
 import java.io.IOException;
-import java.util.List;
-
-import javax.persistence.EntityManager;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.sanjoyghosh.company.db.CompanyUtils;
-import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.utils.JsoupUtils;
 import com.sanjoyghosh.company.utils.StringUtils;
@@ -54,28 +49,5 @@ public class NasdaqCompanyUpdater {
 				e.printStackTrace();
 			}
 		}
-	}
-	
-	
-	public static void main(String[] args) {
-		EntityManager entityManager = null;
-		try {
-			entityManager = JPAHelper.getEntityManager();
-			List<Company> companyList = CompanyUtils.fetchAllCompany(entityManager);
-			
-			entityManager.getTransaction().begin();
-			for (Company company : companyList) {
-				updateCompany(company);
-			}
-			entityManager.getTransaction().commit();
-		} 
-		catch (Exception e) {
-			e.printStackTrace();
-			if (entityManager != null) {
-				entityManager.getTransaction().rollback();
-			}
-		}
-		
-		System.exit(0);
 	}
 }

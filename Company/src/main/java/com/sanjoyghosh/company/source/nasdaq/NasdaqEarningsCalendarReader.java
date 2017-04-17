@@ -123,35 +123,22 @@ public class NasdaqEarningsCalendarReader {
 	
 	public static void main(String[] args) {
 		EntityManager entityManager = null;
-		
-		try {
-			entityManager = JPAHelper.getEntityManager("ec2-52-44-163-130.compute-1.amazonaws.com");
-			NasdaqEarningsCalendarReader reader = new NasdaqEarningsCalendarReader();
-			reader.readEarningsCalendarforMonth(entityManager);		
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		finally {
-			if (entityManager != null) {
-				entityManager.close();
+		for (String mySQLHost : JPAHelper.getMySQLHostList()) {
+			try {
+				entityManager = JPAHelper.getEntityManager(mySQLHost);
+				NasdaqEarningsCalendarReader reader = new NasdaqEarningsCalendarReader();
+				reader.readEarningsCalendarforMonth(entityManager);		
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+			finally {
+				if (entityManager != null) {
+					entityManager.close();
+				}
 			}
 		}
 
-		try {
-			entityManager = JPAHelper.getEntityManager("ec2-34-195-18-116.compute-1.amazonaws.com");
-			NasdaqEarningsCalendarReader reader = new NasdaqEarningsCalendarReader();
-			reader.readEarningsCalendarforMonth(entityManager);		
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		finally {
-			if (entityManager != null) {
-				entityManager.close();
-			}
-		}
-		
 		System.exit(0);
 	}
 }
