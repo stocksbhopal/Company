@@ -68,3 +68,13 @@ insert into CompanyNamePrefix (symbol, companyNamePrefix, manuallyAdded) values 
 delete from CompanyNamePrefix where symbol = 'CCV';
 delete from CompanyNamePrefix where symbol = 'CCZ';
 delete from CompanyNamePrefix where symbol = 'TLLP' and companyNamePrefix = 'tesoro';
+
+delete FROM Company.CompanyNamePrefix where symbol = 'EOD';
+delete FROM Company.Company where symbol = 'EOD';
+delete from Company.CompanyNamePrefix where symbol in (select symbol from Company.Company where name like '%Fund');
+delete from Company.Company where name like '%Fund';
+delete from Company.CompanyNamePrefix where symbol in (select symbol from Company.Company where name like '% fund' or name like '% fund %');
+delete from Company.Company where name like '% fund' or name like '% fund %';
+delete from Company.CompanyNamePrefix where symbol in (select symbol from Company.Company where name like '% Fund' or name like '% Fund, %');
+delete from Company.Company where name like '% Fund' or name like '% Fund, %';
+

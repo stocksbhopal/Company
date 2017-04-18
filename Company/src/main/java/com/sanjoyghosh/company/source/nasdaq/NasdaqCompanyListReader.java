@@ -34,6 +34,10 @@ public class NasdaqCompanyListReader {
 				String name = record.get("Name").trim();
 				String ipoYearStr = record.get("IPOyear").trim();
 				String industry = record.get("Industry").trim();
+				// To drop entries like Wells Fargo Advantage Funds - Wells Fargo Global Dividend Opportunity Fund (EOD).
+				if (name.endsWith(" Fund") || name.indexOf(" Fund ") >= 0 || name.indexOf(" Funds, ") >= 0) {
+					continue;
+				}
 				
 				CompanyStage company = new CompanyStage();
 				company.setExchange(exchange);
