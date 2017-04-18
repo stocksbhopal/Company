@@ -33,8 +33,8 @@ public class JPAHelper {
 	
 	
 	// Use this method only for Batch jobs.
-	public static EntityManager getEntityManager(String mysqlHost) {
-		EntityManagerFactory emf = createEntityManagerFactory(mysqlHost);
+	public static EntityManager getEntityManager(String mySQLHost) {
+		EntityManagerFactory emf = createEntityManagerFactory(mySQLHost);
 		return emf.createEntityManager();
 	}
 

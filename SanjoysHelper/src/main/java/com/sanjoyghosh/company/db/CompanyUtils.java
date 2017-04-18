@@ -30,7 +30,11 @@ public class CompanyUtils {
 				.getSingleResult();
 				return company;
 		}
-		catch (Exception e) {return null;}
+		catch (Exception e) {
+			System.err.println("No company for: " + symbol);
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	public static List<Company> fetchAllCompany(EntityManager entityManager) {

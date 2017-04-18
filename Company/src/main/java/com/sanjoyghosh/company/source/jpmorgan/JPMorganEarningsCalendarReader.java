@@ -23,7 +23,6 @@ import com.sanjoyghosh.company.utils.StringUtils;
 
 public class JPMorganEarningsCalendarReader {
 	
-	private EntityManager entityManager;
 	private SimpleDateFormat dateParser = new SimpleDateFormat("dd-MMM-yy");
 	private List<String> opinionList = Arrays.asList("US Overweight", "US Neutral", "US Underweight", "US Not Rated", "US OW", "US N", "US UW", "US NR");
 	
@@ -31,7 +30,7 @@ public class JPMorganEarningsCalendarReader {
 	public JPMorganEarningsCalendarReader() {}
 	
 	
-	private void readJPMEarningsCalendar(String earningsCalendar) throws IOException {
+	private void readJPMEarningsCalendar(String earningsCalendar, EntityManager entityManager) throws IOException {
 		String line = null;
 		LineNumberReader reader = new LineNumberReader(new StringReader(earningsCalendar));
 		while ((line = reader.readLine()) != null) {
@@ -74,13 +73,13 @@ public class JPMorganEarningsCalendarReader {
 	}
 	
 	
-	private void readJPMEarningsCalendarFile(File jpmEarningsFile) throws IOException {
+	private void readJPMEarningsCalendarFile(File jpmEarningsFile, EntityManager entityManager) throws IOException {
 		FileInputStream fis = null;
 	    Tika tika = new Tika();
 	    try {
 	    	fis = new FileInputStream(jpmEarningsFile);
 			String contents = tika.parseToString(fis);
-			readJPMEarningsCalendar(contents);
+			readJPMEarningsCalendar(contents, entityManager);
 		} 
 	    catch (TikaException e) {
 			e.printStackTrace();
@@ -93,27 +92,46 @@ public class JPMorganEarningsCalendarReader {
 	}
 	
 	
-	private void readAllJPMorganEarningsCalendarFiles() {
-		entityManager = JPAHelper.getEntityManager();
-		
+	private void readAllJPMorganEarningsCalendarFiles(EntityManager entityManager) throws Exception {		
 		File jpmEarningsFolder = new File("/Users/sanjoyghosh/Downloads/JPMEarnings");
 		for (File jpmEarningsFile : jpmEarningsFolder.listFiles()) {
-			entityManager.getTransaction().begin();
 			try {
-				readJPMEarningsCalendarFile(jpmEarningsFile);
-				entityManager.getTransaction().commit();
+				readJPMEarningsCalendarFile(jpmEarningsFile, entityManager);
 			} 
-			catch (IOException e) {
+			catch (Exception e) {
 				e.printStackTrace();
-				entityManager.getTransaction().rollback();
+				throw e;
 			}
 		}
 	}
 	
 	
 	public static void main(String[] args) {
-		JPMorganEarningsCalendarReader reader = new JPMorganEarningsCalendarReader();
-		reader.readAllJPMorganEarningsCalendarFiles();
+		List<String> mySQLHostList = JPAHelper.getMySQLHostList();
+		for (String mySQLHost : mySQLHostList) {
+			EntityManager entityManager = null;
+			try {
+				entityManager = JPAHelper.getEntityManager(mySQLHost);
+				entityManager.getTransaction().begin();
+				
+				JPMorganEarningsCalendarReader reader = new JPMorganEarningsCalendarReader();
+				reader.readAllJPMorganEarningsCalendarFiles(entityManager);
+				
+				entityManager.getTransaction().commit();
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				if (entityManager.getTransaction().isActive()) {
+					entityManager.getTransaction().rollback();
+				}
+			}
+			finally {
+				if (entityManager != null) {
+					entityManager.close();
+				}
+			}
+		}
+		
 		System.exit(0);
 	}
 }

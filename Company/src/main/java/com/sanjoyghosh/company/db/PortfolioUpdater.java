@@ -1,6 +1,7 @@
 package com.sanjoyghosh.company.db;
 
 import java.io.File;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 
@@ -14,39 +15,57 @@ public class PortfolioUpdater {
 
 	
 	public static void main(String[] args) {
-		EntityManager em = JPAHelper.getEntityManager();
-		em.getTransaction().begin();
-		PortfolioJPA.deletePortfolioItemList(em, PortfolioJPA.MY_PORTFOLIO_NAME, MY_ALEXA_USER_ID);
-		Portfolio portfolio = PortfolioJPA.fetchOrCreatePortfolio(em, PortfolioUpdater.MY_ALEXA_USER_ID);
-		
-		FidelityPortfolioReader fidelityReader = new FidelityPortfolioReader(portfolio);
-		File[] fidelityFiles = fidelityReader.getFidelityHoldingsFiles();
-		for (File fidelityFile : fidelityFiles) {
+		List<String> mySQLHostList = JPAHelper.getMySQLHostList();
+		for (String mySQLHost : mySQLHostList) {
+			
+			EntityManager em = null;
+			Portfolio portfolio = null;
 			try {
-				fidelityReader.readFidelityHoldingsFiles(em, fidelityFile);
-				fidelityFile.delete();
+				em = JPAHelper.getEntityManager(mySQLHost);
+				em.getTransaction().begin();
+				
+				PortfolioJPA.deletePortfolioItemList(em, PortfolioJPA.MY_PORTFOLIO_NAME, MY_ALEXA_USER_ID);
+				portfolio = PortfolioJPA.fetchOrCreatePortfolio(em, PortfolioUpdater.MY_ALEXA_USER_ID);
+				
+				FidelityPortfolioReader fidelityReader = new FidelityPortfolioReader(portfolio);
+				File[] fidelityFiles = fidelityReader.getFidelityHoldingsFiles();
+				for (File fidelityFile : fidelityFiles) {
+					try {
+						fidelityReader.readFidelityHoldingsFiles(em, fidelityFile);
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+						throw e;
+					}
+				}
+				
+				MerrillLynchPortfolioReader merrillLynchReader = new MerrillLynchPortfolioReader(portfolio);
+				File[] merrillLynchFiles = merrillLynchReader.getMerrillLynchHoldingsFiles();
+				for (File merrillLynchFile : merrillLynchFiles) {
+					try {
+						merrillLynchReader.readMerrillLynchHoldingsFile(em, merrillLynchFile);
+					}
+					catch (Throwable e) {
+						e.printStackTrace();
+						throw e;
+					}
+				}
+		
+				em.persist(portfolio);
+				em.getTransaction().commit();
 			}
-			catch (Throwable e) {
-				e.printStackTrace();
-				throw e;
+			catch (Exception e) {
+				if (em.getTransaction().isActive()) {
+					em.getTransaction().rollback();
+				}
+			}
+			finally {
+				if (em != null) {
+					em.close();
+				}
 			}
 		}
 		
-		MerrillLynchPortfolioReader merrillLynchReader = new MerrillLynchPortfolioReader(portfolio);
-		File[] merrillLynchFiles = merrillLynchReader.getMerrillLynchHoldingsFiles();
-		for (File merrillLynchFile : merrillLynchFiles) {
-			try {
-				merrillLynchReader.readMerrillLynchHoldingsFile(em, merrillLynchFile);
-				merrillLynchFile.delete();
-			}
-			catch (Throwable e) {
-				e.printStackTrace();
-				throw e;
-			}
-		}
-
-		em.persist(portfolio);
-		em.getTransaction().commit();
 		System.exit(0);
 	}
 }
