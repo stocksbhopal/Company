@@ -21,9 +21,9 @@ import com.sanjoyghosh.company.source.nasdaq.NasdaqRealtimeQuote;
 import com.sanjoyghosh.company.source.nasdaq.NasdaqRealtimeQuoteReader;
 import com.sanjoyghosh.company.utils.LocalDateRange;
 
-public class IntentGetMyStocksWithEarnings implements InterfaceIntent {
+public class IntentGetStockEarnings implements InterfaceIntent {
 
-    private static final Logger logger = Logger.getLogger(IntentGetMyStocksWithEarnings.class.getName());
+    private static final Logger logger = Logger.getLogger(IntentGetStockEarnings.class.getName());
 
     
     private double getNetValueChange(List<PortfolioItemData> portfolioItemDataList) {

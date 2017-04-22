@@ -14,8 +14,7 @@ import com.amazon.speech.speechlet.Speechlet;
 import com.amazon.speech.speechlet.SpeechletException;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
-import com.sanjoyghosh.company.earnings.intent.IntentGetMyStocks;
-import com.sanjoyghosh.company.earnings.intent.IntentGetMyStocksWithEarnings;
+import com.sanjoyghosh.company.earnings.intent.IntentGetStockEarnings;
 import com.sanjoyghosh.company.earnings.intent.IntentGetStockPrice;
 import com.sanjoyghosh.company.earnings.intent.IntentMyStocksMovers;
 import com.sanjoyghosh.company.earnings.intent.IntentMyStocksStatus;
@@ -32,8 +31,7 @@ public class EarningsSpeechlet implements Speechlet  {
 
     private static final Map<String, InterfaceIntent> intentInterfaceByIntentNameMap = new HashMap<>();
     static {    	
-    	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_GET_MY_STOCKS, new IntentGetMyStocks());
-    	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_GET_MY_STOCKS_WITH_EARNINGS, new IntentGetMyStocksWithEarnings());
+    	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_EARNINGS_ON_LIST, new IntentGetStockEarnings());
 
     	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_CREATE_STOCK_ON_LIST, new IntentStockOnList());
     	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_READ_STOCK_ON_LIST, new IntentStockOnList());
