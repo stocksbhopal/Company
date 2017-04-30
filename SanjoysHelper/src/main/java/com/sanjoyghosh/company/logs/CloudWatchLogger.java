@@ -9,8 +9,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.persistence.EntityManager;
-
 import com.amazonaws.services.logs.AWSLogs;
 import com.amazonaws.services.logs.AWSLogsClient;
 import com.amazonaws.services.logs.model.CreateLogGroupRequest;
@@ -19,7 +17,6 @@ import com.amazonaws.services.logs.model.InputLogEvent;
 import com.amazonaws.services.logs.model.PutLogEventsRequest;
 import com.amazonaws.services.logs.model.PutLogEventsResult;
 import com.amazonaws.services.logs.model.ResourceAlreadyExistsException;
-import com.sanjoyghosh.company.db.JPAHelper;
 
 public class CloudWatchLogger {
 
@@ -110,32 +107,10 @@ public class CloudWatchLogger {
 		List<CloudWatchLoggerIntentResult> intentResultList = useLogEventListOne ? intentResultListTwo : intentResultListOne;
 		if (intentResultList.size() > 0 && ensureGroupAndStream()) {
 			
-			EntityManager em = null;
 			List<InputLogEvent> logEventList = new ArrayList<>();
-			try {
-				em = JPAHelper.getEntityManager();
-				em.getTransaction().begin();
-				for (CloudWatchLoggerIntentResult intentResult : intentResultList) {
-					IntentResultLog intentResultLog = intentResult.toIntentResultLog();
-					em.persist(intentResultLog);
-					
-					InputLogEvent logEvent = intentResult.toInputLogEvent();
-					logEventList.add(logEvent);
-				}
-				em.getTransaction().commit();
+			for (CloudWatchLoggerIntentResult intentResult : intentResultList) {
+				logEventList.add(intentResult.toInputLogEvent());
 			}
-			catch (Throwable e) {
-				if (em.getTransaction().isActive()) {
-					em.getTransaction().rollback();
-				}
-				logger.log(Level.SEVERE, "Exception persisting CloudWatch Logs", e);
-			}
-			finally {
-				if (em != null) {
-					em.close();
-				}
-			}
-			
 			PutLogEventsRequest logRequest = new PutLogEventsRequest();
 			logRequest.setLogEvents(logEventList);
 			logRequest.setLogGroupName(groupName);

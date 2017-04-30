@@ -99,15 +99,15 @@ public class CompanyJPA {
 			}
 		}
 		
-		if (css != null) {
-			Company company = fetchCompanyBySymbol(em, css);
+		if (cs != null) {
+			Company company = fetchCompanyBySymbol(em, cs);
 			if (company != null) {
 				return company;
 			}
 		}
 		
-		if (cs != null) {
-			Company company = fetchCompanyBySymbol(em, cs);
+		if (css != null) {
+			Company company = fetchCompanyBySymbol(em, css);
 			if (company != null) {
 				return company;
 			}

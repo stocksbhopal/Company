@@ -16,9 +16,9 @@ import com.sanjoyghosh.company.utils.KeyValuePair;
 
 
 @JsonPropertyOrder({"n","rt","rp","i","u","t"})
-public class CloudWatchLoggerIntentResult {
+public class IntentResult {
 
-    private static final Logger logger = Logger.getLogger(CloudWatchLoggerIntentResult.class.getName());
+    private static final Logger logger = Logger.getLogger(IntentResult.class.getName());
 
     
 	private String				name;
@@ -29,7 +29,7 @@ public class CloudWatchLoggerIntentResult {
 	private long				eventTime;
 	
 	
-	public CloudWatchLoggerIntentResult(String alexaUserId, String name, int result, 
+	public IntentResult(String alexaUserId, String name, int result, 
 		String response, List<KeyValuePair> inputs, Date eventTime) {
 
 		this.alexaUserId = alexaUserId;

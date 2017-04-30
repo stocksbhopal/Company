@@ -1,4 +1,4 @@
-package com.sanjoyghosh.company.logs;
+package com.sanjoyghosh.company.db.model;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -32,6 +32,8 @@ public class IntentResultLog implements Serializable {
 	private String alexaUserId;
 	@Column
 	private Timestamp eventTime;
+	@Column
+	private Integer execTimeMilliSecs;
 	
 	
 	public int getId() {
@@ -87,5 +89,11 @@ public class IntentResultLog implements Serializable {
 	}
 	public void setEventTime(Timestamp eventTime) {
 		this.eventTime = eventTime;
+	}
+	public Integer getExecTimeMilliSecs() {
+		return execTimeMilliSecs;
+	}
+	public void setExecTimeMilliSecs(Integer execTimeMilliSecs) {
+		this.execTimeMilliSecs = execTimeMilliSecs;
 	};
 }
