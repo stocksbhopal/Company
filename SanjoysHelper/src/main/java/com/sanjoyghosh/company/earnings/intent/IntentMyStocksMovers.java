@@ -18,7 +18,7 @@ public class IntentMyStocksMovers implements InterfaceIntent {
     private static final Logger log = LoggerFactory.getLogger(IntentMyStocksMovers.class);
 
 	@Override
-	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
+	public SpeechletResponse onIntent(IntentRequest request, Session session, IntentResult intentResult) throws SpeechletException {
 		String intentName = request.getIntent().getName();
 		boolean gainers = intentName.equals(INTENT_MY_STOCKS_GAINERS);
 		

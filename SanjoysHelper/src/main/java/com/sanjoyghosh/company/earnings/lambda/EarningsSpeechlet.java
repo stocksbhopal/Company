@@ -18,12 +18,14 @@ import com.sanjoyghosh.company.earnings.intent.IntentGetStockEarnings;
 import com.sanjoyghosh.company.earnings.intent.IntentGetStockPrice;
 import com.sanjoyghosh.company.earnings.intent.IntentMyStocksMovers;
 import com.sanjoyghosh.company.earnings.intent.IntentMyStocksStatus;
+import com.sanjoyghosh.company.earnings.intent.IntentResult;
 import com.sanjoyghosh.company.earnings.intent.IntentStockOnList;
 import com.sanjoyghosh.company.earnings.intent.IntentStopCancel;
 import com.sanjoyghosh.company.earnings.intent.IntentUpdatePrices;
 import com.sanjoyghosh.company.earnings.intent.InterfaceIntent;
 import com.sanjoyghosh.company.earnings.intent.LaunchSanjoysHelper;
 import com.sanjoyghosh.company.logs.CloudWatchLogger;
+import com.sanjoyghosh.company.logs.IntentResultLogger;
 
 public class EarningsSpeechlet implements Speechlet  {
 
@@ -72,14 +74,15 @@ public class EarningsSpeechlet implements Speechlet  {
 	
 	@Override
 	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
+		String intentName = request.getIntent().getName();
+		IntentResult intentResult = new IntentResult(request, session);
 		try {
-			String intentName = request.getIntent().getName();
 			if (intentName.equals("AMAZON.YesIntent") || intentName.equals("AMAZON.NoIntent")) {
 				String lastIntentName = (String) session.getAttribute(InterfaceIntent.ATTR_LAST_INTENT);
 				if (lastIntentName != null) {
 					InterfaceIntent interfaceIntent = intentInterfaceByIntentNameMap.get(lastIntentName);
 					if (interfaceIntent != null) {
-						return interfaceIntent.onIntent(request, session);
+						return interfaceIntent.onIntent(request, session, intentResult);
 					}				
 				}
 			}
@@ -89,7 +92,7 @@ public class EarningsSpeechlet implements Speechlet  {
 	
 			InterfaceIntent interfaceIntent = intentInterfaceByIntentNameMap.get(intentName);
 			if (interfaceIntent != null) {
-				return interfaceIntent.onIntent(request, session);
+				return interfaceIntent.onIntent(request, session, intentResult);
 			}
 	
 			PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
@@ -103,6 +106,9 @@ public class EarningsSpeechlet implements Speechlet  {
 		catch (Throwable e) {
 			logger.log(Level.SEVERE, "Exception in EarningsSpeechlet.onIntent()", e);
 			throw new SpeechletException(e);
+		}
+		finally {
+			IntentResultLogger.getInstance().addLogEvent(intentResult);
 		}
 	}
 

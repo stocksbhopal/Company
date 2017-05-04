@@ -15,7 +15,7 @@ public class IntentUpdatePrices implements InterfaceIntent {
 	
 	
 	@Override
-	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
+	public SpeechletResponse onIntent(IntentRequest request, Session session, IntentResult intentResult) throws SpeechletException {
 		if (isUpdatingPrices.compareAndSet(false, true)) {
 			new Thread(new Runnable() {
 				@Override

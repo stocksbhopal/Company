@@ -42,5 +42,5 @@ public interface InterfaceIntent {
     public static final String INTENT_UPDATE_PRICES = "UpdatePrices";
     
     
-	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException;
+	public SpeechletResponse onIntent(IntentRequest request, Session session, IntentResult intentResult) throws SpeechletException;
 }

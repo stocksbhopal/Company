@@ -34,7 +34,7 @@ public class IntentStockOnList implements InterfaceIntent {
     
     
     @Override
-	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
+	public SpeechletResponse onIntent(IntentRequest request, Session session, IntentResult intentResult) throws SpeechletException {
     	String intentName = request.getIntent().getName();
     	boolean isConfirmation = intentName.equals("AMAZON.YesIntent") || intentName.equals("AMAZON.NoIntent");
     	intentName = isConfirmation ? (String)session.getAttribute(InterfaceIntent.ATTR_LAST_INTENT) : intentName;

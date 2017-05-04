@@ -1,7 +1,5 @@
 package com.sanjoyghosh.company.logs;
 
-import java.net.Inet4Address;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -11,16 +9,8 @@ import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
 
-import com.amazonaws.services.logs.AWSLogs;
-import com.amazonaws.services.logs.AWSLogsClient;
-import com.amazonaws.services.logs.model.CreateLogGroupRequest;
-import com.amazonaws.services.logs.model.CreateLogStreamRequest;
-import com.amazonaws.services.logs.model.InputLogEvent;
-import com.amazonaws.services.logs.model.PutLogEventsRequest;
-import com.amazonaws.services.logs.model.PutLogEventsResult;
-import com.amazonaws.services.logs.model.ResourceAlreadyExistsException;
 import com.sanjoyghosh.company.db.JPAHelper;
-import com.sanjoyghosh.company.db.model.IntentResultLog;
+import com.sanjoyghosh.company.earnings.intent.IntentResult;
 
 public class IntentResultLogger {
 
@@ -29,12 +19,11 @@ public class IntentResultLogger {
     private static final Logger logger = Logger.getLogger(IntentResultLogger.class.getName());
 	
 	
-	private boolean 							useLogEventListOne;
-	private List<CloudWatchLoggerIntentResult>	intentResultListOne;
-	private List<CloudWatchLoggerIntentResult>	intentResultListTwo;
+	private boolean 			useLogEventListOne;
+	private List<IntentResult>	intentResultListOne;
+	private List<IntentResult>	intentResultListTwo;
 	
 	
-	@SuppressWarnings("deprecation")
 	private IntentResultLogger() {
 		this.useLogEventListOne = true;
 		this.intentResultListOne = new ArrayList<>();
@@ -65,20 +54,15 @@ public class IntentResultLogger {
 		}
 		
 		// Log the list that is NOT pointed to by useLogEventListOne.
-		List<CloudWatchLoggerIntentResult> intentResultList = useLogEventListOne ? intentResultListTwo : intentResultListOne;
+		List<IntentResult> intentResultList = useLogEventListOne ? intentResultListTwo : intentResultListOne;
 		if (intentResultList.size() > 0) {
 			
 			EntityManager em = null;
-			List<InputLogEvent> logEventList = new ArrayList<>();
 			try {
 				em = JPAHelper.getEntityManager();
 				em.getTransaction().begin();
-				for (CloudWatchLoggerIntentResult intentResult : intentResultList) {
-					IntentResultLog intentResultLog = intentResult.toIntentResultLog();
-					em.persist(intentResultLog);
-					
-					InputLogEvent logEvent = intentResult.toInputLogEvent();
-					logEventList.add(logEvent);
+				for (IntentResult intentResult : intentResultList) {
+					em.persist(intentResult.toIntentResultLog());
 				}
 				em.getTransaction().commit();
 			}
@@ -86,7 +70,7 @@ public class IntentResultLogger {
 				if (em.getTransaction().isActive()) {
 					em.getTransaction().rollback();
 				}
-				logger.log(Level.SEVERE, "Exception persisting CloudWatch Logs", e);
+				logger.log(Level.SEVERE, "Exception persisting DB Logs", e);
 			}
 			finally {
 				if (em != null) {
@@ -98,24 +82,12 @@ public class IntentResultLogger {
 	}
 	
 
-	public synchronized void addLogEvent(CloudWatchLoggerIntentResult intentResult, String juliLoggerMessage) {
-//		addLogEvent(intentResult, juliLoggerMessage, null);
-	}
-
-
-	public synchronized void addLogEvent(IntentResult intentResult, String juliLoggerMessage, Throwable e) {
-		if (juliLoggerMessage != null && e != null) {
-			logger.log(Level.SEVERE, juliLoggerMessage, e);
-		}
-		else if (juliLoggerMessage != null) {
-			logger.info(juliLoggerMessage);
-		}
-		
+	public synchronized void addLogEvent(IntentResult intentResultLog) {
 		if (useLogEventListOne) {
-//			intentResultListOne.add(intentResult);
+			intentResultListOne.add(intentResultLog);
 		}
 		else {
-//			intentResultListTwo.add(intentResult);
+			intentResultListTwo.add(intentResultLog);
 		}
 	}
 

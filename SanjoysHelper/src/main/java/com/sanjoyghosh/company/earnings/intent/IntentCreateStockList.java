@@ -10,7 +10,7 @@ import com.amazon.speech.ui.Reprompt;
 public class IntentCreateStockList implements InterfaceIntent {
 
 	@Override
-	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
+	public SpeechletResponse onIntent(IntentRequest request, Session session, IntentResult intentResult) throws SpeechletException {
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 		outputSpeech.setText("Create list " + request.getIntent().getName());
 		

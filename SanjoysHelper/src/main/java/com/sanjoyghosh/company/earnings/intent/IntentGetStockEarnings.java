@@ -97,7 +97,7 @@ public class IntentGetStockEarnings implements InterfaceIntent {
     
     
 	@Override
-	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
+	public SpeechletResponse onIntent(IntentRequest request, Session session, IntentResult intentResult) throws SpeechletException {
 		SpeechletResponse response = null;
 		EntityManager em = null;
 		try {

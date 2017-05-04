@@ -15,7 +15,7 @@ import com.sanjoyghosh.company.db.JPAHelper;
 public class IntentMyStocksStatus implements InterfaceIntent {
 
 	@Override
-	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
+	public SpeechletResponse onIntent(IntentRequest request, Session session, IntentResult intentResult) throws SpeechletException {
         EntityManager entityManager = JPAHelper.getEntityManager();
 //        List<CompanyPrice> companyPriceList = CompanyUtils.fetchCompanyPriceListForAlexaUser(entityManager, session.getUser().getUserId());
         List<CompanyPrice> companyPriceList = null;

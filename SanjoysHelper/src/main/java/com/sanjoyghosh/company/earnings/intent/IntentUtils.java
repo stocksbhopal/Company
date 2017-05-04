@@ -2,7 +2,10 @@ package com.sanjoyghosh.company.earnings.intent;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,6 +19,7 @@ import com.amazon.speech.ui.Reprompt;
 import com.sanjoyghosh.company.logs.CloudWatchLogger;
 import com.sanjoyghosh.company.logs.CloudWatchLoggerIntentResult;
 import com.sanjoyghosh.company.utils.AlexaDateUtils;
+import com.sanjoyghosh.company.utils.KeyValuePair;
 import com.sanjoyghosh.company.utils.LocalDateRange;
 
 public class IntentUtils {
@@ -26,6 +30,36 @@ public class IntentUtils {
 		logger.log(Level.INFO, intentName + " got for slot: " + slot + ", value: " + slotValue);
 	}
 	
+	
+	public static List<KeyValuePair> getSlotsFromIntent(IntentRequest request) {
+		List<KeyValuePair> slots = new ArrayList<>();
+		for (Entry<String, Slot> entry : request.getIntent().getSlots().entrySet()) {
+			String key = entry.getKey();
+			String value = entry.getValue().getValue();
+			value = value == null ? null : value.trim();
+			if (value != null && value.length() > 0) {
+				KeyValuePair pair = new KeyValuePair(key, value);
+				slots.add(pair);
+			}
+		}
+		return slots;
+	}
+	
+
+	public static List<KeyValuePair> getAttributesFromSession(Session session) {
+		List<KeyValuePair> attributes = new ArrayList<>();
+		for (Entry<String, Object> entry : session.getAttributes().entrySet()) {
+			String key = entry.getKey();
+			String value = entry.getValue().toString();
+			value = value == null ? null : value.trim();
+			if (value != null && value.length() > 0) {
+				KeyValuePair pair = new KeyValuePair(key, value);
+				attributes.add(pair);
+			}
+		}
+		return attributes;
+	}
+
 	
 	public static LocalDateRange getValidDateRange(IntentRequest request) {
 		Intent intent = request.getIntent();

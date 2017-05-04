@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanjoyghosh.company.db.model.IntentResultLog;
+import com.sanjoyghosh.company.earnings.intent.IntentResult;
 import com.sanjoyghosh.company.utils.KeyValuePair;
 
 
@@ -57,7 +58,7 @@ public class CloudWatchLoggerIntentResult {
 	}
 	
 	
-	public IntentResultLog toIntentResultLog() {
+	public IntentResult toIntentResultLog() {
 		String inputsStr = null;
 		if (inputs != null) {
 			try {
@@ -68,13 +69,7 @@ public class CloudWatchLoggerIntentResult {
 			}
 		}
 
-		IntentResultLog intentResult = new IntentResultLog();
-		intentResult.setAlexaUserId(alexaUserId);
-		intentResult.setEventTime(new Timestamp(eventTime));
-		intentResult.setInputs(inputsStr);
-		intentResult.setName(name);
-		intentResult.setResponse(response);
-		intentResult.setResult(result);
+		IntentResult intentResult = null;
 		return intentResult;
 	}
 
