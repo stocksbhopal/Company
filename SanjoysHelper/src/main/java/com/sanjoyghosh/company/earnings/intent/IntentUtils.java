@@ -80,10 +80,10 @@ public class IntentUtils {
 		LocalDateRange localDateRange = AlexaDateUtils.getLocalDateRange(dateStr);
 		// Alexa Date is local US date, whereas EC2 date is UTC date.
 		// And so Alexa Date can be up to 1 day behind EC2 date.
-		if (localDateRange.getEndDate().isBefore(LocalDate.now().minusDays(1L))) {
+		if (localDateRange.getEndDate().isBefore(LocalDate.now().minusDays(31L))) {
 			return null;
 		}
-		if (localDateRange.getEndDate().isAfter(LocalDate.now().plusDays(30))) {
+		if (localDateRange.getEndDate().isAfter(LocalDate.now().plusDays(31L))) {
 			return null;
 		}
 		return localDateRange;

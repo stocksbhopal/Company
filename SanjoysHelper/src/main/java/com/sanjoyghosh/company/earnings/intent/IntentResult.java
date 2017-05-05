@@ -1,14 +1,25 @@
 package com.sanjoyghosh.company.earnings.intent;
 
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.Session;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanjoyghosh.company.db.model.IntentResultLog;
 import com.sanjoyghosh.company.utils.KeyValuePair;
 
 
 public class IntentResult {
+
+    private static final Logger logger = Logger.getLogger(IntentResult.class.getName());
+    
 
 	private String				name;
 	private List<KeyValuePair>	slots;
@@ -16,7 +27,7 @@ public class IntentResult {
 	private int					execTimeMilliSecs;
 	private int					result;
 	private String				response;
-	private long				eventTime;
+	private Date				eventTime;
 	private String				alexaUserId;
 	private String				sessionId;
 
@@ -27,6 +38,7 @@ public class IntentResult {
 		this.attributes = IntentUtils.getAttributesFromSession(session);
 		this.alexaUserId = session.getUser().getUserId();
 		this.sessionId = session.getSessionId();
+		this.eventTime = new Date();
 	}
 
 
@@ -69,7 +81,7 @@ public class IntentResult {
 	}
 
 
-	public long getEventTime() {
+	public Date getEventTime() {
 		return eventTime;
 	}
 
@@ -83,9 +95,38 @@ public class IntentResult {
 		return sessionId;
 	}
 
+	
+	private String listToJson(List<KeyValuePair> keyValueList) {
+		Map<String, String> map = new HashMap<>();
+		for (KeyValuePair pair : keyValueList) {
+			map.put(pair.getKey().substring(0, 1), pair.getValue());
+		}
+		
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			String json = mapper.writeValueAsString(map);
+			return json;
+		} 
+		catch (JsonProcessingException e) {
+			logger.log(Level.SEVERE, "Cannot serialize JSON", e);
+			return null;
+		}
+	}
+
 
 	public IntentResultLog toIntentResultLog() {
-		// TODO Auto-generated method stub
-		return null;
+		IntentResultLog intentResultlog = new IntentResultLog();
+		
+		intentResultlog.setAlexaUserId(alexaUserId);
+		intentResultlog.setAttributes(listToJson(attributes));
+		intentResultlog.setEventTime(new Timestamp(eventTime.getTime()));
+		intentResultlog.setExecTimeMilliSecs(execTimeMilliSecs);
+		intentResultlog.setName(name);
+		intentResultlog.setResponse(response);
+		intentResultlog.setResponse(response);
+		intentResultlog.setSessionId(sessionId);
+		intentResultlog.setSlots(listToJson(slots));
+		
+		return intentResultlog;
 	}
 }

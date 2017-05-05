@@ -7,10 +7,12 @@ import com.amazon.speech.speechlet.SpeechletResponse;
 
 public interface InterfaceIntent {
 
+	// Make sure the first letter of each ATTR_ is unique to serialize for logging.
     public static final String ATTR_LAST_INTENT = "LAST_INTENT";
     public static final String ATTR_SYMBOL = "SYMBOL";
     public static final String ATTR_QUANTITY = "QUANTITY";
 
+	// Make sure the first letter of each SLOT_ is unique to serialize for logging.
     public static final String SLOT_COMPANY = "company";    
     public static final String SLOT_DATE = "date";
     public static final String SLOT_QUANTITY = "quantity";

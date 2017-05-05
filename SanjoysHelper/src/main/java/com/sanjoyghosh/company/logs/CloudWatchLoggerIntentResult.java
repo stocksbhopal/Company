@@ -1,6 +1,5 @@
 package com.sanjoyghosh.company.logs;
 
-import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -11,7 +10,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sanjoyghosh.company.db.model.IntentResultLog;
 import com.sanjoyghosh.company.earnings.intent.IntentResult;
 import com.sanjoyghosh.company.utils.KeyValuePair;
 
