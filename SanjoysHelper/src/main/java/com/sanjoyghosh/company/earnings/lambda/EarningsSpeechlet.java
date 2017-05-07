@@ -56,7 +56,7 @@ public class EarningsSpeechlet implements Speechlet  {
         
     
     public static void init() {
-    	CloudWatchLogger.init();
+    	IntentResultLogger.init();
     }
     
 	
@@ -74,9 +74,9 @@ public class EarningsSpeechlet implements Speechlet  {
 	
 	@Override
 	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
-		String intentName = request.getIntent().getName();
 		IntentResult intentResult = new IntentResult(request, session);
 		try {
+			String intentName = request.getIntent().getName();
 			if (intentName.equals("AMAZON.YesIntent") || intentName.equals("AMAZON.NoIntent")) {
 				String lastIntentName = (String) session.getAttribute(InterfaceIntent.ATTR_LAST_INTENT);
 				if (lastIntentName != null) {
@@ -108,6 +108,7 @@ public class EarningsSpeechlet implements Speechlet  {
 			throw new SpeechletException(e);
 		}
 		finally {
+			intentResult.setExecTimeMilliSecs((int) (System.currentTimeMillis() - intentResult.getEventTime().getTime()));
 			IntentResultLogger.getInstance().addLogEvent(intentResult);
 		}
 	}
