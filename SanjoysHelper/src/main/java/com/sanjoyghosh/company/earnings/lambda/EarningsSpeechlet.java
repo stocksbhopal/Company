@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.persistence.PersistenceException;
+
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.LaunchRequest;
 import com.amazon.speech.speechlet.Session;
@@ -24,7 +26,6 @@ import com.sanjoyghosh.company.earnings.intent.IntentStopCancel;
 import com.sanjoyghosh.company.earnings.intent.IntentUpdatePrices;
 import com.sanjoyghosh.company.earnings.intent.InterfaceIntent;
 import com.sanjoyghosh.company.earnings.intent.LaunchSanjoysHelper;
-import com.sanjoyghosh.company.logs.CloudWatchLogger;
 import com.sanjoyghosh.company.logs.IntentResultLogger;
 
 public class EarningsSpeechlet implements Speechlet  {
@@ -72,45 +73,62 @@ public class EarningsSpeechlet implements Speechlet  {
 	}
 
 	
+	// This method also throws lots of RuntimeExceptions such as SQLException.
+	// If there is a RuntimeException this will be tried again.
+	private SpeechletResponse tryOnIntent(IntentRequest request, Session session, IntentResult intentResult) throws SpeechletException {
+		String intentName = request.getIntent().getName();
+		if (intentName.equals("AMAZON.YesIntent") || intentName.equals("AMAZON.NoIntent")) {
+			String lastIntentName = (String) session.getAttribute(InterfaceIntent.ATTR_LAST_INTENT);
+			if (lastIntentName != null) {
+				InterfaceIntent interfaceIntent = intentInterfaceByIntentNameMap.get(lastIntentName);
+				if (interfaceIntent != null) {
+					return interfaceIntent.onIntent(request, session, intentResult);
+				}				
+			}
+		}
+		if (intentName.equals("AMAZON.HelpIntent")) {
+			return LaunchSanjoysHelper.onLaunch(session);
+		}
+
+		InterfaceIntent interfaceIntent = intentInterfaceByIntentNameMap.get(intentName);
+		if (interfaceIntent != null) {
+			return interfaceIntent.onIntent(request, session, intentResult);
+		}
+
+		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
+		outputSpeech.setText("Finance Helper has no idea what to do with this intent: " + intentName);
+		return SpeechletResponse.newTellResponse(outputSpeech);		
+	}
+	
+	
 	@Override
 	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
 		IntentResult intentResult = new IntentResult(request, session);
 		try {
-			String intentName = request.getIntent().getName();
-			if (intentName.equals("AMAZON.YesIntent") || intentName.equals("AMAZON.NoIntent")) {
-				String lastIntentName = (String) session.getAttribute(InterfaceIntent.ATTR_LAST_INTENT);
-				if (lastIntentName != null) {
-					InterfaceIntent interfaceIntent = intentInterfaceByIntentNameMap.get(lastIntentName);
-					if (interfaceIntent != null) {
-						return interfaceIntent.onIntent(request, session, intentResult);
-					}				
+			for (int retries = 0; retries < 5; retries++) {
+				try {
+					return tryOnIntent(request, session, intentResult);
+				}
+				catch (PersistenceException e) {
+					logger.log(Level.SEVERE, "PersistenceException in EarningsSpeechlet.onIntent(), retries:" + retries, e);
+					Thread.sleep(10);
 				}
 			}
-			if (intentName.equals("AMAZON.HelpIntent")) {
-				return LaunchSanjoysHelper.onLaunch(session);
-			}
-	
-			InterfaceIntent interfaceIntent = intentInterfaceByIntentNameMap.get(intentName);
-			if (interfaceIntent != null) {
-				return interfaceIntent.onIntent(request, session, intentResult);
-			}
-	
-			PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
-			outputSpeech.setText("Finance Helper has no idea what to do with this intent: " + intentName);
-			return SpeechletResponse.newTellResponse(outputSpeech);
 		}
 		catch (SpeechletException e) {
 			logger.log(Level.SEVERE, "SpeechletException in EarningsSpeechlet.onIntent()", e);
 			throw e;
 		}
 		catch (Throwable e) {
-			logger.log(Level.SEVERE, "Exception in EarningsSpeechlet.onIntent()", e);
+			logger.log(Level.SEVERE, "Throwable in EarningsSpeechlet.onIntent()", e);
 			throw new SpeechletException(e);
 		}
 		finally {
 			intentResult.setExecTimeMilliSecs((int) (System.currentTimeMillis() - intentResult.getEventTime().getTime()));
 			IntentResultLogger.getInstance().addLogEvent(intentResult);
 		}
+		
+		throw new SpeechletException("Too many retries");
 	}
 
 	
