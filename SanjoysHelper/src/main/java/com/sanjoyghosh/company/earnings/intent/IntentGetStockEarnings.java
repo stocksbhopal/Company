@@ -25,7 +25,10 @@ public class IntentGetStockEarnings implements InterfaceIntent {
 
     private static final Logger logger = Logger.getLogger(IntentGetStockEarnings.class.getName());
 
-    
+	public static final int RESULT_SUCCESS = 0;
+	public static final int RESULT_ERROR_INVALID_DATE_RANGE = -1;
+
+	
     private double getNetValueChange(List<PortfolioItemData> portfolioItemDataList) {
     	double valueChange = 0.00;
 		for (PortfolioItemData portfolioItemData : portfolioItemDataList) {
@@ -46,7 +49,7 @@ public class IntentGetStockEarnings implements InterfaceIntent {
     }
     
     
-    private SpeechletResponse respondWithEarningsInfo(EntityManager em, IntentRequest request, Session session, LocalDateRange dateRange) {
+    private SpeechletResponse respondWithEarningsInfo(EntityManager em, IntentRequest request, Session session, LocalDateRange dateRange, IntentResult intentResult) {
 		String speech = "";
 		List<PortfolioItemData> portfolioItemDataList = PortfolioJPA.fetchPortfolioItemDataWithEarnings(
 			em, PortfolioJPA.MY_PORTFOLIO_NAME, session.getUser().getUserId(), dateRange.getStartDate(), dateRange.getEndDate());
@@ -76,13 +79,17 @@ public class IntentGetStockEarnings implements InterfaceIntent {
 			}
 		}
 		logger.info(speech);
+		
+		intentResult.setResult(RESULT_SUCCESS);
+		intentResult.setResponse(String.valueOf(portfolioItemDataList == null ? 0 : portfolioItemDataList.size()));
+		
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 		outputSpeech.setText(speech);
 		return SpeechletResponse.newTellResponse(outputSpeech);
     }
     
     
-    private SpeechletResponse respondToInvalidTimeFrame(IntentRequest request, Session session) {
+    private SpeechletResponse respondToInvalidTimeFrame(IntentRequest request, Session session, IntentResult intentResult) {
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 		outputSpeech.setText("Need a time frame less than 31 days ahead, like today or next week.");
 
@@ -92,6 +99,7 @@ public class IntentGetStockEarnings implements InterfaceIntent {
 		reprompt.setOutputSpeech(repromptSpeech);
 		
 		logger.info(request.getIntent().getName() + " user did not provide a proper time frame.");
+		intentResult.setResult(RESULT_ERROR_INVALID_DATE_RANGE);
 		return SpeechletResponse.newAskResponse(outputSpeech, reprompt);	    				    	
     }
     
@@ -104,10 +112,10 @@ public class IntentGetStockEarnings implements InterfaceIntent {
 			em = JPAHelper.getEntityManager();
 			LocalDateRange dateRange = IntentUtils.getValidDateRange(request);
 			if (dateRange == null) {
-				response = respondToInvalidTimeFrame(request, session);
+				response = respondToInvalidTimeFrame(request, session, intentResult);
 			}
 			else {
-				response = respondWithEarningsInfo(em, request, session, dateRange);
+				response = respondWithEarningsInfo(em, request, session, dateRange, intentResult);
 			}
 			return response;
 		}
