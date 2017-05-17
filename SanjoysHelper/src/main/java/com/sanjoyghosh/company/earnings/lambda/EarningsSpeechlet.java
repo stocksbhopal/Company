@@ -51,8 +51,8 @@ public class EarningsSpeechlet implements Speechlet  {
 		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_MY_STOCKS_LOSERS, new IntentMyStocksMovers());
 		
 		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_UPDATE_PRICES, new IntentUpdatePrices());
-		intentInterfaceByIntentNameMap.put("AMAZON.StopIntent", new IntentStopCancel());
-		intentInterfaceByIntentNameMap.put("AMAZON.CancelIntent", new IntentStopCancel());
+		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_AMAZON_STOP_INTENT, new IntentStopCancel());
+		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_AMAZON_CANCEL_INTENT, new IntentStopCancel());
     }
         
     
@@ -77,7 +77,12 @@ public class EarningsSpeechlet implements Speechlet  {
 	// If there is a RuntimeException this will be tried again.
 	private SpeechletResponse tryOnIntent(IntentRequest request, Session session, IntentResult intentResult) throws SpeechletException {
 		String intentName = request.getIntent().getName();
-		if (intentName.equals("AMAZON.YesIntent") || intentName.equals("AMAZON.NoIntent")) {
+
+		if (intentName.equals(InterfaceIntent.INTENT_AMAZON_HELP_INTENT)) {
+			return LaunchSanjoysHelper.onLaunch(session);
+		}
+				
+		if (intentName.equals(InterfaceIntent.INTENT_AMAZON_YES_INTENT) || intentName.equals(InterfaceIntent.INTENT_AMAZON_NO_INTENT)) {
 			String lastIntentName = (String) session.getAttribute(InterfaceIntent.ATTR_LAST_INTENT);
 			if (lastIntentName != null) {
 				InterfaceIntent interfaceIntent = intentInterfaceByIntentNameMap.get(lastIntentName);
@@ -86,8 +91,16 @@ public class EarningsSpeechlet implements Speechlet  {
 				}				
 			}
 		}
-		if (intentName.equals("AMAZON.HelpIntent")) {
-			return LaunchSanjoysHelper.onLaunch(session);
+
+		// This check has to happen after the check for YesIntent and NoIntent since those will always
+		// have session.isNew() == false.  They are used for user confirmation.
+		if (!session.isNew() && 
+			!intentName.equals(InterfaceIntent.INTENT_GET_STOCK_PRICE) &&
+			!intentName.equals(InterfaceIntent.INTENT_AMAZON_CANCEL_INTENT) &&
+			!intentName.equals(InterfaceIntent.INTENT_AMAZON_STOP_INTENT)) {
+			PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
+			outputSpeech.setText("Sorry, when you open Finance Helper you can only ask the price of a stock, or say Stop or Cancel or Exit.");
+			return SpeechletResponse.newTellResponse(outputSpeech);					
 		}
 
 		InterfaceIntent interfaceIntent = intentInterfaceByIntentNameMap.get(intentName);

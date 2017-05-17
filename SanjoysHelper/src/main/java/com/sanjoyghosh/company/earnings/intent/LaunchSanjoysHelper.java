@@ -26,7 +26,7 @@ public class LaunchSanjoysHelper {
 		
 		Reprompt reprompt = new Reprompt();
 		PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
-		repromptSpeech.setText("Sorry, ask the price of a stock, or say Stop or Cancel or Exit.");
+		repromptSpeech.setText("Sorry, when you open Finance Helper you can only ask the price of a stock, or say Stop or Cancel or Exit.");
 		reprompt.setOutputSpeech(repromptSpeech);
 
 		return SpeechletResponse.newAskResponse(outputSpeech, reprompt);

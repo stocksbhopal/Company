@@ -24,6 +24,7 @@ public class PortfolioJPA {
 				.setParameter("name", name)
 				.setParameter("alexaUserId", alexaUserId)
 				.getSingleResult();
+			portfolio.restorePortfolioItemBySymbolMap();
 			return portfolio;
 		}
 		catch (NoResultException e) {}

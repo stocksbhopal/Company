@@ -113,7 +113,7 @@ public class IntentStockOnList implements InterfaceIntent {
 					em.getTransaction().begin();					
 					em.remove(portfolioItem);
 					em.getTransaction().commit();
-					return IntentUtils.makeTellResponse(alexaUserId, intentName, RESULT_SUCCESS, slotValues, "Deleted the shares of " + company.getName() + " from the list.");				
+					return IntentUtils.makeTellResponse(alexaUserId, intentName, RESULT_SUCCESS, slotValues, "Removed the shares of " + company.getName() + " from the list.");				
 				}
 				catch (Exception e) {
 					logger.log(Level.SEVERE, "Exception in deleting PortfolioItem", e);
@@ -187,7 +187,10 @@ public class IntentStockOnList implements InterfaceIntent {
 
 	private SpeechletResponse updateStockOnList(EntityManager em, boolean isConfirmation, String intentName, Session session, Company company, int quantity, AllSlotValues slotValues) {
 		String alexaUserId = session.getUser().getUserId();
-		Portfolio portfolio = PortfolioJPA.fetchOrCreatePortfolio(em, alexaUserId);
+		Portfolio portfolio = PortfolioJPA.fetchPortfolio(em, PortfolioJPA.MY_PORTFOLIO_NAME, alexaUserId);
+		if (portfolio == null) {
+			return IntentUtils.makeTellResponse(alexaUserId, intentName, RESULT_SUCCESS, null, "Sorry, you do not yet have a list of stocks.");
+		}
 		PortfolioItem portfolioItem = portfolio.getPortfolioItemBySymbol(company.getSymbol());
 		if (portfolioItem == null) {
 			return IntentUtils.makeTellResponse(alexaUserId, intentName, RESULT_SUCCESS, slotValues, "You have no shares of " + company.getName() + " on your list.");
@@ -202,7 +205,7 @@ public class IntentStockOnList implements InterfaceIntent {
 					portfolioItem.setValidateDate(LocalDate.now());
 					em.persist(portfolio);
 					em.getTransaction().commit();
-					return IntentUtils.makeTellResponse(alexaUserId, intentName, RESULT_SUCCESS, slotValues, "Updated the number of shares of " + company.getName() + " to " + quantity + ".");				
+					return IntentUtils.makeTellResponse(alexaUserId, intentName, RESULT_SUCCESS, slotValues, "Changed the number of shares of " + company.getName() + " to " + quantity + ".");				
 				}
 				catch (Exception e) {
 					logger.log(Level.SEVERE, "Exception in updating the quantity in PortfolioItem", e);
@@ -235,7 +238,10 @@ public class IntentStockOnList implements InterfaceIntent {
 
 
 	private SpeechletResponse readStockOnList(EntityManager em, String alexaUserId, String intentName, Company company, AllSlotValues slotValues) {
-		Portfolio portfolio = PortfolioJPA.fetchOrCreatePortfolio(em, alexaUserId);
+		Portfolio portfolio = PortfolioJPA.fetchPortfolio(em, PortfolioJPA.MY_PORTFOLIO_NAME, alexaUserId);
+		if (portfolio == null) {
+			return IntentUtils.makeTellResponse(alexaUserId, intentName, RESULT_SUCCESS, null, "Sorry, you do not yet have a list of stocks.");
+		}
 		PortfolioItem portfolioItem = portfolio.getPortfolioItemBySymbol(company.getSymbol());
 		String speechText = (portfolioItem == null) ?
 			"You have no shares of " + company.getName() + " on your list." :
@@ -284,7 +290,7 @@ public class IntentStockOnList implements InterfaceIntent {
 		String speechText = "";
 		Portfolio portfolio = PortfolioJPA.fetchPortfolio(em, PortfolioJPA.MY_PORTFOLIO_NAME, alexaUserId);
 		if (portfolio == null || portfolio.isEmpty()) {
-			speechText = "Sorry, you have no stocks in your list.";
+			speechText = "Sorry, you do not yet have a list of stocks.";
 		}
 		else {
 			List<PortfolioItem> portfolioItemList = portfolio.getPortfolioItemList();
@@ -293,7 +299,7 @@ public class IntentStockOnList implements InterfaceIntent {
 			for (PortfolioItem item : portfolioItemList) {
 				speechText += (int)item.getQuantity() + " shares of " + item.getCompany().getName() + ", ";
 			}
-			speechText += " in your list.";
+			speechText += "on your list.";
 		}		
 		
 		return IntentUtils.makeTellResponse(alexaUserId, intentName, RESULT_SUCCESS, String.valueOf(numStocks), null, speechText);

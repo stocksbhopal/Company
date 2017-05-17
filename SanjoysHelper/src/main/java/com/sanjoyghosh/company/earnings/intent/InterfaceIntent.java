@@ -17,6 +17,12 @@ public interface InterfaceIntent {
     public static final String SLOT_DATE = "date";
     public static final String SLOT_QUANTITY = "quantity";
 
+    public static final String INTENT_AMAZON_CANCEL_INTENT = "AMAZON.CancelIntent";
+    public static final String INTENT_AMAZON_STOP_INTENT = "AMAZON.StopIntent";
+    public static final String INTENT_AMAZON_YES_INTENT = "AMAZON.YesIntent";
+    public static final String INTENT_AMAZON_NO_INTENT = "AMAZON.NoIntent";
+    public static final String INTENT_AMAZON_HELP_INTENT = "AMAZON.HelpIntent";
+    
     public static final String INTENT_CREATE_STOCK_ON_LIST = "CreateStockOnList";
     public static final String INTENT_READ_STOCK_ON_LIST = "ReadStockOnList";
     public static final String INTENT_UPDATE_STOCK_ON_LIST = "UpdateStockOnList";
