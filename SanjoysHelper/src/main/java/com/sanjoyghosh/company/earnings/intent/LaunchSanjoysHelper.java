@@ -14,12 +14,11 @@ public class LaunchSanjoysHelper {
 			"You can identify the company by its name, popular name, or ticker symbol. " +
 			"A company's official registered name may be different from its popular name. " +
 			"For example, Google's registered name is Alphabet Inc. " + 
-			"You can spell the name or symbol either by letter or using the Wikipedia Spelling Alphabet. " +
-			"Just use England for E when using the Spelling Alphabet. " +
-			"For example, you can ask for the price of Apple by saying. " +
-			"Alexa, ask Finance Helper the price of alpha papa papa lima england. " + 
-			"As a simple example, Alexa, ask Finance Helper, the price of amazon. " +
-			"Go ahead, ask the price of your favorite stock.";
+			"You can also create your own list of stocks by asking Finance Helper " +
+			"to add a number of shares of a particular company, like Amazon. " +
+			"You can also modify the number of shares or remove the shares " +
+			"from your list.  Of course, you can ask for the complete list as well. " + 
+			"Go ahead, try Finance Helper.";
 		
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 		outputSpeech.setText(text);

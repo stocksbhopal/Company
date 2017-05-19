@@ -92,17 +92,6 @@ public class EarningsSpeechlet implements Speechlet  {
 			}
 		}
 
-		// This check has to happen after the check for YesIntent and NoIntent since those will always
-		// have session.isNew() == false.  They are used for user confirmation.
-		if (!session.isNew() && 
-			!intentName.equals(InterfaceIntent.INTENT_GET_STOCK_PRICE) &&
-			!intentName.equals(InterfaceIntent.INTENT_AMAZON_CANCEL_INTENT) &&
-			!intentName.equals(InterfaceIntent.INTENT_AMAZON_STOP_INTENT)) {
-			PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
-			outputSpeech.setText("Sorry, when you open Finance Helper you can only ask the price of a stock, or say Stop or Cancel or Exit.");
-			return SpeechletResponse.newTellResponse(outputSpeech);					
-		}
-
 		InterfaceIntent interfaceIntent = intentInterfaceByIntentNameMap.get(intentName);
 		if (interfaceIntent != null) {
 			return interfaceIntent.onIntent(request, session, intentResult);
