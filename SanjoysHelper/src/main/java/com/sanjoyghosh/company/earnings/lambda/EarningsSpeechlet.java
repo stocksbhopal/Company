@@ -23,6 +23,7 @@ import com.sanjoyghosh.company.earnings.intent.IntentMyStocksStatus;
 import com.sanjoyghosh.company.earnings.intent.IntentResult;
 import com.sanjoyghosh.company.earnings.intent.IntentStockOnList;
 import com.sanjoyghosh.company.earnings.intent.IntentStopCancel;
+import com.sanjoyghosh.company.earnings.intent.IntentTodayOnList;
 import com.sanjoyghosh.company.earnings.intent.IntentUpdatePrices;
 import com.sanjoyghosh.company.earnings.intent.InterfaceIntent;
 import com.sanjoyghosh.company.earnings.intent.LaunchSanjoysHelper;
@@ -42,6 +43,12 @@ public class EarningsSpeechlet implements Speechlet  {
     	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_DELETE_STOCK_ON_LIST, new IntentStockOnList());
     	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_LIST_STOCKS_ON_LIST, new IntentStockOnList());
     	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_CLEAR_STOCKS_ON_LIST, new IntentStockOnList());
+    	
+    	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_TODAY_PERFORMANCE, new IntentTodayOnList());
+    	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_TODAY_TOP_GAINERS_DOLLARS, new IntentTodayOnList());
+    	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_TODAY_TOP_GAINERS_PERCENTAGE, new IntentTodayOnList());
+    	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_TODAY_TOP_LOSERS_DOLLARS, new IntentTodayOnList());
+    	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_TODAY_TOP_LOSERS_PERCENTAGE, new IntentTodayOnList());
 
     	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_GET_STOCK_PRICE, new IntentGetStockPrice());
 		

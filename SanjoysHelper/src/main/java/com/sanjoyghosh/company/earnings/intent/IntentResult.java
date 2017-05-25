@@ -1,10 +1,13 @@
 package com.sanjoyghosh.company.earnings.intent;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,21 +24,25 @@ public class IntentResult {
     private static final Logger logger = Logger.getLogger(IntentResult.class.getName());
     
 
-	private String				name;
-	private List<KeyValuePair>	slots;
-	private List<KeyValuePair>	attributes;
-	private int					execTimeMilliSecs;
-	private int					result;
-	private String				response;
-	private Date				eventTime;
-	private String				alexaUserId;
-	private String				sessionId;
+	private String						name;
+	private List<KeyValuePair>			slots;
+	private List<KeyValuePair>			attributes;
+	private Map<String, Set<String>>	symbolsByExceptionSet;
+	private Set	<String>				symbolsWithNullQuotes;
+	private int							execTimeMilliSecs;
+	private int							result;
+	private String						response;
+	private Date						eventTime;
+	private String						alexaUserId;
+	private String						sessionId;
 
 	
 	public IntentResult(IntentRequest request, Session session) {
 		this.name = request.getIntent().getName();
 		this.slots = IntentUtils.getSlotsFromIntent(request);
 		this.attributes = IntentUtils.getAttributesFromSession(session);
+		this.symbolsByExceptionSet = new HashMap<>();
+		this.symbolsWithNullQuotes = new HashSet<>();
 		this.alexaUserId = session.getUser().getUserId();
 		this.sessionId = session.getSessionId();
 		this.eventTime = new Date();
@@ -111,6 +118,22 @@ public class IntentResult {
 			logger.log(Level.SEVERE, "Cannot serialize JSON", e);
 			return null;
 		}
+	}
+	
+	
+	public void addNullQuoteSymbol(String symbol) {
+		symbolsWithNullQuotes.add(symbol);
+	}
+	
+	
+	public void addSymbolWithException(String symbol, Exception exception) {
+		String key = exception.getClass().getName() + ":" + exception.getMessage();
+		Set<String> symbols = symbolsByExceptionSet.get(key);
+		if (symbols == null) {
+			symbols = new HashSet<>();
+			symbolsByExceptionSet.put(key, symbols);
+		}
+		symbols.add(symbol);
 	}
 
 
