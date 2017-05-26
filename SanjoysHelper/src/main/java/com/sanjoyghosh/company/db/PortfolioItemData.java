@@ -4,25 +4,23 @@ public class PortfolioItemData {
 
 	private String symbol;
 	private String speechName;
+	private Double price;
+	private Double priceChange;
 	private double quantity;
 	private double valueChangeDollars;
 	private double priceChangePercent;
 
 	
-	public PortfolioItemData(String symbol, String speechName, Double quantity) {
+	public PortfolioItemData(String symbol, String speechName, 
+		Double price, Double priceChange, Double priceChangePercent, Double quantity) {
+		
 		this.symbol = symbol;
 		this.speechName = speechName;
+		this.price = price;
+		this.priceChange = priceChange;
+		this.priceChangePercent = priceChangePercent;
 		this.quantity = quantity;
-	}
-
-
-	public String getSpeechName() {
-		return speechName;
-	}
-
-
-	public double getQuantity() {
-		return quantity;
+		this.valueChangeDollars = priceChange * quantity;
 	}
 
 
@@ -31,18 +29,48 @@ public class PortfolioItemData {
 	}
 
 
+	public String getSpeechName() {
+		return speechName;
+	}
+
+
+	public Double getPrice() {
+		return price;
+	}
+
+
+	public Double getPriceChange() {
+		return priceChange;
+	}
+
+
+	public double getQuantity() {
+		return quantity;
+	}
+
+
 	public double getValueChangeDollars() {
 		return valueChangeDollars;
 	}
 
 
-	public void setValueChangeDollars(double valueChangeDollars) {
-		this.valueChangeDollars = valueChangeDollars;
+	public double getPriceChangePercent() {
+		return priceChangePercent;
 	}
 
 
-	public double getPriceChangePercent() {
-		return priceChangePercent;
+	public void setPrice(Double price) {
+		this.price = price;
+	}
+
+
+	public void setPriceChange(Double priceChange) {
+		this.priceChange = priceChange;
+	}
+
+
+	public void setValueChangeDollars(double valueChangeDollars) {
+		this.valueChangeDollars = valueChangeDollars;
 	}
 
 

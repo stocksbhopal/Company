@@ -103,7 +103,7 @@ public class PortfolioJPA {
 					.getResultList();
 			List<PortfolioItemData> portfolioItemDataList = new ArrayList<>();
 			for (Object[] item : list) {
-				PortfolioItemData portfolioItemData = new PortfolioItemData(item[0].toString(), item[1].toString(), (Double)item[2]);
+				PortfolioItemData portfolioItemData = new PortfolioItemData(item[0].toString(), item[1].toString(), 0.00D, 0.00D, 0.00D, (Double)item[2]);
 				portfolioItemDataList.add(portfolioItemData);
 			}
 			return portfolioItemDataList;

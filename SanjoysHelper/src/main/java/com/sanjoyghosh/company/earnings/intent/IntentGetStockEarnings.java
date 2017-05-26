@@ -1,6 +1,5 @@
 package com.sanjoyghosh.company.earnings.intent;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -17,8 +16,6 @@ import com.amazon.speech.ui.Reprompt;
 import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.PortfolioItemData;
 import com.sanjoyghosh.company.db.PortfolioJPA;
-import com.sanjoyghosh.company.source.nasdaq.NasdaqRealtimeQuote;
-import com.sanjoyghosh.company.source.nasdaq.NasdaqRealtimeQuoteReader;
 import com.sanjoyghosh.company.utils.LocalDateRange;
 
 public class IntentGetStockEarnings implements InterfaceIntent {
@@ -27,26 +24,6 @@ public class IntentGetStockEarnings implements InterfaceIntent {
 
 	public static final int RESULT_SUCCESS = 0;
 	public static final int RESULT_ERROR_INVALID_DATE_RANGE = -1;
-
-	
-    private double getNetValueChange(List<PortfolioItemData> portfolioItemDataList) {
-    	double valueChange = 0.00;
-		for (PortfolioItemData portfolioItemData : portfolioItemDataList) {
-			NasdaqRealtimeQuote quote = null;
-			try {
-				quote = NasdaqRealtimeQuoteReader.fetchNasdaqStockSummary(portfolioItemData.getSymbol());
-			} 
-			catch (IOException e) {
-				e.printStackTrace();
-			}
-			if (quote != null) {
-				portfolioItemData.setPriceChangePercent(quote.getPriceChangePercent());
-				portfolioItemData.setValueChangeDollars(portfolioItemData.getQuantity() * quote.getPriceChange());
-				valueChange += portfolioItemData.getValueChangeDollars();
-			}
-		}
-		return valueChange;
-    }
     
     
     private SpeechletResponse respondWithEarningsInfo(EntityManager em, IntentRequest request, Session session, LocalDateRange dateRange, IntentResult intentResult) {
@@ -59,7 +36,7 @@ public class IntentGetStockEarnings implements InterfaceIntent {
 		else {
 			int length = portfolioItemDataList.size();
 			speech = "You have " + length + (length == 1 ? " stock " : " stocks ") + "with earnings " + dateRange.toAlexaString() + ". ";
-			int valueChange = (int)getNetValueChange(portfolioItemDataList);
+			int valueChange = (int)PortfolioUtils.getNetValueChange(portfolioItemDataList, intentResult);
 			speech += "For a net " + (valueChange >= 0 ? "gain" : "loss") + " of " + valueChange + " dollars. ";
 			
 			Collections.sort(portfolioItemDataList, new Comparator<PortfolioItemData>() {
