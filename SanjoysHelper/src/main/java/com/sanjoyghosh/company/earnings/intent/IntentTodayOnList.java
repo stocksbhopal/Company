@@ -1,9 +1,7 @@
 package com.sanjoyghosh.company.earnings.intent;
 
-import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
 
@@ -11,20 +9,13 @@ import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.Session;
 import com.amazon.speech.speechlet.SpeechletException;
 import com.amazon.speech.speechlet.SpeechletResponse;
-import com.amazon.speech.ui.PlainTextOutputSpeech;
-import com.amazon.speech.ui.Reprompt;
-import com.sanjoyghosh.company.db.CompanyJPA;
 import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.PortfolioItemData;
 import com.sanjoyghosh.company.db.PortfolioJPA;
-import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.db.model.Portfolio;
-import com.sanjoyghosh.company.db.model.PortfolioItem;
 
 public class IntentTodayOnList implements InterfaceIntent {
 
-    private static final Logger logger = Logger.getLogger(IntentTodayOnList.class.getName());
-   
     public static final int RESULT_SUCCESS = 0;
     public static final int RESULT_ERROR_EXCEPTION = -1;
     public static final int RESULT_ERROR_MISSING_QUANTITY = -2;
@@ -39,30 +30,25 @@ public class IntentTodayOnList implements InterfaceIntent {
 
     	AllSlotValues slotValues = new AllSlotValues();
     	boolean hasQuantity = IntentUtils.getQuantity(request, session, slotValues);
-    	int numTopStocks = (int) (hasQuantity ? slotValues.getQuantity() : DEFAULT_NUM_RESULTS);
+    	int numResults = (int) (hasQuantity ? slotValues.getQuantity() : DEFAULT_NUM_RESULTS);
     	
 		EntityManager em = null;
 		try {
 			em = JPAHelper.getEntityManager();	    	
 			if (intentName.equals(InterfaceIntent.INTENT_TODAY_PERFORMANCE)) {
-				return processTodayPerformance(em, alexaUserId, intentName, intentResult);
+				return processTodayPerformance(em, alexaUserId, intentName, intentResult, -1, false, false);
 			}
-			if (intentName.equals(InterfaceIntent.INTENT_READ_STOCK_ON_LIST)) {
-				return readStockOnList(em, alexaUserId, intentName, company, slotValues);
+			if (intentName.equals(InterfaceIntent.INTENT_TODAY_TOP_GAINERS_DOLLARS)) {
+				return processTodayPerformance(em, alexaUserId, intentName, intentResult, numResults, true, true);
 			}
-			// intentName might have been changed for AMAZON.YesIntent and AMAZON.NoIntent.  So get it from the request.
-			if (intentName.equals(InterfaceIntent.INTENT_UPDATE_STOCK_ON_LIST)) {
-				return updateStockOnList(em, isConfirmation, request.getIntent().getName(), session, company, (int)slotValues.getQuantity().doubleValue(), slotValues);
+			if (intentName.equals(InterfaceIntent.INTENT_TODAY_TOP_GAINERS_PERCENTAGE)) {
+				return processTodayPerformance(em, alexaUserId, intentName, intentResult, numResults, false, true);
 			}
-			if (intentName.equals(InterfaceIntent.INTENT_DELETE_STOCK_ON_LIST)) {
-				return deleteStockOnList(em, isConfirmation, request.getIntent().getName(), session, company, slotValues);
+			if (intentName.equals(InterfaceIntent.INTENT_TODAY_TOP_LOSERS_DOLLARS)) {
+				return processTodayPerformance(em, alexaUserId, intentName, intentResult, numResults, true, false);
 			}
-			if (intentName.equals(InterfaceIntent.INTENT_LIST_STOCKS_ON_LIST)) {
-				return listStocksOnList(em, session.getUser().getUserId(), intentName);
-			}
-			// intentName might have been changed for AMAZON.YesIntent and AMAZON.NoIntent.  So get it from the request.
-			if (intentName.equals(InterfaceIntent.INTENT_CLEAR_STOCKS_ON_LIST)) {
-				return clearStocksOnList(em, isConfirmation, request.getIntent().getName(), session);
+			if (intentName.equals(InterfaceIntent.INTENT_TODAY_TOP_LOSERS_PERCENTAGE)) {
+				return processTodayPerformance(em, alexaUserId, intentName, intentResult, numResults, false, false);
 			}
 		}
 		finally {
@@ -100,7 +86,14 @@ public class IntentTodayOnList implements InterfaceIntent {
 			double netChange = 0.00D;
 			
 			List<PortfolioItemData> portfolioItemDataList = PortfolioUtils.getPortfolioValueChange(portfolio, intentResult);
-			if ()
+			// If numResults is not -1, the results have to be sorted.
+			if (numResults > 0) {
+				PortfolioUtils.sortPortfolioItemDataList(portfolioItemDataList, sortByValueChange);
+				if (showGainers) {
+					Collections.reverse(portfolioItemDataList);
+				}
+			}
+			
 			for (PortfolioItemData item : portfolioItemDataList) {
 				netChange += item.getValueChangeDollars();
 				if (item.getPriceChange() >= 0.00D) {
@@ -113,8 +106,22 @@ public class IntentTodayOnList implements InterfaceIntent {
 			
 			speechText = "You have a net " + (netChange >= 0.00D ? "gain of " + netChange : "loss of " + -netChange) + " today. ";
 			speechText += "There are " + numGainers + " gainers, and " + numLosers + " losers. ";
+			
+			if (numResults > 0) {
+				speechText = "The top " + numResults + (showGainers ? " gainers" : "losers") + " by " + 
+					(sortByValueChange ? "value change" : "percent change") + " are: ";
+				for (PortfolioItemData portfolioItemData : portfolioItemDataList) {
+					speechText += (int)portfolioItemData.getQuantity() + " shares of " + portfolioItemData.getSpeechName() + ", ";
+					if (portfolioItemData.getValueChangeDollars() >= 0.00) {
+						speechText += "gain " + (int)portfolioItemData.getValueChangeDollars() + " dollars, up " + portfolioItemData.getPriceChangePercent() + " percent. ";
+					}
+					else {
+						speechText += "loss " + (int)(-portfolioItemData.getValueChangeDollars()) + " dollars, down " + -portfolioItemData.getPriceChangePercent() + " percent. ";					
+					}
+				}
+			}
 		}		
 		
-		return IntentUtils.makeTellResponse(alexaUserId, intentName, RESULT_SUCCESS, String.valueOf(numStocks), null, speechText);
+		return IntentUtils.makeTellResponse(alexaUserId, intentName, RESULT_SUCCESS, String.valueOf(0), null, speechText);
 	}
 }

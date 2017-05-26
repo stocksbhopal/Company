@@ -1,5 +1,6 @@
 package com.sanjoyghosh.company.db.model;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,6 +32,17 @@ public class Portfolio {
 	private LocalDate createDate;
 	@Column
 	private LocalDate updateDate;
+	@Column
+	private boolean isUpdatingPrices;
+	@Column
+	@Column
+	private int updatePricesExecMSecs;
+	@Column
+	private double netValueChange;
+	@Column
+	private int numGainers;
+	@Column
+	private int numLosers;
 	
 	@OneToMany(mappedBy="portfolio", cascade=CascadeType.ALL)
 	private List<PortfolioItem> portfolioItemList;
@@ -131,5 +143,65 @@ public class Portfolio {
 	
 	public boolean isEmpty() {
 		return portfolioItemList == null || portfolioItemList.size() == 0;
+	}
+
+
+	public boolean isUpdatingPrices() {
+		return isUpdatingPrices;
+	}
+
+
+	public void setUpdatingPrices(boolean isUpdatingPrices) {
+		this.isUpdatingPrices = isUpdatingPrices;
+	}
+
+
+	public Timestamp getUpdatePricesStart() {
+		return updatePricesStart;
+	}
+
+
+	public void setUpdatePricesStart(Timestamp updatePricesStart) {
+		this.updatePricesStart = updatePricesStart;
+	}
+
+
+	public int getUpdatePricesExecMSecs() {
+		return updatePricesExecMSecs;
+	}
+
+
+	public void setUpdatePricesExecMSecs(int updatePricesExecMSecs) {
+		this.updatePricesExecMSecs = updatePricesExecMSecs;
+	}
+
+
+	public double getNetValueChange() {
+		return netValueChange;
+	}
+
+
+	public void setNetValueChange(double netValueChange) {
+		this.netValueChange = netValueChange;
+	}
+
+
+	public int getNumGainers() {
+		return numGainers;
+	}
+
+
+	public void setNumGainers(int numGainers) {
+		this.numGainers = numGainers;
+	}
+
+
+	public int getNumLosers() {
+		return numLosers;
+	}
+
+
+	public void setNumLosers(int numLosers) {
+		this.numLosers = numLosers;
 	}
 }

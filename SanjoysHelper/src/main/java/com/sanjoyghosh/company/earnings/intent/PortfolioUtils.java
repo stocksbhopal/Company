@@ -2,6 +2,8 @@ package com.sanjoyghosh.company.earnings.intent;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -87,5 +89,20 @@ public class PortfolioUtils {
     	List<PortfolioItem> portfolioItemList = portfolio.getPortfolioItemList();
     	List<PortfolioItemData> portfolioItemDataList = getPortfolioItemListValueChange(portfolioItemList, intentResult);
     	return portfolioItemDataList;
+    }
+    
+    
+    public static void sortPortfolioItemDataList(List<PortfolioItemData> portfolioItemDataList, boolean sortByValueChange) {
+    	Collections.sort(portfolioItemDataList, new Comparator<PortfolioItemData>() {
+			@Override
+			public int compare(PortfolioItemData o1, PortfolioItemData o2) {
+				if (sortByValueChange) {
+					return new Double(o1.getValueChangeDollars()).compareTo(new Double(o2.getValueChangeDollars()));
+				}
+				else {
+					return new Double(o1.getPriceChangePercent()).compareTo(new Double(o2.getPriceChangePercent()));					
+				}
+			}
+		});
     }
 }
