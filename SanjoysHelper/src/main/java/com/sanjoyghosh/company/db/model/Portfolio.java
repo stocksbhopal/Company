@@ -37,8 +37,6 @@ public class Portfolio {
 	@Column
 	private Timestamp updatePricesStart;
 	@Column
-	private int updatePricesExecMSecs;
-	@Column
 	private double netValueChange;
 	@Column
 	private int numGainers;
@@ -164,16 +162,6 @@ public class Portfolio {
 
 	public void setUpdatePricesStart(Timestamp updatePricesStart) {
 		this.updatePricesStart = updatePricesStart;
-	}
-
-
-	public int getUpdatePricesExecMSecs() {
-		return updatePricesExecMSecs;
-	}
-
-
-	public void setUpdatePricesExecMSecs(int updatePricesExecMSecs) {
-		this.updatePricesExecMSecs = updatePricesExecMSecs;
 	}
 
 

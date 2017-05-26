@@ -81,26 +81,72 @@ public class PortfolioUtils {
     }
     
     
-    public static List<PortfolioItemData> getPortfolioValueChange(Portfolio portfolio, IntentResult intentResult) {
+    public static boolean updatePortfolioPrices(Portfolio portfolio, IntentResult intentResult) {
     	if (portfolio == null || portfolio.getPortfolioItemList() == null || portfolio.getPortfolioItemList().isEmpty()) {
-    		return null;
+    		return true;
     	}
     	
+    	int numGainers = 0;
+    	int numLosers = 0;
+    	double netValueChange = 0.00D;
+    	
     	List<PortfolioItem> portfolioItemList = portfolio.getPortfolioItemList();
-    	List<PortfolioItemData> portfolioItemDataList = getPortfolioItemListValueChange(portfolioItemList, intentResult);
-    	return portfolioItemDataList;
-    }
-    
-    
-    public static void sortPortfolioItemDataList(List<PortfolioItemData> portfolioItemDataList, boolean sortByValueChange) {
-    	Collections.sort(portfolioItemDataList, new Comparator<PortfolioItemData>() {
-			@Override
-			public int compare(PortfolioItemData o1, PortfolioItemData o2) {
-				if (sortByValueChange) {
-					return new Double(o1.getValueChangeDollars()).compareTo(new Double(o2.getValueChangeDollars()));
+    	for (PortfolioItem portfolioItem : portfolioItemList) {
+			NasdaqRealtimeQuote quote = null;
+			String symbol = portfolioItem.getCompany().getSymbol();
+			try {
+				quote = NasdaqRealtimeQuoteReader.fetchNasdaqStockSummary(symbol);
+			} 
+			catch (IOException e) {
+				intentResult.addSymbolWithException(symbol, e);
+				logger.log(Level.SEVERE, "Exception in reading Nasdaq quote for " + symbol, e);
+			}
+			
+			if (quote == null) {
+				intentResult.addNullQuoteSymbol(symbol);
+				logger.log(Level.SEVERE, "Null quote read from Nasdaq for " + symbol);
+			}
+			else {
+				portfolioItem.setPrice(quote.getPrice());
+				portfolioItem.setPriceChange(quote.getPriceChange());
+				portfolioItem.setPriceChangePercent(quote.getPriceChangePercent());
+				portfolioItem.setValueChange(portfolioItem.getQuantity() * quote.getPriceChange());
+				
+				if (quote.getPriceChange() >= 0.00) {
+					numGainers++;
 				}
 				else {
-					return new Double(o1.getPriceChangePercent()).compareTo(new Double(o2.getPriceChangePercent()));					
+					numLosers++;
+				}
+				netValueChange += portfolioItem.getValueChange();
+			}
+		}
+    	
+    	portfolio.setNetValueChange(netValueChange);
+    	portfolio.setNumGainers(numGainers);
+    	portfolio.setNumLosers(numLosers);
+		
+    	return true;
+    }
+    
+
+    /**
+     * 
+     * @param portfolioItemDataList
+     * @param sortByValueChange True if sort by valueChange.  False if sort by priceChangePercent.
+     * @param sortAscending  True if sort ascending.  False if sort descending.
+     */
+    public static void sortPortfolioItemList(List<PortfolioItem> portfolioItemList, boolean sortByValueChange, boolean sortAscending) {
+    	Collections.sort(portfolioItemList, new Comparator<PortfolioItem>() {
+			@Override
+			public int compare(PortfolioItem o1, PortfolioItem o2) {
+				if (sortByValueChange) {
+					int comparison = new Double(o1.getValueChange()).compareTo(new Double(o2.getValueChange()));
+					return sortAscending ? comparison : -comparison;
+				}
+				else {
+					int comparison = new Double(o1.getPriceChangePercent()).compareTo(new Double(o2.getPriceChangePercent()));		
+					return sortAscending ? comparison : -comparison;
 				}
 			}
 		});

@@ -1,8 +1,5 @@
 package com.sanjoyghosh.company.earnings.intent;
 
-import java.util.Collections;
-import java.util.List;
-
 import javax.persistence.EntityManager;
 
 import com.amazon.speech.speechlet.IntentRequest;
@@ -10,9 +7,9 @@ import com.amazon.speech.speechlet.Session;
 import com.amazon.speech.speechlet.SpeechletException;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.sanjoyghosh.company.db.JPAHelper;
-import com.sanjoyghosh.company.db.PortfolioItemData;
 import com.sanjoyghosh.company.db.PortfolioJPA;
 import com.sanjoyghosh.company.db.model.Portfolio;
+import com.sanjoyghosh.company.db.model.PortfolioItem;
 
 public class IntentTodayOnList implements InterfaceIntent {
 
@@ -35,6 +32,9 @@ public class IntentTodayOnList implements InterfaceIntent {
 		EntityManager em = null;
 		try {
 			em = JPAHelper.getEntityManager();	    	
+			if (intentName.equals(InterfaceIntent.INTENT_UPDATE_PRICES_ON_LIST)) {
+				return processUpdatePricesOnList(em, alexaUserId, intentName, intentResult);
+			}
 			if (intentName.equals(InterfaceIntent.INTENT_TODAY_PERFORMANCE)) {
 				return processTodayPerformance(em, alexaUserId, intentName, intentResult, -1, false, false);
 			}
@@ -60,6 +60,25 @@ public class IntentTodayOnList implements InterfaceIntent {
 		return IntentUtils.makeTellResponse(alexaUserId, intentName, RESULT_ERROR_BAD_INTENT, slotValues, "Sorry " + getClass().getName() + " does not know what to do with intent: " + request.getIntent().getName());
 	}
 
+    
+    private SpeechletResponse processUpdatePricesOnList(EntityManager em, String alexaUserId, String intentName, IntentResult intentResult) {
+		String speechText = "";
+		Portfolio portfolio = PortfolioJPA.fetchPortfolio(em, PortfolioJPA.MY_PORTFOLIO_NAME, alexaUserId);
+		if (portfolio == null || portfolio.isEmpty()) {
+			speechText = "Sorry, you do not yet have a list of stocks.";
+		}
+		else {
+			if (portfolio.isUpdatingPrices()) {
+				speechText = "Hang on just a little longer.  Finance Helper is still gathering updated prices on your stocks.";
+			}
+			else {
+				PortfolioUtils.updatePortfolioPrices(portfolio, intentResult);
+			}
+		}
+		
+		return IntentUtils.makeTellResponse(alexaUserId, intentName, RESULT_SUCCESS, String.valueOf(0), null, speechText);    	
+    }
+    
 
     /**
      * 
@@ -81,42 +100,24 @@ public class IntentTodayOnList implements InterfaceIntent {
 			speechText = "Sorry, you do not yet have a list of stocks.";
 		}
 		else {
-			int numGainers = 0;
-			int numLosers = 0;
-			double netChange = 0.00D;
-			
-			List<PortfolioItemData> portfolioItemDataList = PortfolioUtils.getPortfolioValueChange(portfolio, intentResult);
-			// If numResults is not -1, the results have to be sorted.
-			if (numResults > 0) {
-				PortfolioUtils.sortPortfolioItemDataList(portfolioItemDataList, sortByValueChange);
-				if (showGainers) {
-					Collections.reverse(portfolioItemDataList);
-				}
-			}
-			
-			for (PortfolioItemData item : portfolioItemDataList) {
-				netChange += item.getValueChangeDollars();
-				if (item.getPriceChange() >= 0.00D) {
-					numGainers++;
-				}
-				else {
-					numLosers++;
-				}
-			}
-			
-			speechText = "You have a net " + (netChange >= 0.00D ? "gain of " + netChange : "loss of " + -netChange) + " today. ";
+			int numGainers = portfolio.getNumGainers();
+			int numLosers = portfolio.getNumLosers();
+			double netValueChange = portfolio.getNetValueChange();
+						
+			speechText = "You have a net " + (netValueChange >= 0.00D ? "gain of " + netValueChange : "loss of " + -netValueChange) + " today. ";
 			speechText += "There are " + numGainers + " gainers, and " + numLosers + " losers. ";
 			
 			if (numResults > 0) {
+				PortfolioUtils.sortPortfolioItemList(portfolio.getPortfolioItemList(), sortByValueChange, !showGainers);
 				speechText = "The top " + numResults + (showGainers ? " gainers" : "losers") + " by " + 
 					(sortByValueChange ? "value change" : "percent change") + " are: ";
-				for (PortfolioItemData portfolioItemData : portfolioItemDataList) {
-					speechText += (int)portfolioItemData.getQuantity() + " shares of " + portfolioItemData.getSpeechName() + ", ";
-					if (portfolioItemData.getValueChangeDollars() >= 0.00) {
-						speechText += "gain " + (int)portfolioItemData.getValueChangeDollars() + " dollars, up " + portfolioItemData.getPriceChangePercent() + " percent. ";
+				for (PortfolioItem portfolioItem : portfolio.getPortfolioItemList()) {
+					speechText += (int)portfolioItem.getQuantity() + " shares of " + portfolioItem.getCompany().getSpeechName() + ", ";
+					if (portfolioItem.getValueChange() >= 0.00) {
+						speechText += "gain " + (int)portfolioItem.getValueChange() + " dollars, up " + portfolioItem.getPriceChangePercent() + " percent. ";
 					}
 					else {
-						speechText += "loss " + (int)(-portfolioItemData.getValueChangeDollars()) + " dollars, down " + -portfolioItemData.getPriceChangePercent() + " percent. ";					
+						speechText += "loss " + (int)(-portfolioItem.getValueChange()) + " dollars, down " + -portfolioItem.getPriceChangePercent() + " percent. ";					
 					}
 				}
 			}

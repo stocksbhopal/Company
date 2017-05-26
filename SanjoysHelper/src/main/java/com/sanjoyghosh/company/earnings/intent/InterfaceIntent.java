@@ -30,6 +30,7 @@ public interface InterfaceIntent {
     public static final String INTENT_LIST_STOCKS_ON_LIST = "ListStocksOnList";
     public static final String INTENT_CLEAR_STOCKS_ON_LIST = "ClearStocksOnList";
 
+    public static final String INTENT_UPDATE_PRICES_ON_LIST = "UpdatePricesOnList";
     public static final String INTENT_TODAY_PERFORMANCE = "TodayPerformance";
     public static final String INTENT_TODAY_TOP_GAINERS_DOLLARS = "TodayTopGainersDollars";
     public static final String INTENT_TODAY_TOP_GAINERS_PERCENTAGE = "TodayTopGainersPercentage";
@@ -53,7 +54,6 @@ public interface InterfaceIntent {
     public static final String INTENT_MY_STOCKS_STATUS = "MyStocksStatus";
     public static final String INTENT_MY_STOCKS_GAINERS = "MyStocksGainers";
     public static final String INTENT_MY_STOCKS_LOSERS = "MyStocksLosers";
-    public static final String INTENT_UPDATE_PRICES = "UpdatePrices";
     
     
 	public SpeechletResponse onIntent(IntentRequest request, Session session, IntentResult intentResult) throws SpeechletException;

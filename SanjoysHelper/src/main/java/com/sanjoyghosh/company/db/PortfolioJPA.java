@@ -31,6 +31,20 @@ public class PortfolioJPA {
 		return null;
 	}
 
+
+	public static Portfolio fetchPortfolioSorted(EntityManager em, String name, String alexaUserId) {
+		try {
+			Portfolio portfolio = em.createQuery("SELECT p FROM Portfolio p WHERE name = :name AND alexaUserId = :alexaUserId", Portfolio.class)
+				.setParameter("name", name)
+				.setParameter("alexaUserId", alexaUserId)
+				.getSingleResult();
+			portfolio.restorePortfolioItemBySymbolMap();
+			return portfolio;
+		}
+		catch (NoResultException e) {}
+		return null;
+	}
+
 	
 	public static Portfolio deletePortfolioItemList(EntityManager em, String name, String alexaUserId) {
 		try {
