@@ -35,6 +35,7 @@ public class Portfolio {
 	@Column
 	private boolean isUpdatingPrices;
 	@Column
+	private Timestamp updatePricesStart;
 	@Column
 	private int updatePricesExecMSecs;
 	@Column
