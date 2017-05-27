@@ -1,5 +1,8 @@
 package com.sanjoyghosh.company.earnings.intent;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.EntityManager;
 
 import com.amazon.speech.speechlet.IntentRequest;
@@ -63,6 +66,8 @@ public class IntentTodayOnList implements InterfaceIntent {
     
     private SpeechletResponse processUpdatePricesOnList(EntityManager em, String alexaUserId, String intentName, IntentResult intentResult) {
 		String speechText = "";
+		
+		em.getTransaction().begin();
 		Portfolio portfolio = PortfolioJPA.fetchPortfolio(em, PortfolioJPA.MY_PORTFOLIO_NAME, alexaUserId);
 		if (portfolio == null || portfolio.isEmpty()) {
 			speechText = "Sorry, you do not yet have a list of stocks.";
@@ -73,9 +78,12 @@ public class IntentTodayOnList implements InterfaceIntent {
 			}
 			else {
 				PortfolioUtils.updatePortfolioPrices(portfolio, intentResult);
+				em.persist(portfolio);
+				speechText = "Finance Helper has completed updating your stocks. ";
 			}
 		}
 		
+		em.getTransaction().commit();
 		return IntentUtils.makeTellResponse(alexaUserId, intentName, RESULT_SUCCESS, String.valueOf(0), null, speechText);    	
     }
     
@@ -102,22 +110,31 @@ public class IntentTodayOnList implements InterfaceIntent {
 		else {
 			int numGainers = portfolio.getNumGainers();
 			int numLosers = portfolio.getNumLosers();
-			double netValueChange = portfolio.getNetValueChange();
+			int netValueChange = (int)portfolio.getNetValueChange();
 						
 			speechText = "You have a net " + (netValueChange >= 0.00D ? "gain of " + netValueChange : "loss of " + -netValueChange) + " today. ";
 			speechText += "There are " + numGainers + " gainers, and " + numLosers + " losers. ";
 			
 			if (numResults > 0) {
-				PortfolioUtils.sortPortfolioItemList(portfolio.getPortfolioItemList(), sortByValueChange, !showGainers);
-				speechText = "The top " + numResults + (showGainers ? " gainers" : "losers") + " by " + 
-					(sortByValueChange ? "value change" : "percent change") + " are: ";
-				for (PortfolioItem portfolioItem : portfolio.getPortfolioItemList()) {
+				List<PortfolioItem> portfolioItemList = new ArrayList<>();
+				portfolioItemList.addAll(portfolio.getPortfolioItemList());
+				PortfolioUtils.sortPortfolioItemList(portfolioItemList, sortByValueChange, !showGainers);
+				
+				speechText = "The top " + numResults + (showGainers ? " gainers" : " losers") + " by " + 
+					(sortByValueChange ? "dollar change" : "percentage change") + " are: ";
+				
+				int count = 0;
+				for (PortfolioItem portfolioItem : portfolioItemList) {
 					speechText += (int)portfolioItem.getQuantity() + " shares of " + portfolioItem.getCompany().getSpeechName() + ", ";
 					if (portfolioItem.getValueChange() >= 0.00) {
-						speechText += "gain " + (int)portfolioItem.getValueChange() + " dollars, up " + portfolioItem.getPriceChangePercent() + " percent. ";
+						speechText += "gain " + (int)portfolioItem.getValueChange() + " dollars, up " + portfolioItem.getPriceChangePercent() + " percent, ";
 					}
 					else {
-						speechText += "loss " + (int)(-portfolioItem.getValueChange()) + " dollars, down " + -portfolioItem.getPriceChangePercent() + " percent. ";					
+						speechText += "loss " + (int)(-portfolioItem.getValueChange()) + " dollars, down " + -portfolioItem.getPriceChangePercent() + " percent, ";					
+					}
+					count++;
+					if (count == numResults) {
+						break;
 					}
 				}
 			}
