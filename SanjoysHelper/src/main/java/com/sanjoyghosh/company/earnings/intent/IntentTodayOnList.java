@@ -113,15 +113,15 @@ public class IntentTodayOnList implements InterfaceIntent {
 			int netValueChange = (int)portfolio.getNetValueChange();
 						
 			speechText = "You have a net " + (netValueChange >= 0.00D ? "gain of " + netValueChange : "loss of " + -netValueChange) + " today. ";
-			speechText += "There are " + numGainers + " gainers, and " + numLosers + " losers. ";
+			speechText += "There are " + numGainers + " advancers, and " + numLosers + " decliners. ";
 			
 			if (numResults > 0) {
 				List<PortfolioItem> portfolioItemList = new ArrayList<>();
 				portfolioItemList.addAll(portfolio.getPortfolioItemList());
 				PortfolioUtils.sortPortfolioItemList(portfolioItemList, sortByValueChange, !showGainers);
 				
-				speechText = "The top " + numResults + (showGainers ? " gainers" : " losers") + " by " + 
-					(sortByValueChange ? "dollar change" : "percentage change") + " are: ";
+				speechText = "The top " + numResults + (showGainers ? " advancers" : " decliners") + " by " + 
+					(sortByValueChange ? "dollars" : "percentage") + " are: ";
 				
 				int count = 0;
 				for (PortfolioItem portfolioItem : portfolioItemList) {
