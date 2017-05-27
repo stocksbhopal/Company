@@ -90,8 +90,6 @@ public class PortfolioUtils {
     	int numLosers = 0;
     	double netValueChange = 0.00D;
 
-		logger.log(Level.SEVERE, "Started updating prices");
-
     	List<PortfolioItem> portfolioItemList = portfolio.getPortfolioItemList();
     	for (PortfolioItem portfolioItem : portfolioItemList) {
 			NasdaqRealtimeQuote quote = null;
@@ -128,8 +126,6 @@ public class PortfolioUtils {
     	portfolio.setNumGainers(numGainers);
     	portfolio.setNumLosers(numLosers);
 		
-		logger.log(Level.SEVERE, "Finished updating prices");
-
     	return true;
     }
     
