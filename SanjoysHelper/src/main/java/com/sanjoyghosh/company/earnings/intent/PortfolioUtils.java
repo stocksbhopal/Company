@@ -1,6 +1,7 @@
 package com.sanjoyghosh.company.earnings.intent;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -89,6 +90,7 @@ public class PortfolioUtils {
     	int numGainers = 0;
     	int numLosers = 0;
     	double netValueChange = 0.00D;
+    	portfolio.setUpdatePricesStart(new Timestamp(System.currentTimeMillis()));
 
     	List<PortfolioItem> portfolioItemList = portfolio.getPortfolioItemList();
     	for (PortfolioItem portfolioItem : portfolioItemList) {

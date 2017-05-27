@@ -1,5 +1,6 @@
 package com.sanjoyghosh.company.utils;
 
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -17,6 +18,7 @@ public class DateUtils {
 	private static final SimpleDateFormat MerrillLynchDateFormatter = new SimpleDateFormat("MMddyyyy");
 	
 	private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+	private static final SimpleDateFormat ssmlDateFormatter = new SimpleDateFormat("MMMMM dd, hh:mm aaa");
 	
 	
 	public static Date getDateFromFidelityHoldingsFileName(String fileName) throws ParseException {
@@ -57,5 +59,11 @@ public class DateUtils {
 	
 	public static String toDateString(LocalDate date) {
 		return date.format(dateFormatter);
+	}
+	
+	
+	public static String toSsmlString(Timestamp timestamp) {
+		String date = ssmlDateFormatter.format(timestamp);
+		return date;
 	}
 }

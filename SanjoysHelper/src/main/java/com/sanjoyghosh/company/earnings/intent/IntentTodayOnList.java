@@ -1,5 +1,6 @@
 package com.sanjoyghosh.company.earnings.intent;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.PortfolioJPA;
 import com.sanjoyghosh.company.db.model.Portfolio;
 import com.sanjoyghosh.company.db.model.PortfolioItem;
+import com.sanjoyghosh.company.utils.DateUtils;
 
 public class IntentTodayOnList implements InterfaceIntent {
 
@@ -111,8 +113,13 @@ public class IntentTodayOnList implements InterfaceIntent {
 			int numGainers = portfolio.getNumGainers();
 			int numLosers = portfolio.getNumLosers();
 			int netValueChange = (int)portfolio.getNetValueChange();
+			Timestamp updateTimestamp = portfolio.getUpdatePricesStart();
 						
-			speechText = "You have a net " + (netValueChange >= 0.00D ? "gain of " + netValueChange : "loss of " + -netValueChange) + " today. ";
+			speechText = "";
+			if (updateTimestamp != null) {
+				speechText = "As of " + DateUtils.toSsmlString(updateTimestamp) + ", ";				
+			}
+			speechText += "You have a net " + (netValueChange >= 0.00D ? "gain of " + netValueChange : "loss of " + -netValueChange) + " dollars today. ";
 			speechText += "There are " + numGainers + " advancers, and " + numLosers + " decliners. ";
 			
 			if (numResults > 0) {
