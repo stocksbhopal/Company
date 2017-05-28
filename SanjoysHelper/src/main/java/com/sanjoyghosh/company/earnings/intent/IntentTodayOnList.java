@@ -85,19 +85,20 @@ public class IntentTodayOnList implements InterfaceIntent {
 				speechText = "Hang on just a little longer.  Finance Helper is still gathering updated prices on your stocks.";
 			}
 			else {
+				em.getTransaction().begin();
+				portfolio.setUpdatingPrices(true);
+				portfolio.setUpdatePricesStart(new Timestamp(new Date().getTime()));
+				em.persist(portfolio);
+				em.getTransaction().commit();
+
 				poolExecutor.execute(new Runnable() {
 					@Override
 					public void run() {
 						EntityManager emRunnable = null;
 						try {
-							emRunnable = JPAHelper.getEntityManager();
-							
+							emRunnable = JPAHelper.getEntityManager();							
 							emRunnable.getTransaction().begin();
-							portfolio.setUpdatingPrices(true);
-							portfolio.setUpdatePricesStart(new Timestamp(new Date().getTime()));
-							emRunnable.getTransaction().commit();
-							
-							emRunnable.getTransaction().begin();
+							Portfolio portfolio = PortfolioJPA.fetchPortfolio(emRunnable, PortfolioJPA.MY_PORTFOLIO_NAME, alexaUserId);
 							PortfolioUtils.updatePortfolioPrices(portfolio, intentResult);
 							portfolio.setUpdatingPrices(false);
 							emRunnable.persist(portfolio);
