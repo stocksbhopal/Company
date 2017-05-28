@@ -2,7 +2,11 @@ package com.sanjoyghosh.company.earnings.intent;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import javax.persistence.EntityManager;
 
@@ -24,6 +28,9 @@ public class IntentTodayOnList implements InterfaceIntent {
     public static final int RESULT_ERROR_BAD_INTENT = -3;
     
     private static final int DEFAULT_NUM_RESULTS = 6;
+    
+    private static final ThreadPoolExecutor poolExecutor = new ThreadPoolExecutor(16, 24, 0, TimeUnit.SECONDS, new ArrayBlockingQueue<>(24));
+    
     
     @Override
 	public SpeechletResponse onIntent(IntentRequest request, Session session, IntentResult intentResult) throws SpeechletException {
@@ -69,7 +76,6 @@ public class IntentTodayOnList implements InterfaceIntent {
     private SpeechletResponse processUpdatePricesOnList(EntityManager em, String alexaUserId, String intentName, IntentResult intentResult) {
 		String speechText = "";
 		
-		em.getTransaction().begin();
 		Portfolio portfolio = PortfolioJPA.fetchPortfolio(em, PortfolioJPA.MY_PORTFOLIO_NAME, alexaUserId);
 		if (portfolio == null || portfolio.isEmpty()) {
 			speechText = "Sorry, you do not yet have a list of stocks.";
@@ -79,13 +85,35 @@ public class IntentTodayOnList implements InterfaceIntent {
 				speechText = "Hang on just a little longer.  Finance Helper is still gathering updated prices on your stocks.";
 			}
 			else {
-				PortfolioUtils.updatePortfolioPrices(portfolio, intentResult);
-				em.persist(portfolio);
-				speechText = "Finance Helper has completed updating your stocks. ";
+				poolExecutor.execute(new Runnable() {
+					@Override
+					public void run() {
+						EntityManager emRunnable = null;
+						try {
+							emRunnable = JPAHelper.getEntityManager();
+							
+							emRunnable.getTransaction().begin();
+							portfolio.setUpdatingPrices(true);
+							portfolio.setUpdatePricesStart(new Timestamp(new Date().getTime()));
+							emRunnable.getTransaction().commit();
+							
+							emRunnable.getTransaction().begin();
+							PortfolioUtils.updatePortfolioPrices(portfolio, intentResult);
+							portfolio.setUpdatingPrices(false);
+							emRunnable.persist(portfolio);
+							emRunnable.getTransaction().commit();
+						}
+						finally {
+							if (emRunnable != null) {
+								emRunnable.close();
+							}
+						}
+					}
+				});
+				speechText = "Finance Helper has started updating your stocks. ";
 			}
 		}
 		
-		em.getTransaction().commit();
 		return IntentUtils.makeTellResponse(alexaUserId, intentName, RESULT_SUCCESS, String.valueOf(0), null, speechText);    	
     }
     
@@ -108,6 +136,9 @@ public class IntentTodayOnList implements InterfaceIntent {
 		Portfolio portfolio = PortfolioJPA.fetchPortfolio(em, PortfolioJPA.MY_PORTFOLIO_NAME, alexaUserId);
 		if (portfolio == null || portfolio.isEmpty()) {
 			speechText = "Sorry, you do not yet have a list of stocks.";
+		}
+		else if (portfolio.isUpdatingPrices()) {
+			speechText = "Hang on just a little longer.  Finance Helper is still gathering updated prices on your stocks.";
 		}
 		else {
 			int numGainers = portfolio.getNumGainers();
