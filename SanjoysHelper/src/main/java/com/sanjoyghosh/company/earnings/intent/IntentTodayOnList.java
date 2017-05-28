@@ -151,7 +151,7 @@ public class IntentTodayOnList implements InterfaceIntent {
 			if (updateTimestamp != null) {
 				speechText = "As of " + DateUtils.toSsmlString(updateTimestamp) + ", ";				
 			}
-			speechText += "You have a net " + (netValueChange >= 0.00D ? "gain of " + netValueChange : "loss of " + -netValueChange) + " dollars today. ";
+			speechText += "You have a net " + (netValueChange >= 0.00D ? "gain of " + netValueChange : "loss of " + -netValueChange) + " dollars. ";
 			speechText += "There are " + numGainers + " advancers, and " + numLosers + " decliners. ";
 			
 			if (numResults > 0) {
