@@ -1,7 +1,6 @@
 package com.sanjoyghosh.company.earnings.intent;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
