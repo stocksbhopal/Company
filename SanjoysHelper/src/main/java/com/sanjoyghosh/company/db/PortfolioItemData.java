@@ -1,5 +1,7 @@
 package com.sanjoyghosh.company.db;
 
+import java.time.LocalDate;
+
 public class PortfolioItemData {
 
 	private String symbol;
@@ -7,6 +9,8 @@ public class PortfolioItemData {
 	private Double price;
 	private Double priceChange;
 	private double quantity;
+	private LocalDate earningsDate;
+	private String beforeMarketOrAfterMarket;
 	private double valueChangeDollars;
 	private double priceChangePercent;
 
@@ -24,6 +28,22 @@ public class PortfolioItemData {
 	}
 
 
+	public PortfolioItemData(String symbol, String speechName, 
+		Double price, Double priceChange, Double priceChangePercent, Double quantity,
+		LocalDate earningsDate, String beforeMarketOrAfterMarket) {
+		
+		this.symbol = symbol;
+		this.speechName = speechName;
+		this.price = price;
+		this.priceChange = priceChange;
+		this.priceChangePercent = priceChangePercent;
+		this.quantity = quantity;
+		this.valueChangeDollars = priceChange * quantity;
+		this.earningsDate = earningsDate;
+		this.beforeMarketOrAfterMarket = beforeMarketOrAfterMarket;
+	}
+
+	
 	public String getSymbol() {
 		return symbol;
 	}
@@ -76,5 +96,15 @@ public class PortfolioItemData {
 
 	public void setPriceChangePercent(double priceChangePercent) {
 		this.priceChangePercent = priceChangePercent;
+	}
+
+
+	public LocalDate getEarningsDate() {
+		return earningsDate;
+	}
+
+
+	public String getBeforeMarketOrAfterMarket() {
+		return beforeMarketOrAfterMarket;
 	}
 }
