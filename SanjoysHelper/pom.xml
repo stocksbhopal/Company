@@ -80,6 +80,12 @@
 			<artifactId>aws-java-sdk-logs</artifactId>
 			<version>1.11.98</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.freemarker/freemarker -->
+		<dependency>
+			<groupId>org.freemarker</groupId>
+			<artifactId>freemarker</artifactId>
+			<version>2.3.23</version>
+		</dependency>
 	</dependencies>
 
 	<build>
