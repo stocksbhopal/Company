@@ -30,8 +30,8 @@ import com.amazonaws.services.simpleemail.model.SendEmailRequest;
 
 public class EarningsReminderEmail {
 
-    static final String FROM = "SENDER@EXAMPLE.COM";  // Replace with your "From" address. This address must be verified.
-    static final String TO = "RECIPIENT@EXAMPLE.COM"; // Replace with a "To" address. If you have not yet requested
+    static final String FROM = "stocksbhopal@gmail.com";  // Replace with your "From" address. This address must be verified.
+    static final String TO = "sanjoy@yahoo.com"; // Replace with a "To" address. If you have not yet requested
                                                       // production access, this address must be verified.
     static final String BODY = "This email was sent through Amazon SES by using the AWS SDK for Java.";
     static final String SUBJECT = "Amazon SES test (AWS SDK for Java)";
