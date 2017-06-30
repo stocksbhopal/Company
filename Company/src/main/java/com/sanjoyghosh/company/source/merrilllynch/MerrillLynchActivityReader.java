@@ -22,7 +22,7 @@ import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.model.Activity;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.utils.Constants;
-import com.sanjoyghosh.company.utils.DateUtils;
+import com.sanjoyghosh.company.utils.LocalDateUtils;
 import com.sanjoyghosh.company.utils.StringUtils;
 
 public class MerrillLynchActivityReader {
@@ -59,8 +59,8 @@ public class MerrillLynchActivityReader {
 			Iterable<CSVRecord> records = CSVFormat.EXCEL.withHeader().parse(reader);
 			for (CSVRecord record : records) {
 				if (record.size() == 13) {
-					LocalDate tradeDate = DateUtils.getLocalDate(record.get("Trade Date").trim());
-					LocalDate settledDate = DateUtils.getLocalDate(record.get("Settlement Date").trim());
+					LocalDate tradeDate = LocalDateUtils.getLocalDate(record.get("Trade Date").trim());
+					LocalDate settledDate = LocalDateUtils.getLocalDate(record.get("Settlement Date").trim());
 					tradeDate = tradeDate == null ? settledDate : tradeDate;
 					String account = StringUtils.onlyLast4Characters(record.get("Account #").trim());
 					String transactionType = record.get("Description 1 ").trim();

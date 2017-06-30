@@ -3,8 +3,6 @@ package com.sanjoyghosh.company.utils;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,7 +15,6 @@ public class DateUtils {
 	private static final Pattern MerrillLynchHoldingsPattern = Pattern.compile(Constants.MerrillLynchHoldingsFileName);
 	private static final SimpleDateFormat MerrillLynchDateFormatter = new SimpleDateFormat("MMddyyyy");
 	
-	private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 	private static final SimpleDateFormat ssmlDateFormatter = new SimpleDateFormat("MMMMM dd, hh:mm aaa");
 	
 	
@@ -45,23 +42,6 @@ public class DateUtils {
 	}
 
 
-	/**
-	 * Assumes that the date is of the form: "8/27/2015"
-	 */
-	public static LocalDate getLocalDate(String dateStr) throws ParseException {
-		if (dateStr.equals("--") || dateStr.equals("")) {
-			return null;
-		}
-		LocalDate day = LocalDate.parse(dateStr, dateFormatter);
-		return day;
-	}
-	
-	
-	public static String toDateString(LocalDate date) {
-		return date.format(dateFormatter);
-	}
-	
-	
 	public static String toSsmlString(Timestamp timestamp) {
 		String date = ssmlDateFormatter.format(timestamp);
 		return date;

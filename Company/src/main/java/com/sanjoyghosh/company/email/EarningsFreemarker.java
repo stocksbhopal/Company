@@ -1,5 +1,8 @@
 package com.sanjoyghosh.company.email;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+
 import freemarker.template.Configuration;
 import freemarker.template.TemplateExceptionHandler;
 
@@ -14,4 +17,10 @@ public class EarningsFreemarker {
 	}
 	
 	
+	public static void main(String[] args) {
+		LocalDate today = LocalDate.now();
+		DayOfWeek dayOfWeek = today.getDayOfWeek();
+		
+		System.out.println(today);
+	}
 }

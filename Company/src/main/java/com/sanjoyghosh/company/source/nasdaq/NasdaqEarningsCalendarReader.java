@@ -17,8 +17,8 @@ import com.sanjoyghosh.company.db.CompanyUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.db.model.EarningsDate;
-import com.sanjoyghosh.company.utils.DateUtils;
 import com.sanjoyghosh.company.utils.JsoupUtils;
+import com.sanjoyghosh.company.utils.LocalDateUtils;
 
 public class NasdaqEarningsCalendarReader {
 
@@ -107,7 +107,7 @@ public class NasdaqEarningsCalendarReader {
 		    	entityManager.getTransaction().begin();		    	
 				int count = readEarningsCalendarFor(date, entityManager);
 			    entityManager.getTransaction().commit();
-				System.out.println("Got " + count + " earnings for " + DateUtils.toDateString(date));				
+				System.out.println("Got " + count + " earnings for " + LocalDateUtils.toDateString(date));				
 			} 
 			catch (IOException e) {
 				e.printStackTrace();

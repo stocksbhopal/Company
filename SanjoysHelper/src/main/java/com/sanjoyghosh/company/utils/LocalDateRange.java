@@ -33,8 +33,8 @@ public class LocalDateRange {
 
 	public String toAlexaString() {
 		if (numberOfDays == 1) {
-			return "on " + DateUtils.toDateString(startDate);
+			return "on " + LocalDateUtils.toDateString(startDate);
 		}
-		return "between " + DateUtils.toDateString(startDate) + " and " + DateUtils.toDateString(endDate);
+		return "between " + LocalDateUtils.toDateString(startDate) + " and " + LocalDateUtils.toDateString(endDate);
 	}
 }

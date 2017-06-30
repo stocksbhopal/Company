@@ -22,7 +22,7 @@ import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.model.Activity;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.utils.Constants;
-import com.sanjoyghosh.company.utils.DateUtils;
+import com.sanjoyghosh.company.utils.LocalDateUtils;
 import com.sanjoyghosh.company.utils.StringUtils;
 
 public class FidelityActivityReader {
@@ -62,7 +62,7 @@ public class FidelityActivityReader {
 				if (record.size() == 13) {
 					LocalDate tradeDate = null;
 					try {
-						tradeDate = DateUtils.getLocalDate(record.get("Run Date").trim());
+						tradeDate = LocalDateUtils.getLocalDate(record.get("Run Date").trim());
 						if (tradeDate == null) {
 							continue;
 						}
@@ -71,7 +71,7 @@ public class FidelityActivityReader {
 						continue;
 					}
 					
-					LocalDate settledDate = DateUtils.getLocalDate(record.get("Settlement Date").trim());
+					LocalDate settledDate = LocalDateUtils.getLocalDate(record.get("Settlement Date").trim());
 					settledDate = settledDate == null ? tradeDate : settledDate;
 					String account = StringUtils.onlyLast4Characters(record.get("Account").trim());
 					String transactionType = record.get("Action").trim();
