@@ -1,7 +1,15 @@
 package com.sanjoyghosh.company.email;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.List;
+
+import javax.persistence.EntityManager;
+
+import com.sanjoyghosh.company.db.JPAHelper;
+import com.sanjoyghosh.company.db.PortfolioItemData;
+import com.sanjoyghosh.company.db.PortfolioJPA;
+import com.sanjoyghosh.company.db.model.Portfolio;
+import com.sanjoyghosh.company.utils.LocalDateUtils;
 
 import freemarker.template.Configuration;
 import freemarker.template.TemplateExceptionHandler;
@@ -17,10 +25,29 @@ public class EarningsFreemarker {
 	}
 	
 	
-	public static void main(String[] args) {
+	private void fetchEarnings() {
 		LocalDate today = LocalDate.now();
-		DayOfWeek dayOfWeek = today.getDayOfWeek();
+		LocalDate startDate = LocalDateUtils.getWeekdayBefore(today, 30);
+		LocalDate endDate = LocalDateUtils.getWeekdayAfter(today, 30);
 		
-		System.out.println(today);
+		EntityManager em = null;
+		try {
+			em = JPAHelper.getEntityManager();
+			Portfolio portfolio = PortfolioJPA.fetchPortfolio(em, PortfolioJPA.MY_PORTFOLIO_NAME, PortfolioJPA.MY_ALEXA_USER_ID);
+			List<PortfolioItemData> items = PortfolioJPA.fetchPortfolioItemDataWithEarnings(em, PortfolioJPA.MY_PORTFOLIO_NAME, 
+				PortfolioJPA.MY_ALEXA_USER_ID, startDate, endDate);
+			System.out.println(portfolio.getPortfolioItemList().size() + "  " + items.size() + "  " + startDate + "  " + today + "  " + endDate);					
+		}
+		finally {
+			if (em != null) {
+				em.close();
+			}
+		}
+	}
+	
+	
+	public static void main(String[] args) {
+		EarningsFreemarker freemarker = new EarningsFreemarker();
+		freemarker.fetchEarnings();
 	}
 }
