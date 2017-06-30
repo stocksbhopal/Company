@@ -71,8 +71,9 @@ public class PortfolioUtils {
 				logger.log(Level.SEVERE, "Null quote read from Nasdaq for " + symbol);
 			}
 			else {
-				PortfolioItemData portfolioItemData = new PortfolioItemData(symbol, portfolioItem.getCompany().getSpeechName(), 
-					quote.getPrice(), quote.getPriceChange(), quote.getPriceChangePercent(), portfolioItem.getQuantity());
+				PortfolioItemData portfolioItemData = new PortfolioItemData(symbol, portfolioItem.getCompany().getName(), 
+					portfolioItem.getCompany().getSpeechName(), quote.getPrice(), quote.getPriceChange(), quote.getPriceChangePercent(), 
+					portfolioItem.getQuantity());
 				portfolioItemDataList.add(portfolioItemData);
 			}
 		}

@@ -5,6 +5,7 @@ import java.time.LocalDate;
 public class PortfolioItemData {
 
 	private String symbol;
+	private String name;
 	private String speechName;
 	private Double price;
 	private Double priceChange;
@@ -15,10 +16,11 @@ public class PortfolioItemData {
 	private double priceChangePercent;
 
 	
-	public PortfolioItemData(String symbol, String speechName, 
+	public PortfolioItemData(String symbol, String name, String speechName, 
 		Double price, Double priceChange, Double priceChangePercent, Double quantity) {
 		
 		this.symbol = symbol;
+		this.name = name;
 		this.speechName = speechName;
 		this.price = price;
 		this.priceChange = priceChange;
@@ -28,11 +30,12 @@ public class PortfolioItemData {
 	}
 
 
-	public PortfolioItemData(String symbol, String speechName, 
+	public PortfolioItemData(String symbol, String name, String speechName, 
 		Double price, Double priceChange, Double priceChangePercent, Double quantity,
 		LocalDate earningsDate, String beforeMarketOrAfterMarket) {
 		
 		this.symbol = symbol;
+		this.name = name;
 		this.speechName = speechName;
 		this.price = price;
 		this.priceChange = priceChange;
@@ -106,5 +109,15 @@ public class PortfolioItemData {
 
 	public String getBeforeMarketOrAfterMarket() {
 		return beforeMarketOrAfterMarket;
+	}
+
+
+	public String getName() {
+		return name;
+	}
+
+
+	public void setName(String name) {
+		this.name = name;
 	}
 }

@@ -99,7 +99,7 @@ public class PortfolioJPA {
 		EntityManager em, String portfolioName, String portfolioAlexaUserId, LocalDate startDate, LocalDate endDate) {
 		
 		String sql = 
-			"SELECT DISTINCT c.symbol, c.speechName, pi.quantity " +
+			"SELECT DISTINCT c.symbol, c.name, c.speechName, pi.quantity " +
 			"FROM Company AS c, Portfolio AS p, PortfolioItem AS pi, EarningsDate AS e " +
 			"WHERE " + 
 				"p.name = :portfolioName AND p.alexaUserId = :portfolioAlexaUserId " +
@@ -117,7 +117,8 @@ public class PortfolioJPA {
 					.getResultList();
 			List<PortfolioItemData> portfolioItemDataList = new ArrayList<>();
 			for (Object[] item : list) {
-				PortfolioItemData portfolioItemData = new PortfolioItemData(item[0].toString(), item[1].toString(), 0.00D, 0.00D, 0.00D, (Double)item[2]);
+				PortfolioItemData portfolioItemData = new PortfolioItemData(item[0].toString(), item[1].toString(), item[2].toString(), 
+					0.00D, 0.00D, 0.00D, (Double)item[3]);
 				portfolioItemDataList.add(portfolioItemData);
 			}
 			return portfolioItemDataList;
