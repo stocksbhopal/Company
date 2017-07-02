@@ -32,16 +32,16 @@ public class Portfolio {
 	private LocalDate createDate;
 	@Column
 	private LocalDate updateDate;
-//	@Column
-//	private boolean isUpdatingPrices;
-//	@Column
-//	private Timestamp updatePricesStart;
-//	@Column
-//	private double netValueChange;
-//	@Column
-//	private int numGainers;
-//	@Column
-//	private int numLosers;
+	@Column
+	private boolean isUpdatingPrices;
+	@Column
+	private Timestamp updatePricesStart;
+	@Column
+	private double netValueChange;
+	@Column
+	private int numGainers;
+	@Column
+	private int numLosers;
 	
 	@OneToMany(mappedBy="portfolio", cascade=CascadeType.ALL)
 	private List<PortfolioItem> portfolioItemList;
@@ -145,7 +145,6 @@ public class Portfolio {
 	}
 
 
-	/*
 	public boolean isUpdatingPrices() {
 		return isUpdatingPrices;
 	}
@@ -194,5 +193,4 @@ public class Portfolio {
 	public void setNumLosers(int numLosers) {
 		this.numLosers = numLosers;
 	}
-	*/
 }

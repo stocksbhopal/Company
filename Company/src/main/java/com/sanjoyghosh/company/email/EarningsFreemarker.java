@@ -33,10 +33,10 @@ public class EarningsFreemarker {
 		EntityManager em = null;
 		try {
 			em = JPAHelper.getEntityManager();
-			Portfolio portfolio = PortfolioJPA.fetchPortfolio(em, PortfolioJPA.MY_PORTFOLIO_NAME, PortfolioJPA.MY_ALEXA_USER_ID);
+//			Portfolio portfolio = PortfolioJPA.fetchPortfolio(em, PortfolioJPA.MY_PORTFOLIO_NAME, PortfolioJPA.MY_ALEXA_USER_ID);
 			List<PortfolioItemData> items = PortfolioJPA.fetchPortfolioItemDataWithEarnings(em, PortfolioJPA.MY_PORTFOLIO_NAME, 
 				PortfolioJPA.MY_ALEXA_USER_ID, startDate, endDate);
-			System.out.println(portfolio.getPortfolioItemList().size() + "  " + items.size() + "  " + startDate + "  " + today + "  " + endDate);					
+			System.out.println(items.size() + "  " + startDate + "  " + today + "  " + endDate);					
 		}
 		finally {
 			if (em != null) {
@@ -48,6 +48,12 @@ public class EarningsFreemarker {
 	
 	public static void main(String[] args) {
 		EarningsFreemarker freemarker = new EarningsFreemarker();
-		freemarker.fetchEarnings();
+		try {
+			freemarker.fetchEarnings();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.exit(0);
 	}
 }

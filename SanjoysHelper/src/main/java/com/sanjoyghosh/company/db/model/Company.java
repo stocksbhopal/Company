@@ -48,8 +48,8 @@ public class Company implements Serializable {
 	private String jpmOpinion;
 	@Column
 	private String jpmAnalyst;
-//	@Column
-//	private Integer numEarningsEstimates;
+	@Column
+	private Integer numEarningsEstimates;
 	
 	
 	public Company() {}
@@ -264,7 +264,6 @@ public class Company implements Serializable {
 	}
 
 
-	/*
 	public Integer getNumEarningsEstimates() {
 		return numEarningsEstimates;
 	}
@@ -273,5 +272,4 @@ public class Company implements Serializable {
 	public void setNumEarningsEstimates(Integer numEarningsEstimates) {
 		this.numEarningsEstimates = numEarningsEstimates;
 	}
-	*/	
 }

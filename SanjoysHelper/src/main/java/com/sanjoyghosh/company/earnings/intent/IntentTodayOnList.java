@@ -144,7 +144,7 @@ public class IntentTodayOnList implements InterfaceIntent {
 		else {
 			int numGainers = portfolio.getNumGainers();
 			int numLosers = portfolio.getNumLosers();
-			int netValueChange = (int)portfolio.getNetValueChange();
+			int netValueChange = (int) portfolio.getNetValueChange();
 			Timestamp updateTimestamp = portfolio.getUpdatePricesStart();
 						
 			speechText = "";

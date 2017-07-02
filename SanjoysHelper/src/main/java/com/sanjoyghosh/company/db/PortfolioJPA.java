@@ -1,7 +1,9 @@
 package com.sanjoyghosh.company.db;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -99,7 +101,7 @@ public class PortfolioJPA {
 		EntityManager em, String portfolioName, String portfolioAlexaUserId, LocalDate startDate, LocalDate endDate) {
 		
 		String sql = 
-			"SELECT DISTINCT c.symbol, c.name, c.speechName, pi.quantity " +
+			"SELECT new com.sanjoyghosh.company.db.PortfolioItemData(c.symbol, c.name, c.speechName, 0.00D, 0.00D, 0.00D, pi.quantity)" +
 			"FROM Company AS c, Portfolio AS p, PortfolioItem AS pi, EarningsDate AS e " +
 			"WHERE " + 
 				"p.name = :portfolioName AND p.alexaUserId = :portfolioAlexaUserId " +
@@ -109,18 +111,20 @@ public class PortfolioJPA {
 				"AND e.earningsDate >= :startDate AND e.earningsDate <= :endDate " +
 			"ORDER BY c.speechName ASC";
 		try {
-			List<Object[]> list = em.createNativeQuery(sql)
+			List<PortfolioItemData> list = em.createQuery(sql, PortfolioItemData.class)
 					.setParameter("portfolioName", portfolioName)
 					.setParameter("portfolioAlexaUserId", portfolioAlexaUserId)
-					.setParameter("startDate", startDate)
-					.setParameter("endDate", endDate)
+					.setParameter("startDate", new Timestamp(new Date(2017, 5, 20).getTime()))
+					.setParameter("endDate", new Timestamp(new Date(2017, 8, 01).getTime()))
 					.getResultList();
-			List<PortfolioItemData> portfolioItemDataList = new ArrayList<>();
+			List<PortfolioItemData> portfolioItemDataList = list;
+			/*
 			for (Object[] item : list) {
 				PortfolioItemData portfolioItemData = new PortfolioItemData(item[0].toString(), item[1].toString(), item[2].toString(), 
 					0.00D, 0.00D, 0.00D, (Double)item[3]);
 				portfolioItemDataList.add(portfolioItemData);
 			}
+			*/
 			return portfolioItemDataList;
 		}
 		catch (NoResultException e) {
