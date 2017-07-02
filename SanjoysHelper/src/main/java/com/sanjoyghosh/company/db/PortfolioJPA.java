@@ -1,9 +1,7 @@
 package com.sanjoyghosh.company.db;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -96,7 +94,6 @@ public class PortfolioJPA {
 	
 	public static final String MY_ALEXA_USER_ID = "amzn1.ask.account.AG3AH7ORTENZGSI5ATVRSNF2V4C2QK6CH3IXLPQMPLAWCCTWZNMGGWOGNVG5E6742XCHBILJRV6IIPQHMBLZ6L7TTTZSBVXRDEC567NDTNJHCJBN5P2JXH3C7XEDD7FSHUGIDIOKG7LTDXPZUU7XGF5VXNDMCKUV7CNL7CI7DVAWKANDCHLHWCJDQYS4VITDDBVTOPJ7FSV2MQQ";
 
-	@SuppressWarnings("unchecked")
 	public static List<PortfolioItemData> fetchPortfolioItemDataWithEarnings(
 		EntityManager em, String portfolioName, String portfolioAlexaUserId, LocalDate startDate, LocalDate endDate) {
 		
@@ -111,20 +108,12 @@ public class PortfolioJPA {
 				"AND e.earningsDate >= :startDate AND e.earningsDate <= :endDate " +
 			"ORDER BY c.speechName ASC";
 		try {
-			List<PortfolioItemData> list = em.createQuery(sql, PortfolioItemData.class)
-					.setParameter("portfolioName", portfolioName)
-					.setParameter("portfolioAlexaUserId", portfolioAlexaUserId)
-					.setParameter("startDate", new Timestamp(new Date(2017, 5, 20).getTime()))
-					.setParameter("endDate", new Timestamp(new Date(2017, 8, 01).getTime()))
-					.getResultList();
-			List<PortfolioItemData> portfolioItemDataList = list;
-			/*
-			for (Object[] item : list) {
-				PortfolioItemData portfolioItemData = new PortfolioItemData(item[0].toString(), item[1].toString(), item[2].toString(), 
-					0.00D, 0.00D, 0.00D, (Double)item[3]);
-				portfolioItemDataList.add(portfolioItemData);
-			}
-			*/
+			List<PortfolioItemData> portfolioItemDataList = em.createQuery(sql, PortfolioItemData.class)
+				.setParameter("portfolioName", portfolioName)
+				.setParameter("portfolioAlexaUserId", portfolioAlexaUserId)
+				.setParameter("startDate", startDate)
+				.setParameter("endDate", endDate)
+				.getResultList();
 			return portfolioItemDataList;
 		}
 		catch (NoResultException e) {

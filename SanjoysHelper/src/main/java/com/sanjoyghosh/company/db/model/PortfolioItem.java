@@ -19,8 +19,10 @@ public class PortfolioItem {
 	@Id()
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
-	@Column
+	@Column(insertable=false, updatable=false)
 	private int portfolioId;
+	@Column(insertable=false, updatable=false)
+	private int companyId;
 	@Column
 	private LocalDate createDate;
 	@Column
@@ -40,9 +42,9 @@ public class PortfolioItem {
 	@JoinColumn(name="companyId", referencedColumnName="id")
 	private Company company;
 
-//	@ManyToOne
-//	@JoinColumn(name="portfolioId", referencedColumnName="id")
-//	private Portfolio portfolio;
+	@ManyToOne
+	@JoinColumn(name="portfolioId", referencedColumnName="id")
+	private Portfolio portfolio;
 	
 	
 	public PortfolioItem() {}
@@ -88,7 +90,6 @@ public class PortfolioItem {
 	}
 
 
-	/*
 	public Portfolio getPortfolio() {
 		return portfolio;
 	}
@@ -97,7 +98,6 @@ public class PortfolioItem {
 	public void setPortfolio(Portfolio portfolio) {
 		this.portfolio = portfolio;
 	}
-	*/
 
 
 	public double getQuantity() {
@@ -163,5 +163,15 @@ public class PortfolioItem {
 
 	public void setPortfolioId(int portfolioId) {
 		this.portfolioId = portfolioId;
+	}
+
+
+	public int getCompanyId() {
+		return companyId;
+	}
+
+
+	public void setCompanyId(int companyId) {
+		this.companyId = companyId;
 	}
 }
