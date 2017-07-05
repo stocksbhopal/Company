@@ -1,25 +1,26 @@
 package com.sanjoyghosh.company.email;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.sanjoyghosh.company.db.PortfolioItemData;
 
 public class EarningsEmailModel {
 
-	private List<DateListModel> earningsList;
+	private List<DateListModel> earningsList = new ArrayList<>();
 	
 	
 	public class DateListModel {
 		
-		private Date earningsDate;
-		private List<PortfolioItemData> itemList;
+		private LocalDate earningsDate;
+		private List<PortfolioItemData> itemList = new ArrayList<>();
 		
 		
-		public Date getEarningsDate() {
+		public LocalDate getEarningsDate() {
 			return earningsDate;
 		}
-		public void setEarningsDate(Date earningsDate) {
+		public void setEarningsDate(LocalDate earningsDate) {
 			this.earningsDate = earningsDate;
 		}
 		
@@ -27,8 +28,8 @@ public class EarningsEmailModel {
 		public List<PortfolioItemData> getItemList() {
 			return itemList;
 		}
-		public void setItemList(List<PortfolioItemData> itemList) {
-			this.itemList = itemList;
+		public void addPortfolioItemData(PortfolioItemData portfolioItemData) {
+			this.itemList.add(portfolioItemData);
 		}
 	}
 	
@@ -36,7 +37,7 @@ public class EarningsEmailModel {
 	public List<DateListModel> getEarningsList() {
 		return earningsList;
 	}
-	public void setEarningsList(List<DateListModel> earningsList) {
-		this.earningsList = earningsList;
+	public void addDateListModel(DateListModel dateListModel) {
+		this.earningsList.add(dateListModel);
 	}
 }

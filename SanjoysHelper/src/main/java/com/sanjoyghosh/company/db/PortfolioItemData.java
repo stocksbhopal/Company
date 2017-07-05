@@ -120,4 +120,13 @@ public class PortfolioItemData {
 	public void setName(String name) {
 		this.name = name;
 	}
+
+
+	@Override
+	public String toString() {
+		return "PortfolioItemData [symbol=" + symbol + ", name=" + name + ", speechName=" + speechName + ", price="
+				+ price + ", priceChange=" + priceChange + ", quantity=" + quantity + ", earningsDate=" + earningsDate
+				+ ", beforeMarketOrAfterMarket=" + beforeMarketOrAfterMarket + ", valueChangeDollars="
+				+ valueChangeDollars + ", priceChangePercent=" + priceChangePercent + "]";
+	}
 }
