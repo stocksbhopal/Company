@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Earnings List for</title>
+</head>
+<body>
+<table>
+<#list earningsList as earnings>
+  <tr>
+    <td>${earnings.earningsDate}</td>
+  </tr>
+  <tr>
+    <td>
+      <#list earnings.itemList as item>
+        <tr>
+          <td>${item.name}</td>
+          <td>${item.quantity}</td>
+      </#list>
+    </td>
+  </tr>
+</#list>
+</table>
+  
+</body>
+</html>

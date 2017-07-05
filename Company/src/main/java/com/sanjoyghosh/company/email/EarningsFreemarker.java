@@ -1,5 +1,9 @@
 package com.sanjoyghosh.company.email;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -12,6 +16,8 @@ import com.sanjoyghosh.company.email.EarningsEmailModel.DateListModel;
 import com.sanjoyghosh.company.utils.LocalDateUtils;
 
 import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 
 public class EarningsFreemarker {
@@ -27,8 +33,8 @@ public class EarningsFreemarker {
 	
 	private EarningsEmailModel makeEarningsEmailModel() {
 		LocalDate today = LocalDate.now();
-		LocalDate startDate = LocalDateUtils.getWeekdayBefore(today, 0);
-		LocalDate endDate = LocalDateUtils.getWeekdayAfter(today, 15);
+		LocalDate startDate = LocalDateUtils.getWeekdayBefore(today, 30);
+		LocalDate endDate = LocalDateUtils.getWeekdayAfter(today, 30);
 		
 		EntityManager em = null;
 		EarningsEmailModel model = new EarningsEmailModel();
@@ -46,7 +52,7 @@ public class EarningsFreemarker {
 					dateListModel.setEarningsDate(item.getEarningsDate());
 					model.addDateListModel(dateListModel);
 				}
-				System.out.println(item);
+				dateListModel.addPortfolioItemData(item);
 			}
 			
 			return model;
@@ -61,7 +67,22 @@ public class EarningsFreemarker {
 	
 	private void fetchEarnings() {
 		EarningsEmailModel model = makeEarningsEmailModel();
+		for (DateListModel listModel : model.getEarningsList()) {
+			for (PortfolioItemData item : listModel.getItemList()) {
+				System.out.println(item.getName());
+			}
+		}
 		System.out.println(model.getEarningsList().size());
+		
+		try {
+			Template template = cfg.getTemplate("EarningsEmailTemplate.html");
+			Writer out = new OutputStreamWriter(new FileOutputStream("EarningsEmail.html"));
+			template.process(model, out);
+			out.close();
+		} 
+		catch (IOException | TemplateException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	
