@@ -5,6 +5,30 @@
     <property name="iconFile">/templates/blank_report.gif</property>
     <property name="bidiLayoutOrientation">ltr</property>
     <property name="imageDPI">72</property>
+    <data-sources>
+        <oda-data-source extensionID="org.eclipse.birt.report.data.oda.jdbc" name="Company" id="25">
+            <list-property name="privateDriverProperties">
+                <ex-property>
+                    <name>metadataBidiFormatStr</name>
+                    <value>ILYNN</value>
+                </ex-property>
+                <ex-property>
+                    <name>disabledMetadataBidiFormatStr</name>
+                </ex-property>
+                <ex-property>
+                    <name>contentBidiFormatStr</name>
+                    <value>ILYNN</value>
+                </ex-property>
+                <ex-property>
+                    <name>disabledContentBidiFormatStr</name>
+                </ex-property>
+            </list-property>
+            <property name="odaDriverClass">com.mysql.jdbc.Driver</property>
+            <property name="odaURL">jdbc:mysql://ec2-52-44-163-130.compute-1.amazonaws.com:3306/Company</property>
+            <property name="odaUser">sanjoy</property>
+            <encrypted-property name="odaPassword" encryptionID="base64">c3JpbmFnYXI2NTk4</encrypted-property>
+        </oda-data-source>
+    </data-sources>
     <styles>
         <style name="report" id="4">
             <property name="fontFamily">sans-serif</property>
@@ -49,4 +73,40 @@
             </page-footer>
         </simple-master-page>
     </page-setup>
+    <body>
+        <text id="7">
+            <property name="textAlign">center</property>
+            <property name="display">none</property>
+            <property name="contentType">auto</property>
+            <text-property name="content"><![CDATA[<H1>
+Earnings 07/08/2017 through 07/15/2015
+</H1>]]></text-property>
+        </text>
+        <table id="8">
+            <column id="21"/>
+            <column id="22"/>
+            <column id="23"/>
+            <header>
+                <row id="9">
+                    <cell id="10"/>
+                    <cell id="11"/>
+                    <cell id="12"/>
+                </row>
+            </header>
+            <detail>
+                <row id="13">
+                    <cell id="14"/>
+                    <cell id="15"/>
+                    <cell id="16"/>
+                </row>
+            </detail>
+            <footer>
+                <row id="17">
+                    <cell id="18"/>
+                    <cell id="19"/>
+                    <cell id="20"/>
+                </row>
+            </footer>
+        </table>
+    </body>
 </report>

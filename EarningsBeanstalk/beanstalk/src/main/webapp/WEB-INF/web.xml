@@ -13,4 +13,25 @@
 		<servlet-name>EarningsServlet</servlet-name>
 		<url-pattern>/earnings</url-pattern>
 	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>EarningsWebAppServlet</servlet-name>
+		<servlet-class>com.sanjoyghosh.company.earnings.webapp.EarningsWebAppServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>EarningsWebAppServlet</servlet-name>
+		<url-pattern>/earningswebapp</url-pattern>
+	</servlet-mapping>
+
+	<!-- Servlets -->
+	<servlet>
+		<servlet-name>greetServlet</servlet-name>
+		<servlet-class>com.sanjoyghosh.company.server.GreetingServiceImpl</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>greetServlet</servlet-name>
+		<url-pattern>/webapp/greet</url-pattern>
+	</servlet-mapping>
 </web-app>
