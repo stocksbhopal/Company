@@ -23,7 +23,7 @@ public class Portfolio {
 
 	@Id()
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private int id;
+	private Integer id;
 	@Column
 	private String name;
 	@Column
@@ -33,15 +33,15 @@ public class Portfolio {
 	@Column
 	private LocalDate updateDate;
 	@Column
-	private boolean isUpdatingPrices;
+	private Boolean isUpdatingPrices;
 	@Column
 	private Timestamp updatePricesStart;
 	@Column
-	private double netValueChange;
+	private Double netValueChange;
 	@Column
-	private int numGainers;
+	private Integer numGainers;
 	@Column
-	private int numLosers;
+	private Integer numLosers;
 	
 	@OneToMany(mappedBy="portfolio", cascade=CascadeType.ALL)
 	private List<PortfolioItem> portfolioItemList;
@@ -53,12 +53,12 @@ public class Portfolio {
 	public Portfolio() {}
 
 
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -140,17 +140,17 @@ public class Portfolio {
 	}
 	
 	
-	public boolean isEmpty() {
+	public Boolean isEmpty() {
 		return portfolioItemList == null || portfolioItemList.size() == 0;
 	}
 
 
-	public boolean isUpdatingPrices() {
+	public Boolean isUpdatingPrices() {
 		return isUpdatingPrices;
 	}
 
 
-	public void setUpdatingPrices(boolean isUpdatingPrices) {
+	public void setUpdatingPrices(Boolean isUpdatingPrices) {
 		this.isUpdatingPrices = isUpdatingPrices;
 	}
 
@@ -165,32 +165,32 @@ public class Portfolio {
 	}
 
 
-	public double getNetValueChange() {
+	public Double getNetValueChange() {
 		return netValueChange;
 	}
 
 
-	public void setNetValueChange(double netValueChange) {
+	public void setNetValueChange(Double netValueChange) {
 		this.netValueChange = netValueChange;
 	}
 
 
-	public int getNumGainers() {
+	public Integer getNumGainers() {
 		return numGainers;
 	}
 
 
-	public void setNumGainers(int numGainers) {
+	public void setNumGainers(Integer numGainers) {
 		this.numGainers = numGainers;
 	}
 
 
-	public int getNumLosers() {
+	public Integer getNumLosers() {
 		return numLosers;
 	}
 
 
-	public void setNumLosers(int numLosers) {
+	public void setNumLosers(Integer numLosers) {
 		this.numLosers = numLosers;
 	}
 }

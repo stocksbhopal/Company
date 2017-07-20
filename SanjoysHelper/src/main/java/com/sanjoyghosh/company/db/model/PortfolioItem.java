@@ -28,15 +28,15 @@ public class PortfolioItem {
 	@Column
 	private LocalDate validateDate;
 	@Column
-	private double price;
+	private Double price;
 	@Column
-	private double priceChange;
+	private Double priceChange;
 	@Column
-	private double priceChangePercent;
+	private Double priceChangePercent;
 	@Column 
 	private double quantity;	// This field has a SQL Default of 0.00.
 	@Column
-	private double valueChange;	// This is the product of the quantity and priceChange.
+	private Double valueChange;	// This is the product of the quantity and priceChange.
 	
 	@OneToOne
 	@JoinColumn(name="companyId", referencedColumnName="id")
@@ -116,42 +116,42 @@ public class PortfolioItem {
 				+ validateDate + ", quantity=" + quantity + "]";
 	}
 
-	public double getPrice() {
+	public Double getPrice() {
 		return price;
 	}
 
 
-	public void setPrice(double price) {
+	public void setPrice(Double price) {
 		this.price = price;
 	}
 
 
-	public double getPriceChange() {
+	public Double getPriceChange() {
 		return priceChange;
 	}
 
 
-	public void setPriceChange(double priceChange) {
+	public void setPriceChange(Double priceChange) {
 		this.priceChange = priceChange;
 	}
 
 
-	public double getPriceChangePercent() {
+	public Double getPriceChangePercent() {
 		return priceChangePercent;
 	}
 
 
-	public void setPriceChangePercent(double priceChangePercent) {
+	public void setPriceChangePercent(Double priceChangePercent) {
 		this.priceChangePercent = priceChangePercent;
 	}
 
 
-	public double getValueChange() {
+	public Double getValueChange() {
 		return valueChange;
 	}
 
 
-	public void setValueChange(double valueChange) {
+	public void setValueChange(Double valueChange) {
 		this.valueChange = valueChange;
 	}
 

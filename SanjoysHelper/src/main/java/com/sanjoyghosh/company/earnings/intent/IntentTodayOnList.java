@@ -19,6 +19,7 @@ import com.sanjoyghosh.company.db.PortfolioJPA;
 import com.sanjoyghosh.company.db.model.Portfolio;
 import com.sanjoyghosh.company.db.model.PortfolioItem;
 import com.sanjoyghosh.company.utils.DateUtils;
+import com.sanjoyghosh.company.utils.Utils;
 
 public class IntentTodayOnList implements InterfaceIntent {
 
@@ -144,7 +145,7 @@ public class IntentTodayOnList implements InterfaceIntent {
 		else {
 			int numGainers = portfolio.getNumGainers();
 			int numLosers = portfolio.getNumLosers();
-			int netValueChange = (int) portfolio.getNetValueChange();
+			int netValueChange = Utils.toInt(portfolio.getNetValueChange());
 			Timestamp updateTimestamp = portfolio.getUpdatePricesStart();
 						
 			speechText = "";
@@ -166,10 +167,10 @@ public class IntentTodayOnList implements InterfaceIntent {
 				for (PortfolioItem portfolioItem : portfolioItemList) {
 					speechText += (int)portfolioItem.getQuantity() + " shares of " + portfolioItem.getCompany().getSpeechName() + ", ";
 					if (portfolioItem.getValueChange() >= 0.00) {
-						speechText += "gain " + (int)portfolioItem.getValueChange() + " dollars, up " + portfolioItem.getPriceChangePercent() + " percent, ";
+						speechText += "gain " + Utils.toInt(portfolioItem.getValueChange()) + " dollars, up " + portfolioItem.getPriceChangePercent() + " percent, ";
 					}
 					else {
-						speechText += "loss " + (int)(-portfolioItem.getValueChange()) + " dollars, down " + -portfolioItem.getPriceChangePercent() + " percent, ";					
+						speechText += "loss " + -Utils.toInt(portfolioItem.getValueChange()) + " dollars, down " + -portfolioItem.getPriceChangePercent() + " percent, ";					
 					}
 					count++;
 					if (count == numResults) {
