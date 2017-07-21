@@ -17,6 +17,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
+import com.sanjoyghosh.company.utils.Utils;
+
 @Entity
 @Cacheable(false)
 public class Portfolio {
@@ -53,7 +55,7 @@ public class Portfolio {
 	public Portfolio() {}
 
 
-	public Integer getId() {
+	public int getId() {
 		return id;
 	}
 
@@ -140,13 +142,13 @@ public class Portfolio {
 	}
 	
 	
-	public Boolean isEmpty() {
+	public boolean isEmpty() {
 		return portfolioItemList == null || portfolioItemList.size() == 0;
 	}
 
 
-	public Boolean isUpdatingPrices() {
-		return isUpdatingPrices;
+	public boolean isUpdatingPrices() {
+		return Utils.toBoolean(isUpdatingPrices);
 	}
 
 
@@ -165,8 +167,8 @@ public class Portfolio {
 	}
 
 
-	public Double getNetValueChange() {
-		return netValueChange;
+	public double getNetValueChange() {
+		return Utils.toDouble(netValueChange);
 	}
 
 
@@ -175,8 +177,8 @@ public class Portfolio {
 	}
 
 
-	public Integer getNumGainers() {
-		return numGainers;
+	public int getNumGainers() {
+		return Utils.toInt(numGainers);
 	}
 
 
@@ -185,8 +187,8 @@ public class Portfolio {
 	}
 
 
-	public Integer getNumLosers() {
-		return numLosers;
+	public int getNumLosers() {
+		return Utils.toInt(numLosers);
 	}
 
 

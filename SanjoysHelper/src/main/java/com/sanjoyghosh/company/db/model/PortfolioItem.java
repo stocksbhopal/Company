@@ -12,6 +12,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
+import com.sanjoyghosh.company.utils.Utils;
+
 @Entity
 @Cacheable(false)
 public class PortfolioItem {
@@ -116,8 +118,8 @@ public class PortfolioItem {
 				+ validateDate + ", quantity=" + quantity + "]";
 	}
 
-	public Double getPrice() {
-		return price;
+	public double getPrice() {
+		return Utils.toDouble(price);
 	}
 
 
@@ -126,8 +128,8 @@ public class PortfolioItem {
 	}
 
 
-	public Double getPriceChange() {
-		return priceChange;
+	public double getPriceChange() {
+		return Utils.toDouble(priceChange);
 	}
 
 
@@ -136,8 +138,8 @@ public class PortfolioItem {
 	}
 
 
-	public Double getPriceChangePercent() {
-		return priceChangePercent;
+	public double getPriceChangePercent() {
+		return Utils.toDouble(priceChangePercent);
 	}
 
 
@@ -146,8 +148,8 @@ public class PortfolioItem {
 	}
 
 
-	public Double getValueChange() {
-		return valueChange;
+	public double getValueChange() {
+		return Utils.toDouble(valueChange);
 	}
 
 
