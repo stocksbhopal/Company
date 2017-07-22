@@ -99,11 +99,35 @@ public class PortfolioJPA {
 	    		portfolio.addPortfolioItem(portfolioItem);
 	    	}
     		portfolioItem.setQuantity(quantity + portfolioItem.getQuantity());
-    		portfolioItem.setValidateDate(LocalDate.now());
 	    }
 	}
 	
 
+	public static List<PortfolioItemData> fetchPortfolioItemDataWithPrices(
+		EntityManager em, String portfolioName, String portfolioAlexaUserId) {
+		
+		String sql = 
+			"SELECT DISTINCT new com.sanjoyghosh.company.db.PortfolioItemData(c.symbol, c.name, c.speechName, pr.price, pr.priceChange, pr.priceChangePercent, pi.quantity)" +
+			"FROM Company AS c, Portfolio AS p, PortfolioItem AS pi, Price AS pr " +
+			"WHERE " + 
+				"p.name = :portfolioName AND p.alexaUserId = :portfolioAlexaUserId " +
+				"AND pi.portfolioId = p.id " +
+				"AND pi.companyId = c.id " +
+				"AND c.id = pr.companyId " +
+			"ORDER BY c.speechName ASC";
+		try {
+			List<PortfolioItemData> portfolioItemDataList = em.createQuery(sql, PortfolioItemData.class)
+				.setParameter("portfolioName", portfolioName)
+				.setParameter("portfolioAlexaUserId", portfolioAlexaUserId)
+				.getResultList();
+			return portfolioItemDataList;
+		}
+		catch (NoResultException e) {
+		}
+		return null;
+	}
+
+	
 	public static List<PortfolioItemData> fetchPortfolioItemDataWithEarnings(
 		EntityManager em, String portfolioName, String portfolioAlexaUserId, LocalDate startDate, LocalDate endDate) {
 		

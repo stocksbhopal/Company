@@ -9,11 +9,11 @@ public class PortfolioItemData {
 	private String speechName;
 	private Double price;
 	private Double priceChange;
+	private double priceChangePercent;
 	private double quantity;
 	private LocalDate earningsDate;
 	private String beforeMarketOrAfterMarket;
 	private double valueChangeDollars;
-	private double priceChangePercent;
 
 	
 	public PortfolioItemData(String symbol, String name, String speechName, 

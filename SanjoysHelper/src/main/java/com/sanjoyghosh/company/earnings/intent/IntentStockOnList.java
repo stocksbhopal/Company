@@ -202,7 +202,6 @@ public class IntentStockOnList implements InterfaceIntent {
 				try {
 					em.getTransaction().begin();					
 					portfolioItem.setQuantity(quantity);
-					portfolioItem.setValidateDate(LocalDate.now());
 					em.persist(portfolio);
 					em.getTransaction().commit();
 					return IntentUtils.makeTellResponse(alexaUserId, intentName, RESULT_SUCCESS, slotValues, "Changed the number of shares of " + company.getName() + " to " + quantity + ".");				
@@ -265,7 +264,6 @@ public class IntentStockOnList implements InterfaceIntent {
 			portfolioItem.setCreateDate(LocalDate.now());
 			portfolioItem.setPortfolio(portfolio);
 			portfolioItem.setQuantity(quantity);
-			portfolioItem.setValidateDate(LocalDate.now());
 			portfolio.addPortfolioItem(portfolioItem);
 			em.persist(portfolio);
 			em.getTransaction().commit();

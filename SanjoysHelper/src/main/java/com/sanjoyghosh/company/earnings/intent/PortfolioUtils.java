@@ -9,7 +9,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.sanjoyghosh.company.db.PortfolioItemData;
-import com.sanjoyghosh.company.db.model.Portfolio;
 import com.sanjoyghosh.company.db.model.PortfolioItem;
 import com.sanjoyghosh.company.source.nasdaq.NasdaqRealtimeQuote;
 import com.sanjoyghosh.company.source.nasdaq.NasdaqRealtimeQuoteReader;
@@ -81,68 +80,19 @@ public class PortfolioUtils {
 		return portfolioItemDataList;
     }
     
-    
-    public static boolean updatePortfolioPrices(Portfolio portfolio, IntentResult intentResult) {
-    	if (portfolio == null || portfolio.getPortfolioItemList() == null || portfolio.getPortfolioItemList().isEmpty()) {
-    		return true;
-    	}
-    	
-    	int numGainers = 0;
-    	int numLosers = 0;
-    	double netValueChange = 0.00D;
-
-    	List<PortfolioItem> portfolioItemList = portfolio.getPortfolioItemList();
-    	for (PortfolioItem portfolioItem : portfolioItemList) {
-			NasdaqRealtimeQuote quote = null;
-			String symbol = portfolioItem.getCompany().getSymbol();
-			try {
-				quote = NasdaqRealtimeQuoteReader.fetchNasdaqStockSummary(symbol);
-			} 
-			catch (IOException e) {
-				intentResult.addSymbolWithException(symbol, e);
-				logger.log(Level.SEVERE, "Exception in reading Nasdaq quote for " + symbol, e);
-			}
-			
-			if (quote == null) {
-				intentResult.addNullQuoteSymbol(symbol);
-				logger.log(Level.SEVERE, "Null quote read from Nasdaq for " + symbol);
-			}
-			else {
-				portfolioItem.setPrice(quote.getPrice());
-				portfolioItem.setPriceChange(quote.getPriceChange());
-				portfolioItem.setPriceChangePercent(quote.getPriceChangePercent());
-				portfolioItem.setValueChange(portfolioItem.getQuantity() * quote.getPriceChange());
-				
-				if (quote.getPriceChange() >= 0.00) {
-					numGainers++;
-				}
-				else {
-					numLosers++;
-				}
-				netValueChange += portfolioItem.getValueChange();
-			}
-		}
-    	
-    	portfolio.setNetValueChange(netValueChange);
-    	portfolio.setNumGainers(numGainers);
-    	portfolio.setNumLosers(numLosers);
-		
-    	return true;
-    }
-    
-
+   
     /**
      * 
      * @param portfolioItemDataList
      * @param sortByValueChange True if sort by valueChange.  False if sort by priceChangePercent.
      * @param sortAscending  True if sort ascending.  False if sort descending.
      */
-    public static void sortPortfolioItemList(List<PortfolioItem> portfolioItemList, boolean sortByValueChange, boolean sortAscending) {
-    	Collections.sort(portfolioItemList, new Comparator<PortfolioItem>() {
+    public static void sortPortfolioItemDataList(List<PortfolioItemData> portfolioItemDataList, boolean sortByValueChange, boolean sortAscending) {
+    	Collections.sort(portfolioItemDataList, new Comparator<PortfolioItemData>() {
 			@Override
-			public int compare(PortfolioItem o1, PortfolioItem o2) {
+			public int compare(PortfolioItemData o1, PortfolioItemData o2) {
 				if (sortByValueChange) {
-					int comparison = new Double(o1.getValueChange()).compareTo(new Double(o2.getValueChange()));
+					int comparison = new Double(o1.getValueChangeDollars()).compareTo(new Double(o2.getValueChangeDollars()));
 					return sortAscending ? comparison : -comparison;
 				}
 				else {

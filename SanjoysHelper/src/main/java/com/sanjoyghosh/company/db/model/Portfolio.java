@@ -1,6 +1,5 @@
 package com.sanjoyghosh.company.db.model;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashMap;
@@ -17,8 +16,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
-import com.sanjoyghosh.company.utils.Utils;
-
 @Entity
 @Cacheable(false)
 public class Portfolio {
@@ -34,16 +31,7 @@ public class Portfolio {
 	private LocalDate createDate;
 	@Column
 	private LocalDate updateDate;
-	@Column
-	private Boolean isUpdatingPrices;
-	@Column
-	private Timestamp updatePricesStart;
-	@Column
-	private Double netValueChange;
-	@Column
-	private Integer numGainers;
-	@Column
-	private Integer numLosers;
+
 	
 	@OneToMany(mappedBy="portfolio", cascade=CascadeType.ALL)
 	private List<PortfolioItem> portfolioItemList;
@@ -144,55 +132,5 @@ public class Portfolio {
 	
 	public boolean isEmpty() {
 		return portfolioItemList == null || portfolioItemList.size() == 0;
-	}
-
-
-	public boolean isUpdatingPrices() {
-		return Utils.toBoolean(isUpdatingPrices);
-	}
-
-
-	public void setUpdatingPrices(Boolean isUpdatingPrices) {
-		this.isUpdatingPrices = isUpdatingPrices;
-	}
-
-
-	public Timestamp getUpdatePricesStart() {
-		return updatePricesStart;
-	}
-
-
-	public void setUpdatePricesStart(Timestamp updatePricesStart) {
-		this.updatePricesStart = updatePricesStart;
-	}
-
-
-	public double getNetValueChange() {
-		return Utils.toDouble(netValueChange);
-	}
-
-
-	public void setNetValueChange(Double netValueChange) {
-		this.netValueChange = netValueChange;
-	}
-
-
-	public int getNumGainers() {
-		return Utils.toInt(numGainers);
-	}
-
-
-	public void setNumGainers(Integer numGainers) {
-		this.numGainers = numGainers;
-	}
-
-
-	public int getNumLosers() {
-		return Utils.toInt(numLosers);
-	}
-
-
-	public void setNumLosers(Integer numLosers) {
-		this.numLosers = numLosers;
 	}
 }
