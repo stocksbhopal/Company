@@ -132,7 +132,7 @@ public class PortfolioJPA {
 		EntityManager em, String portfolioName, String portfolioAlexaUserId, LocalDate startDate, LocalDate endDate) {
 		
 		String sql = 
-			"SELECT new com.sanjoyghosh.company.db.PortfolioItemData(c.symbol, c.name, c.speechName, 0.00D, 0.00D, 0.00D, pi.quantity, e.earningsDate, e.beforeMarketOrAfterMarket)" +
+			"SELECT DISTINCT new com.sanjoyghosh.company.db.PortfolioItemData(c.symbol, c.name, c.speechName, 0.00D, 0.00D, 0.00D, pi.quantity, e.earningsDate, e.beforeMarketOrAfterMarket)" +
 			"FROM Company AS c, Portfolio AS p, PortfolioItem AS pi, EarningsDate AS e " +
 			"WHERE " + 
 				"p.name = :portfolioName AND p.alexaUserId = :portfolioAlexaUserId " +
