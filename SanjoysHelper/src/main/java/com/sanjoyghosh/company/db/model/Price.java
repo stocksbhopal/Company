@@ -19,7 +19,7 @@ public class Price {
 	@Column
 	private int companyId;
 	@Column
-	private LocalDateTime dateTime;
+	private LocalDateTime priceDateTime;
 	@Column
 	private double price;
 	@Column
@@ -51,13 +51,13 @@ public class Price {
 	}
 	
 	
-	public LocalDateTime getDateTime() {
-		return dateTime;
+	public LocalDateTime getPriceDateTime() {
+		return priceDateTime;
 	}
 
 
-	public void setDateTime(LocalDateTime dateTime) {
-		this.dateTime = dateTime;
+	public void setPriceDateTime(LocalDateTime priceDateTime) {
+		this.priceDateTime = priceDateTime;
 	}
 
 
@@ -93,7 +93,7 @@ public class Price {
 
 	@Override
 	public String toString() {
-		return "Price [id=" + id + ", companyId=" + companyId + ", dateTime=" + dateTime + ", price=" + price
+		return "Price [id=" + id + ", companyId=" + companyId + ", priceDateTime=" + priceDateTime + ", price=" + price
 				+ ", priceChange=" + priceChange + ", priceChangePercent=" + priceChangePercent + "]";
 	}
 }

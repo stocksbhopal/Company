@@ -15,6 +15,7 @@ import com.sanjoyghosh.company.db.model.Price;
 public class NasdaqRealtimePriceUpdater {
 
 	private void updatePricesForPortfolios(EntityManager entityManager) {
+		entityManager.getTransaction().begin();
 		List<PortfolioItem> portfolioItems = PortfolioJPA.fetchAllPortfolioItems(entityManager);
 		for (PortfolioItem item : portfolioItems) {
 			NasdaqRealtimeQuote quote;
@@ -23,7 +24,7 @@ public class NasdaqRealtimePriceUpdater {
 				if (quote != null) {
 					Price price = new Price();
 					price.setCompanyId(item.getCompany().getId());
-					price.setDateTime(LocalDateTime.now());
+					price.setPriceDateTime(LocalDateTime.now());
 					price.setPrice(quote.getPrice());
 					price.setPriceChange(quote.getPriceChange());
 					price.setPriceChangePercent(quote.getPriceChangePercent());
@@ -35,6 +36,7 @@ public class NasdaqRealtimePriceUpdater {
 				e.printStackTrace();
 			}
 		}
+		entityManager.getTransaction().commit();
 	}
 	
 	
