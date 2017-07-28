@@ -7,7 +7,9 @@ import java.time.format.DateTimeFormatter;
 
 public class LocalDateUtils {
 	
-	private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+	private static final DateTimeFormatter DateFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+	private static final DateTimeFormatter ReutersDateTimeFormatter = DateTimeFormatter.ofPattern("MMddyyyy");
+	private static final DateTimeFormatter GoogleFinanceDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-M-dd");
 
 	
 	public static LocalDate getWeekdayBefore(LocalDate date, int daysBefore) {
@@ -57,12 +59,28 @@ public class LocalDateUtils {
 		if (dateStr.equals("--") || dateStr.equals("")) {
 			return null;
 		}
-		LocalDate day = LocalDate.parse(dateStr, dateFormatter);
+		LocalDate day = LocalDate.parse(dateStr, DateFormatter);
 		return day;
 	}
 	
 	
 	public static String toDateString(LocalDate date) {
-		return date.format(dateFormatter);
+		return date.format(DateFormatter);
+	}
+	
+	public static String toReutersDateString(LocalDate date) {
+		return date.format(ReutersDateTimeFormatter);
+	}
+	
+	public static String toReutersDateString() {
+		return toReutersDateString(LocalDate.now());
+	}
+	
+	public static String toGoogleFinanceDateString() {
+		return toGoogleFinanceDateString(LocalDate.now());
+	}
+
+	public static String toGoogleFinanceDateString(LocalDate date) {
+		return date.format(GoogleFinanceDateTimeFormatter);
 	}
 }
