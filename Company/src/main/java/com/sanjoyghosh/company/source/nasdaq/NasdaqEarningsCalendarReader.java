@@ -13,7 +13,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.sanjoyghosh.company.db.CompanyUtils;
+import com.sanjoyghosh.company.db.CompanyDBUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.db.model.EarningsDate;
@@ -69,7 +69,7 @@ public class NasdaqEarningsCalendarReader {
 	    		}
 	    			    			    		
 	    		boolean hasEarningsDate = false;
-	    		List<EarningsDate> earningsDateList = CompanyUtils.fetchEarningsDateListForSymbolDate(entityManager, symbol, date);
+	    		List<EarningsDate> earningsDateList = CompanyDBUtils.fetchEarningsDateListForSymbolDate(entityManager, symbol, date);
 	    		for (EarningsDate earningsDate : earningsDateList) {
 	    			if (!earningsDate.getEarningsDate().equals(date)) {
 	    				entityManager.remove(earningsDate);
@@ -100,7 +100,7 @@ public class NasdaqEarningsCalendarReader {
 
 	
 	private void readEarningsCalendarforMonth(EntityManager entityManager) {
-		companyBySymbolMap = CompanyUtils.fetchAllCompanyBySymbolMap(entityManager);
+		companyBySymbolMap = CompanyDBUtils.fetchAllCompanyBySymbolMap(entityManager);
 		LocalDate date = LocalDate.now();
 		for (int i = 0; i < 31; i++) {
 			try {

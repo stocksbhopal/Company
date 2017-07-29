@@ -116,6 +116,12 @@ public class IntentUtils {
 		if (nameLower.endsWith("shares")) {
 			return name.substring(0, name.length() - "shares".length()).trim();			
 		}
+		if (nameLower.endsWith("headlines")) {
+			return name.substring(0, name.length() - "headlines".length()).trim();			
+		}
+		if (nameLower.endsWith("news")) {
+			return name.substring(0, name.length() - "news".length()).trim();			
+		}
 		return name;
 	}
 	
@@ -282,4 +288,21 @@ public class IntentUtils {
 		outputSpeech.setText(speechText);
 		return SpeechletResponse.newTellResponse(outputSpeech);			
     }
+    
+    
+	public static SpeechletResponse respondWithQuestion(IntentResult intentResult, IntentRequest request, Session session, 
+		String questionPrefix, String repromptSuffix) {
+		
+		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
+		outputSpeech.setText(questionPrefix + "what company?  Tell me the name or symbol.");
+
+		Reprompt reprompt = new Reprompt();
+		PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
+		repromptSpeech.setText("Sorry, need the name or symbol to get" + repromptSuffix);
+		reprompt.setOutputSpeech(repromptSpeech);
+	   	
+		intentResult.setResult(IntentGetStockPrice.RESULT_INCOMPLETE);
+		logger.log(Level.INFO, request.getIntent().getName() + ": user did not provide name of company.");
+		return SpeechletResponse.newAskResponse(outputSpeech, reprompt);	    	
+	}
 }

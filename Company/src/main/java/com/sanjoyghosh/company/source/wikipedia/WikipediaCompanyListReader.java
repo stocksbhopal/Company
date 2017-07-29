@@ -9,7 +9,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.sanjoyghosh.company.db.CompanyUtils;
+import com.sanjoyghosh.company.db.CompanyDBUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.utils.JsoupUtils;
@@ -81,7 +81,7 @@ public class WikipediaCompanyListReader {
 	private void updateListOfCompanies() {
 		try {
 			entityManager = JPAHelper.getEntityManager();
-			companyBySymbolMap = CompanyUtils.fetchAllCompanyBySymbolMap(entityManager);
+			companyBySymbolMap = CompanyDBUtils.fetchAllCompanyBySymbolMap(entityManager);
 			for (Company company : companyBySymbolMap.values()) {
 				company.setIsDJIA("N");
 				company.setIsNasdaq100("N");

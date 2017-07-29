@@ -16,6 +16,7 @@ import com.amazon.speech.speechlet.Speechlet;
 import com.amazon.speech.speechlet.SpeechletException;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
+import com.sanjoyghosh.company.earnings.intent.IntentGetCompanyNews;
 import com.sanjoyghosh.company.earnings.intent.IntentGetStockEarnings;
 import com.sanjoyghosh.company.earnings.intent.IntentGetStockPrice;
 import com.sanjoyghosh.company.earnings.intent.IntentResult;
@@ -49,6 +50,8 @@ public class EarningsSpeechlet implements Speechlet  {
     	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_TODAY_TOP_LOSERS_PERCENTAGE, new IntentTodayOnList());
 
     	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_GET_STOCK_PRICE, new IntentGetStockPrice());
+    	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_GET_COMPANY_HEADLINES, new IntentGetCompanyNews());
+    	intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_GET_COMPANY_NEWS_SUMMARIES, new IntentGetCompanyNews());
 				
 		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_AMAZON_STOP_INTENT, new IntentStopCancel());
 		intentInterfaceByIntentNameMap.put(InterfaceIntent.INTENT_AMAZON_CANCEL_INTENT, new IntentStopCancel());

@@ -13,7 +13,7 @@ import com.sanjoyghosh.company.api.MarketIndexEnum;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.db.model.EarningsDate;
 
-public class CompanyUtils {
+public class CompanyDBUtils {
 
 	public static Company fetchCompanyBySymbol(EntityManager entityManager, String symbol) {
 		try {

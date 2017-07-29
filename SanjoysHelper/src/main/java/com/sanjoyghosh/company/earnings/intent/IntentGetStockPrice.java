@@ -10,7 +10,6 @@ import com.amazon.speech.speechlet.Session;
 import com.amazon.speech.speechlet.SpeechletException;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
-import com.amazon.speech.ui.Reprompt;
 import com.sanjoyghosh.company.db.CompanyJPA;
 import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.model.Company;
@@ -109,21 +108,6 @@ public class IntentGetStockPrice implements InterfaceIntent {
 		return SpeechletResponse.newTellResponse(outputSpeech);		    	
     }
     
-
-	private SpeechletResponse respondWithQuestion(IntentResult intentResult, IntentRequest request, Session session) {
-		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
-		outputSpeech.setText("Price of what company?  Tell me the name or symbol.");
-
-		Reprompt reprompt = new Reprompt();
-		PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
-		repromptSpeech.setText("Sorry, need the name or symbol to get the price.");
-		reprompt.setOutputSpeech(repromptSpeech);
-	   	
-		intentResult.setResult(RESULT_INCOMPLETE);
-		logger.log(Level.INFO, request.getIntent().getName() + ": user did not provide name of company.");
-		return SpeechletResponse.newAskResponse(outputSpeech, reprompt);	    	
-	}
-
 	
 	@Override
 	public SpeechletResponse onIntent(IntentRequest request, Session session, IntentResult intentResult) throws SpeechletException {
@@ -132,7 +116,7 @@ public class IntentGetStockPrice implements InterfaceIntent {
 			em = JPAHelper.getEntityManager();
 			AllSlotValues slotValues = new AllSlotValues();
 			if (!IntentUtils.getCompanyOrSymbol(request, session, slotValues)) {	
-				return respondWithQuestion(intentResult, request, session);
+				return IntentUtils.respondWithQuestion(intentResult, request, session, "Price of ", "the price.");
 			}
 			else {
 				return respondWithPrice(em, slotValues, intentResult, request, session);

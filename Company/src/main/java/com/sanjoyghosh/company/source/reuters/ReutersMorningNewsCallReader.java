@@ -16,7 +16,7 @@ import javax.persistence.EntityManager;
 import org.apache.tika.Tika;
 import org.apache.tika.exception.TikaException;
 
-import com.sanjoyghosh.company.db.CompanyUtils;
+import com.sanjoyghosh.company.db.CompanyDBUtils;
 import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.utils.StringUtils;
@@ -55,7 +55,7 @@ public class ReutersMorningNewsCallReader {
 						continue;
 					}
 					
-					Company company = CompanyUtils.fetchCompanyBySymbol(entityManager, symbol);
+					Company company = CompanyDBUtils.fetchCompanyBySymbol(entityManager, symbol);
 					if (company != null) {
 						pos = embedded.indexOf(' ');
 						String opinion = embedded.substring(pos, embedded.length()).trim();

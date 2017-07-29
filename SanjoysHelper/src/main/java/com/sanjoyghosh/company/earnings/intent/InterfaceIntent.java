@@ -40,6 +40,8 @@ public interface InterfaceIntent {
     public static final String INTENT_EARNINGS_ON_LIST = "GetEarningsOnList";    
 
     public static final String INTENT_GET_STOCK_PRICE = "GetStockPrice";
+    public static final String INTENT_GET_COMPANY_NEWS_SUMMARIES = "GetCompanyNewsSummaries";
+    public static final String INTENT_GET_COMPANY_HEADLINES = "GetCompanyHeadlines";
     
     
 	public SpeechletResponse onIntent(IntentRequest request, Session session, IntentResult intentResult) throws SpeechletException;

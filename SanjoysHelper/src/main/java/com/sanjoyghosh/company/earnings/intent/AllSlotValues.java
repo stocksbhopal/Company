@@ -1,5 +1,6 @@
 package com.sanjoyghosh.company.earnings.intent;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,9 +9,10 @@ import com.sanjoyghosh.company.utils.KeyValuePair;
 
 public class AllSlotValues {
 
-	private String companyOrSymbol;			// Prefix of the name of the company or the ticker symbol.
-	private String companyOrSymbolSpelt;	// Prefix of the name of the company or the ticker symbol spelt by letter.
-	private Double quantity;
+	private String		companyOrSymbol;			// Prefix of the name of the company or the ticker symbol.
+	private String		companyOrSymbolSpelt;	// Prefix of the name of the company or the ticker symbol spelt by letter.
+	private Double		quantity;
+	private LocalDate	localDate;
 	
 	
 	public AllSlotValues() {
@@ -59,6 +61,10 @@ public class AllSlotValues {
 			KeyValuePair pair = new KeyValuePair("q", String.valueOf(quantity));
 			kvList.add(pair);
 		}
+		if (localDate != null) {
+			KeyValuePair pair = new KeyValuePair("d", String.valueOf(localDate));
+			kvList.add(pair);
+		}
 		return kvList;
 	}
 	
@@ -80,12 +86,26 @@ public class AllSlotValues {
 	}
 
 
+	@JsonProperty("q")
 	public Double getQuantity() {
 		return quantity;
 	}
 
 
+	@JsonProperty("q")
 	public void setQuantity(Double quantity) {
 		this.quantity = quantity;
+	}
+
+
+	@JsonProperty("d")
+	public LocalDate getLocalDate() {
+		return localDate;
+	}
+
+
+	@JsonProperty("d")
+	public void setLocalDate(LocalDate localDate) {
+		this.localDate = localDate;
 	}
 }
