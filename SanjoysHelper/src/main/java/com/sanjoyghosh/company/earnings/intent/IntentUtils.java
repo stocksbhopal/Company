@@ -61,8 +61,8 @@ public class IntentUtils {
 		return attributes;
 	}
 
-	
-	public static LocalDateRange getValidDateRange(IntentRequest request) {
+
+	public static LocalDateRange getDateRange(IntentRequest request) {
 		Intent intent = request.getIntent();
 		Slot slot = intent.getSlot(InterfaceIntent.SLOT_DATE);
 		if (slot == null) {
@@ -79,6 +79,12 @@ public class IntentUtils {
 		
 		logSlotValue(intent.getName(), InterfaceIntent.SLOT_DATE, dateStr);
 		LocalDateRange localDateRange = AlexaDateUtils.getLocalDateRange(dateStr);
+		return localDateRange;
+	}
+
+	
+	public static LocalDateRange getValidDateRange(IntentRequest request) {
+		LocalDateRange localDateRange = getDateRange(request);
 		// Alexa Date is local US date, whereas EC2 date is UTC date.
 		// And so Alexa Date can be up to 1 day behind EC2 date.
 		if (localDateRange.getEndDate().isBefore(LocalDate.now().minusDays(31L))) {
@@ -99,6 +105,9 @@ public class IntentUtils {
 		String nameLower = name.toLowerCase().trim();
 		if (nameLower.endsWith("inc")) {
 			return name.substring(0, name.length() - "inc".length()).trim();
+		}
+		if (nameLower.endsWith("corporation")) {
+			return name.substring(0, name.length() - "corporation".length()).trim();
 		}
 		if (nameLower.endsWith("ink")) {
 			return name.substring(0, name.length() - "ink".length()).trim();

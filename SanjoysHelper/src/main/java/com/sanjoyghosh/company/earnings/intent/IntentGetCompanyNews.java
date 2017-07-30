@@ -43,7 +43,7 @@ public class IntentGetCompanyNews implements InterfaceIntent {
 					"Sorry, could not find a company named " + slotValues.toString());
 			}
 			
-			LocalDateRange dateRange = IntentUtils.getValidDateRange(request);
+			LocalDateRange dateRange = IntentUtils.getDateRange(request);
 			LocalDate localDate = dateRange == null ? LocalDate.now() : dateRange.getStartDate();
 			List<ReutersCompanyNewsItem> newsItems = null;
 			try {
