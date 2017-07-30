@@ -1,6 +1,13 @@
 package com.sanjoyghosh.company.utils;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.commons.lang3.StringEscapeUtils;
+
 
 public class StringUtils {
 
@@ -266,10 +273,38 @@ public class StringUtils {
 		}
 		return valueStr;
 	}
+	
+
+	private static Pattern CapitalPrefixPattern = Pattern.compile("([0-9A-Z -]+)-");
+	public static String cleanForSSML(String value) {
+		if (value == null) {
+			return null;
+		}
 		
+		Matcher matcher = CapitalPrefixPattern.matcher(value);
+		if (matcher.lookingAt()) {
+			value = matcher.replaceFirst("");
+		}
+		value = StringEscapeUtils.escapeXml(value);
+		
+		return value;
+	}
+
+	
+	public static String formatForSSML(List<String> stringList) {
+		StringWriter sw = new StringWriter();
+		PrintWriter pw = new PrintWriter(sw);
+		pw.println("<speak>");
+		for (String str : stringList) {
+			pw.println(str);
+		}
+		pw.println("</speak>");
+		return sw.toString();
+	}
+	
 	
 	public static void main(String[] args) {
-		String str = toStringWith2DecimalPlaces(1.66);
+		String str = cleanForSSML("RPT-UPDATE 2-Sears to sell Kenmore appliances on Amazon; shares jump");
 		System.out.println(str);
 	}
 }

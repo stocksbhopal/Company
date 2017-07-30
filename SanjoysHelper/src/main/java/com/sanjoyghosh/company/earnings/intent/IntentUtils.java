@@ -16,6 +16,7 @@ import com.amazon.speech.speechlet.Session;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.amazon.speech.ui.Reprompt;
+import com.amazon.speech.ui.SsmlOutputSpeech;
 import com.sanjoyghosh.company.logs.CloudWatchLogger;
 import com.sanjoyghosh.company.logs.CloudWatchLoggerIntentResult;
 import com.sanjoyghosh.company.utils.AlexaDateUtils;
@@ -191,7 +192,7 @@ public class IntentUtils {
     	return false;
     }
     
-    
+
     public static SpeechletResponse makeTellResponse(
     	String alexaUserId, 
     	String intentName, 
@@ -199,7 +200,19 @@ public class IntentUtils {
     	AllSlotValues slotValues,
     	String speechText) {
     	
-		return makeTellResponse(alexaUserId, intentName, result, "", slotValues, speechText);			
+		return makeTellResponse(alexaUserId, intentName, result, "", slotValues, false, speechText);			
+    }
+
+    
+    public static SpeechletResponse makeTellResponse(
+    	String alexaUserId, 
+    	String intentName, 
+    	int result, 
+    	AllSlotValues slotValues,
+    	boolean isSsml,
+    	String speechText) {
+    	
+		return makeTellResponse(alexaUserId, intentName, result, "", slotValues, isSsml, speechText);			
     }
 
     
@@ -215,11 +228,23 @@ public class IntentUtils {
     
     
     public static SpeechletResponse makeTellResponse(
+        	String alexaUserId, 
+        	String intentName, 
+        	int result, 
+        	String resultText,
+        	AllSlotValues slotValues,
+        	String speechText) {
+    	return makeTellResponse(alexaUserId, intentName, result, resultText, slotValues, false, speechText);
+    }
+    
+    
+    public static SpeechletResponse makeTellResponse(
     	String alexaUserId, 
     	String intentName, 
     	int result, 
     	String resultText,
     	AllSlotValues slotValues,
+    	boolean isSsml,
     	String speechText) {
     	
 		String juliLoggerMessage = intentName + ": " + speechText;
@@ -227,9 +252,16 @@ public class IntentUtils {
     		resultText, slotValues == null ? null : slotValues.toKeyValuePairList(), new Date());
     	CloudWatchLogger.getInstance().addLogEvent(loggerResult, juliLoggerMessage);
 
-		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
-		outputSpeech.setText(speechText);
-		return SpeechletResponse.newTellResponse(outputSpeech);			
+    	if (isSsml) {
+    		SsmlOutputSpeech outputSpeech = new SsmlOutputSpeech();
+    		outputSpeech.setSsml(speechText);
+    		return SpeechletResponse.newTellResponse(outputSpeech);
+    	}
+    	else {
+			PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
+			outputSpeech.setText(speechText);
+			return SpeechletResponse.newTellResponse(outputSpeech);	
+    	}
     }
 
 

@@ -1,5 +1,7 @@
 package com.sanjoyghosh.company.source.reuters;
 
+import com.sanjoyghosh.company.utils.StringUtils;
+
 public class ReutersCompanyNewsItem {
 
 	private String url;
@@ -8,8 +10,8 @@ public class ReutersCompanyNewsItem {
 	
 	public ReutersCompanyNewsItem(String url, String headline, String summary) {
 		this.url = url;
-		this.headline = headline;
-		this.summary = summary;
+		this.headline = StringUtils.cleanForSSML(headline);
+		this.summary = StringUtils.cleanForSSML(summary);
 	}
 	
 	public String getUrl() {
