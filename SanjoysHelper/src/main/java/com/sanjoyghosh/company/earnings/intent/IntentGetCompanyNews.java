@@ -3,9 +3,7 @@ package com.sanjoyghosh.company.earnings.intent;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import com.amazon.speech.speechlet.IntentRequest;
@@ -62,19 +60,9 @@ public class IntentGetCompanyNews implements InterfaceIntent {
 					speechText = "Sorry, there are no headlines for " + company.getName() + " for " + localDate;
 				}
 				else {
-					Set<String> headlineSet = new HashSet<>();
 					List<String> headlineList = new ArrayList<>();
 					for (ReutersCompanyNewsItem item : newsItems) {
-						String headline = item.getHeadline();
-						if (!headlineSet.contains(headline)) {
-							headlineList.add("<p>" + headline + "</p>");
-							headlineSet.add(headline);
-							
-							String[] pieces = headline.split(";");
-							for (int i = 0; i < pieces.length; i++) {
-								headlineSet.add(pieces[i].trim());
-							}
-						}
+						headlineList.add("<p>" + item.getHeadline() + "</p>");
 					}
 					
 					isSsml = true;

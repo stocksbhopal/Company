@@ -5,6 +5,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -51,8 +52,7 @@ public class IntentUtils {
 		List<KeyValuePair> attributes = new ArrayList<>();
 		for (Entry<String, Object> entry : session.getAttributes().entrySet()) {
 			String key = entry.getKey();
-			String value = entry.getValue().toString();
-			value = value == null ? null : value.trim();
+			String value = entry.getValue() == null ? null : entry.getValue().toString().trim();
 			if (value != null && value.length() > 0) {
 				KeyValuePair pair = new KeyValuePair(key, value);
 				attributes.add(pair);
@@ -334,6 +334,11 @@ public class IntentUtils {
 	public static SpeechletResponse respondWithQuestion(IntentResult intentResult, IntentRequest request, Session session, 
 		String questionPrefix, String repromptSuffix) {
 		
+		session.setAttribute(InterfaceIntent.ATTR_LAST_INTENT, request.getIntent().getName());
+		for (Map.Entry<String, Slot> entry : request.getIntent().getSlots().entrySet()) {
+			session.setAttribute(entry.getKey(), entry.getValue().getValue());
+		}
+
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 		outputSpeech.setText(questionPrefix + "what company?  Tell me the name or symbol.");
 

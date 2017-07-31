@@ -79,12 +79,15 @@ public class EarningsSpeechlet implements Speechlet  {
 	// If there is a RuntimeException this will be tried again.
 	private SpeechletResponse tryOnIntent(IntentRequest request, Session session, IntentResult intentResult) throws SpeechletException {
 		String intentName = request.getIntent().getName();
-
+		
 		if (intentName.equals(InterfaceIntent.INTENT_AMAZON_HELP_INTENT)) {
 			return LaunchSanjoysHelper.onLaunch(session);
 		}
 				
-		if (intentName.equals(InterfaceIntent.INTENT_AMAZON_YES_INTENT) || intentName.equals(InterfaceIntent.INTENT_AMAZON_NO_INTENT)) {
+		if (intentName.equals(InterfaceIntent.INTENT_AMAZON_YES_INTENT) || 
+			intentName.equals(InterfaceIntent.INTENT_AMAZON_NO_INTENT) ||
+			intentName.equals(InterfaceIntent.INTENT_MISSING_COMPANY)) {
+
 			String lastIntentName = (String) session.getAttribute(InterfaceIntent.ATTR_LAST_INTENT);
 			if (lastIntentName != null) {
 				InterfaceIntent interfaceIntent = intentInterfaceByIntentNameMap.get(lastIntentName);
@@ -105,8 +108,7 @@ public class EarningsSpeechlet implements Speechlet  {
 	}
 	
 	
-	@Override
-	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
+	public SpeechletResponse processIntent(IntentRequest request, Session session) throws SpeechletException {
 		IntentResult intentResult = new IntentResult(request, session);
 		try {
 			for (int retries = 0; retries < 5; retries++) {
@@ -133,6 +135,12 @@ public class EarningsSpeechlet implements Speechlet  {
 		}
 		
 		throw new SpeechletException("Too many retries");
+	}
+	
+	
+	@Override
+	public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
+		return processIntent(request, session);
 	}
 
 	
