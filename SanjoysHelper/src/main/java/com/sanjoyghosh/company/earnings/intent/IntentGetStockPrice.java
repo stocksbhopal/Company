@@ -57,12 +57,13 @@ public class IntentGetStockPrice implements InterfaceIntent {
     }
     
     
-    private SpeechletResponse respondWithPrice(EntityManager em, AllSlotValues slotValues, IntentResult intentResult, IntentRequest request, Session session) {
+    private SpeechletResponse respondWithPrice(EntityManager em, IntentResult intentResult, IntentRequest request, Session session) {
     	String error = "";
     	Exception exception = null;
 		Company company = null;
 		CompanyNamePrefix companyNamePrefix = null;
-		String intentName = request.getIntent().getName();
+		String intentName = intentResult.getName();
+		AllSlotValues slotValues = intentResult.getSlotValues();
 		try {			
 			company = CompanyJPA.fetchCompanyByNameOrSymbol(em, slotValues);
 			if (company != null) {
@@ -114,12 +115,11 @@ public class IntentGetStockPrice implements InterfaceIntent {
 		EntityManager em = null;
 		try {
 			em = JPAHelper.getEntityManager();
-			AllSlotValues slotValues = new AllSlotValues();
-			if (!IntentUtils.getCompanyOrSymbol(request, session, slotValues)) {	
-				return IntentUtils.respondWithQuestion(intentResult, request, session, "Price of ", "the price.");
+			if (!IntentUtils.getCompanyOrSymbol(intentResult)) {	
+				return IntentUtils.respondWithQuestion(intentResult, session, "Price of ", "the price.");
 			}
 			else {
-				return respondWithPrice(em, slotValues, intentResult, request, session);
+				return respondWithPrice(em, intentResult, request, session);
 			}
 		}
 		finally {

@@ -28,42 +28,20 @@ public class IntentUtils {
 	
     private static final Logger logger = Logger.getLogger(IntentUtils.class.getName());
 
-	private static void logSlotValue(String intentName, String slot, String slotValue) {
-		logger.log(Level.INFO, intentName + " got for slot: " + slot + ", value: " + slotValue);
-	}
-	
-	
-	public static List<KeyValuePair> getSlotsFromIntent(IntentRequest request) {
-		List<KeyValuePair> slots = new ArrayList<>();
+
+    public static void getSlotsFromIntent(IntentRequest request, IntentResult result) {
 		for (Entry<String, Slot> entry : request.getIntent().getSlots().entrySet()) {
 			String key = entry.getKey();
 			String value = entry.getValue().getValue();
 			value = value == null ? null : value.trim();
 			if (value != null && value.length() > 0) {
-				KeyValuePair pair = new KeyValuePair(key, value);
-				slots.add(pair);
+				result.getInputMap().put(key, value);
 			}
 		}
-		return slots;
 	}
 	
 
-	public static List<KeyValuePair> getAttributesFromSession(Session session) {
-		List<KeyValuePair> attributes = new ArrayList<>();
-		for (Entry<String, Object> entry : session.getAttributes().entrySet()) {
-			String key = entry.getKey();
-			String value = entry.getValue() == null ? null : entry.getValue().toString().trim();
-			if (value != null && value.length() > 0) {
-				KeyValuePair pair = new KeyValuePair(key, value);
-				attributes.add(pair);
-			}
-		}
-		return attributes;
-	}
-
-
-	public static LocalDateRange getDateRange(IntentRequest request) {
-		Intent intent = request.getIntent();
+	public static LocalDateRange getDateRange(IntentResult result) {
 		Slot slot = intent.getSlot(InterfaceIntent.SLOT_DATE);
 		if (slot == null) {
 			logSlotValue(intent.getName(), InterfaceIntent.SLOT_DATE, "NO_VALUE");
@@ -136,28 +114,24 @@ public class IntentUtils {
 	}
 	
 
-    public static boolean getCompanyOrSymbol(IntentRequest request, Session session, AllSlotValues slotValues) {
-    	String symbol = (String) session.getAttribute(InterfaceIntent.ATTR_SYMBOL);
+    public static boolean getCompanyOrSymbol(IntentResult intentResult) {
+    	AllSlotValues slotValues = intentResult.getSlotValues();
+    	
+    	String symbol = intentResult.getInputMap().get(InterfaceIntent.SLOT_COMPANY);
     	if (symbol != null) {
     		slotValues.setCompanyOrSymbol(symbol);
     		slotValues.setCompanyOrSymbolSpelt("");
     		return true;
     	}
     	
-       	Intent intent = request.getIntent();
-    	if (intent.getSlot(InterfaceIntent.SLOT_COMPANY) == null ||
-    		intent.getSlot(InterfaceIntent.SLOT_COMPANY).getValue() == null ||
-    		intent.getSlot(InterfaceIntent.SLOT_COMPANY).getValue().trim().length() == 0) {
+    	String companyOrSymbol = intentResult.getInputMap().get(InterfaceIntent.SLOT_COMPANY);
+    	if (companyOrSymbol == null) {
     		return false;
     	}
-    	
-    	String companyOrSymbol = "";
-    	String companyOrSymbolSpelt = "";
-		companyOrSymbol = intent.getSlot(InterfaceIntent.SLOT_COMPANY).getValue();
-    	
     	// Take the apostrophe out for McDonald's and Dick's Sporting Goods
     	companyOrSymbol = removeTrailingWord(companyOrSymbol.trim().replaceAll("'", "")).trim();
     	
+    	String companyOrSymbolSpelt = "";
     	String[] pieces = companyOrSymbol.split(" ");
     	for (String piece : pieces) {
     		companyOrSymbolSpelt += piece.charAt(0);
@@ -170,185 +144,71 @@ public class IntentUtils {
     }
     
     
-    public static boolean getQuantity(IntentRequest request, Session session, AllSlotValues slotValues) {
-    	Double quantity = (Double) session.getAttribute(InterfaceIntent.ATTR_QUANTITY);
-    	if (quantity != null) {
-    		slotValues.setQuantity(quantity);
+    public static boolean getQuantity(IntentResult result) {
+    	if (result.getSlotValues().getQuantity() != null) {
     		return true;
     	}
-    	
-    	Intent intent = request.getIntent();
-    	if (intent.getSlot(InterfaceIntent.SLOT_QUANTITY) == null ||
-        	intent.getSlot(InterfaceIntent.SLOT_QUANTITY).getValue() == null ||
-        	intent.getSlot(InterfaceIntent.SLOT_QUANTITY).getValue().trim().length() == 0) {
+    	if (result.getInputMap().get(InterfaceIntent.SLOT_QUANTITY) == null) {
     		return false;
-        }
-
+    	}
+    	
     	String quantityStr = null;
-    	quantityStr = intent.getSlot(InterfaceIntent.SLOT_QUANTITY).getValue();
+    	quantityStr = result.getInputMap().get(InterfaceIntent.SLOT_QUANTITY);
     	if (quantityStr == null) {
     		return false;
     	}
     	
     	try {
-    		quantity = Double.parseDouble(quantityStr);
-    		slotValues.setQuantity(quantity);
+    		double quantity = Double.parseDouble(quantityStr);
+    		result.getSlotValues().setQuantity(quantity);
     		return true;
     	}
     	catch (Exception e) {
-    		logger.log(Level.SEVERE, intent.getName() + " given bad value for quantity: " + quantityStr, e);
+    		logger.log(Level.SEVERE, result.getName() + " given bad value for quantity: " + quantityStr, e);
     	}
     	return false;
     }
     
 
-    public static SpeechletResponse makeTellResponse(
-    	String alexaUserId, 
-    	String intentName, 
-    	int result, 
-    	AllSlotValues slotValues,
-    	String speechText) {
-    	
-		return makeTellResponse(alexaUserId, intentName, result, "", slotValues, false, speechText);			
-    }
+    public static SpeechletResponse makeTellResponse(IntentResult result) {
+    	if (result.getThrown() == null) {
+			logger.log(Level.INFO, result.getName() + ": " + result.getSpeech());
+    	}
+    	else {
+    		logger.log(Level.SEVERE, result.getName() + ": " + result.getSpeech(), result.getThrown());
+    	}
 
-    
-    public static SpeechletResponse makeTellResponse(
-    	String alexaUserId, 
-    	String intentName, 
-    	int result, 
-    	AllSlotValues slotValues,
-    	boolean isSsml,
-    	String speechText) {
-    	
-		return makeTellResponse(alexaUserId, intentName, result, "", slotValues, isSsml, speechText);			
-    }
-
-    
-    public static SpeechletResponse makeAskResponse(
-    	String alexaUserId, 
-    	String intentName, 
-    	int result, 
-    	AllSlotValues slotValues,
-    	String speechText) {
-    	
-    	return makeAskResponse(alexaUserId, intentName, result, "", slotValues, speechText);
-    }
-    
-    
-    public static SpeechletResponse makeTellResponse(
-        	String alexaUserId, 
-        	String intentName, 
-        	int result, 
-        	String resultText,
-        	AllSlotValues slotValues,
-        	String speechText) {
-    	return makeTellResponse(alexaUserId, intentName, result, resultText, slotValues, false, speechText);
-    }
-    
-    
-    public static SpeechletResponse makeTellResponse(
-    	String alexaUserId, 
-    	String intentName, 
-    	int result, 
-    	String resultText,
-    	AllSlotValues slotValues,
-    	boolean isSsml,
-    	String speechText) {
-    	
-		String juliLoggerMessage = intentName + ": " + speechText;
-    	CloudWatchLoggerIntentResult loggerResult = new CloudWatchLoggerIntentResult(alexaUserId, intentName, result, 
-    		resultText, slotValues == null ? null : slotValues.toKeyValuePairList(), new Date());
-    	CloudWatchLogger.getInstance().addLogEvent(loggerResult, juliLoggerMessage);
-
-    	if (isSsml) {
+    	if (result.isSsml()) {
     		SsmlOutputSpeech outputSpeech = new SsmlOutputSpeech();
-    		outputSpeech.setSsml(speechText);
+    		outputSpeech.setSsml(result.getSpeech());
     		return SpeechletResponse.newTellResponse(outputSpeech);
     	}
     	else {
 			PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
-			outputSpeech.setText(speechText);
+			outputSpeech.setText(result.getSpeech());
 			return SpeechletResponse.newTellResponse(outputSpeech);	
     	}
     }
 
 
-    public static SpeechletResponse makeAskResponse(
-    	String alexaUserId, 
-    	String intentName, 
-    	int result, 
-    	String resultText,
-    	AllSlotValues slotValues,
-    	String speechText) {
-    	
-		String juliLoggerMessage = intentName + ": " + speechText;
-    	CloudWatchLoggerIntentResult loggerResult = new CloudWatchLoggerIntentResult(alexaUserId, intentName, result, 
-    		resultText, slotValues == null ? null : slotValues.toKeyValuePairList(), new Date());
-    	CloudWatchLogger.getInstance().addLogEvent(loggerResult, juliLoggerMessage);
-
-		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
-		outputSpeech.setText(speechText);
+	public static SpeechletResponse makeAskResponse(IntentResult result, Session session, String question, String reprompt) {
+		logger.log(Level.INFO, result.getName() + ": " + question + "; " + reprompt);
 		
-		Reprompt reprompt = new Reprompt();
-		PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
-		repromptSpeech.setText("Sorry, " + speechText);
-		reprompt.setOutputSpeech(repromptSpeech);
-
-		return SpeechletResponse.newAskResponse(outputSpeech, reprompt);			
-    }
-
-    
-    public static SpeechletResponse makeTellResponse(
-    	String alexaUserId, 
-    	String intentName, 
-    	int result, 
-    	AllSlotValues slotValues,
-    	String speechText,
-    	Throwable e) {
-    	
-		return makeTellResponse(alexaUserId, intentName, result, "", slotValues, speechText, e);			
-    }
-
-    
-    public static SpeechletResponse makeTellResponse(
-    	String alexaUserId, 
-    	String intentName, 
-    	int result, 
-    	String resultText,
-    	AllSlotValues slotValues,
-    	String speechText,
-    	Throwable e) {
-    	
-		String juliLoggerMessage = intentName + ": " + speechText;
-    	CloudWatchLoggerIntentResult loggerResult = new CloudWatchLoggerIntentResult(alexaUserId, intentName, result, 
-    		resultText, slotValues == null ? null : slotValues.toKeyValuePairList(), new Date());
-    	CloudWatchLogger.getInstance().addLogEvent(loggerResult, juliLoggerMessage, e);
-
-		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
-		outputSpeech.setText(speechText);
-		return SpeechletResponse.newTellResponse(outputSpeech);			
-    }
-    
-    
-	public static SpeechletResponse respondWithQuestion(IntentResult intentResult, IntentRequest request, Session session, 
-		String questionPrefix, String repromptSuffix) {
-		
-		session.setAttribute(InterfaceIntent.ATTR_LAST_INTENT, request.getIntent().getName());
-		for (Map.Entry<String, Slot> entry : request.getIntent().getSlots().entrySet()) {
-			session.setAttribute(entry.getKey(), entry.getValue().getValue());
+		for (Map.Entry<String, Object> entry : result.getInputMap().entrySet()) {
+			session.setAttribute(entry.getKey(), entry.getValue());
 		}
+		session.setAttribute(InterfaceIntent.ATTR_LAST_INTENT, result.getName());
+		session.setAttribute(InterfaceIntent.ATTR_ALL_SLOT_VALUES,  result.getSlotValues());
 
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
-		outputSpeech.setText(questionPrefix + "what company?  Tell me the name or symbol.");
+		outputSpeech.setText(question);
 
-		Reprompt reprompt = new Reprompt();
-		PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
-		repromptSpeech.setText("Sorry, need the name or symbol to get" + repromptSuffix);
-		reprompt.setOutputSpeech(repromptSpeech);
+		Reprompt prompt = new Reprompt();
+		PlainTextOutputSpeech promptSpeech = new PlainTextOutputSpeech();
+		promptSpeech.setText(reprompt);
+		prompt.setOutputSpeech(promptSpeech);
 	   	
-		intentResult.setResult(IntentGetStockPrice.RESULT_INCOMPLETE);
-		logger.log(Level.INFO, request.getIntent().getName() + ": user did not provide name of company.");
-		return SpeechletResponse.newAskResponse(outputSpeech, reprompt);	    	
+		result.setResult(IntentGetStockPrice.RESULT_INCOMPLETE);
+		return SpeechletResponse.newAskResponse(outputSpeech, prompt);	    	
 	}
 }

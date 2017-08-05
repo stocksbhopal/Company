@@ -1,8 +1,11 @@
 package com.sanjoyghosh.company.utils;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public class LocalDateRange {
+public class LocalDateRange implements Serializable {
+
+	private static final long serialVersionUID = 7516960257871965823L;
 
 	private LocalDate startDate;
 	private LocalDate endDate;

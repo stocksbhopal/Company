@@ -35,7 +35,7 @@ public class IntentStockOnList implements InterfaceIntent {
     
     @Override
 	public SpeechletResponse onIntent(IntentRequest request, Session session, IntentResult intentResult) throws SpeechletException {
-    	String intentName = request.getIntent().getName();
+    	String intentName = intentResult.getName();
     	boolean isConfirmation = intentName.equals("AMAZON.YesIntent") || intentName.equals("AMAZON.NoIntent");
     	intentName = isConfirmation ? (String)session.getAttribute(InterfaceIntent.ATTR_LAST_INTENT) : intentName;
     	boolean needsQuantity = 
@@ -46,8 +46,7 @@ public class IntentStockOnList implements InterfaceIntent {
     		!intentName.equals(InterfaceIntent.INTENT_CLEAR_STOCKS_ON_LIST);
     	String alexaUserId = session.getUser().getUserId();
 
-    	AllSlotValues slotValues = new AllSlotValues();
-    	boolean hasCompanyOrSymbol = IntentUtils.getCompanyOrSymbol(request, session, slotValues);
+    	boolean hasCompanyOrSymbol = IntentUtils.getCompanyOrSymbol(intentResult);
     	boolean hasQuantity = IntentUtils.getQuantity(request, session, slotValues);
     	if (!hasCompanyOrSymbol && needsCompany) {
     		return IntentUtils.makeTellResponse(alexaUserId, intentName, RESULT_ERROR_MISSING_COMPANY, slotValues, "Sorry, we need a company name or ticker symbol.");
@@ -138,21 +137,25 @@ public class IntentStockOnList implements InterfaceIntent {
 			reprompt.setOutputSpeech(repromptSpeech);
 			
 			session.setAttribute(InterfaceIntent.ATTR_LAST_INTENT, intentName);
-			session.setAttribute(InterfaceIntent.ATTR_SYMBOL, company.getSymbol());
+			session.setAttribute(InterfaceIntent.SLOT_COMPANY, company.getSymbol());
 			return SpeechletResponse.newAskResponse(outputSpeech, reprompt);			
 		}
 	}
 
 
-	private SpeechletResponse clearStocksOnList(EntityManager em, boolean isConfirmation, String intentName, Session session) {
-		String alexaUserId = session.getUser().getUserId();
-		Portfolio portfolio = PortfolioJPA.fetchPortfolio(em, PortfolioJPA.MY_PORTFOLIO_NAME, session.getUser().getUserId());
+	private SpeechletResponse clearStocksOnList(EntityManager em, IntentResult result) {
+		String intentName = result.getName();
+		String alexaUserId = result.getAlexaUserId();
+		
+		Portfolio portfolio = PortfolioJPA.fetchPortfolio(em, PortfolioJPA.MY_PORTFOLIO_NAME, alexaUserId);
 		if (portfolio == null) {
-			return IntentUtils.makeTellResponse(alexaUserId, intentName, RESULT_SUCCESS, null, "Sorry, you do not yet have a list of stocks to clear.");
+			result.setSpeech(false, "Sorry, you do not yet have a list of stocks to clear.");
+			return IntentUtils.makeTellResponse(result);
 		}
 		if (portfolio.isEmpty()) {
 			return IntentUtils.makeTellResponse(alexaUserId, intentName, RESULT_SUCCESS, null, "Sorry, you have no stocks on your list to clear,");
 		}
+		
 		if (isConfirmation) {
 			boolean isYes = intentName.equals("AMAZON.YesIntent");
 			if (isYes) {
@@ -229,8 +232,8 @@ public class IntentStockOnList implements InterfaceIntent {
 			reprompt.setOutputSpeech(repromptSpeech);
 			
 			session.setAttribute(InterfaceIntent.ATTR_LAST_INTENT, intentName);
-			session.setAttribute(InterfaceIntent.ATTR_QUANTITY, new Double(quantity));
-			session.setAttribute(InterfaceIntent.ATTR_SYMBOL, company.getSymbol());
+			session.setAttribute(InterfaceIntent.SLOT_QUANTITY, new Double(quantity));
+			session.setAttribute(InterfaceIntent.SLOT_COMPANY, company.getSymbol());
 			return SpeechletResponse.newAskResponse(outputSpeech, reprompt);			
 		}
 	}
@@ -283,10 +286,11 @@ public class IntentStockOnList implements InterfaceIntent {
 	}
 
 
-	private SpeechletResponse listStocksOnList(EntityManager em, String alexaUserId, String intentName) {
+	private SpeechletResponse listStocksOnList(EntityManager em, IntentResult result) {
 		int numStocks = 0;
 		String speechText = "";
-		Portfolio portfolio = PortfolioJPA.fetchPortfolio(em, PortfolioJPA.MY_PORTFOLIO_NAME, alexaUserId);
+		
+		Portfolio portfolio = PortfolioJPA.fetchPortfolio(em, PortfolioJPA.MY_PORTFOLIO_NAME, result.getAlexaUserId());
 		if (portfolio == null || portfolio.isEmpty()) {
 			speechText = "Sorry, you do not yet have a list of stocks.";
 		}
@@ -298,8 +302,10 @@ public class IntentStockOnList implements InterfaceIntent {
 				speechText += (int)item.getQuantity() + " shares of " + item.getCompany().getName() + ", ";
 			}
 			speechText += "on your list.";
-		}		
+		}	
 		
-		return IntentUtils.makeTellResponse(alexaUserId, intentName, RESULT_SUCCESS, String.valueOf(numStocks), null, speechText);
+		result.setResult(numStocks);
+		result.setSpeech(false, speechText);
+		return IntentUtils.makeTellResponse(result);
 	}
 }

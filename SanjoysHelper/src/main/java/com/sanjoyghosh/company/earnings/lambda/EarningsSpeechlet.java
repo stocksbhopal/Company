@@ -109,8 +109,9 @@ public class EarningsSpeechlet implements Speechlet  {
 	
 	
 	public SpeechletResponse processIntent(IntentRequest request, Session session) throws SpeechletException {
-		IntentResult intentResult = new IntentResult(request, session);
+		IntentResult intentResult = null;
 		try {
+			intentResult = new IntentResult(request, session);
 			for (int retries = 0; retries < 5; retries++) {
 				try {
 					return tryOnIntent(request, session, intentResult);
@@ -130,10 +131,10 @@ public class EarningsSpeechlet implements Speechlet  {
 			throw new SpeechletException(e);
 		}
 		finally {
-			intentResult.setExecTimeMilliSecs((int) (System.currentTimeMillis() - intentResult.getEventTime().getTime()));
-			IntentResultLogger.getInstance().addLogEvent(intentResult);
+			if (intentResult != null) {
+				intentResult.setExecTimeMilliSecs((int) (System.currentTimeMillis() - intentResult.getEventTime().getTime()));
+			}
 		}
-		
 		throw new SpeechletException("Too many retries");
 	}
 	

@@ -9,8 +9,7 @@ public interface InterfaceIntent {
 
 	// Make sure the first letter of each ATTR_ is unique to serialize for logging.
     public static final String ATTR_LAST_INTENT = "LAST_INTENT";
-    public static final String ATTR_SYMBOL = "SYMBOL";
-    public static final String ATTR_QUANTITY = "QUANTITY";
+    public static final String ATTR_ALL_SLOT_VALUES = "ALL_SLOT_VALUES";
 
 	// Make sure the first letter of each SLOT_ is unique to serialize for logging.
     public static final String SLOT_COMPANY = "company";    
