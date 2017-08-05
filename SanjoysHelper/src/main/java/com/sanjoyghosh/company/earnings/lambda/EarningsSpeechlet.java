@@ -133,6 +133,7 @@ public class EarningsSpeechlet implements Speechlet  {
 		finally {
 			if (intentResult != null) {
 				intentResult.setExecTimeMilliSecs((int) (System.currentTimeMillis() - intentResult.getEventTime().getTime()));
+				IntentResultLogger.getInstance().addLogEvent(intentResult);
 			}
 		}
 		throw new SpeechletException("Too many retries");
