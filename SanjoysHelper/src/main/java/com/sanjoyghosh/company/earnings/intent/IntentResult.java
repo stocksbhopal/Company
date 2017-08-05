@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.Session;
-import com.sanjoyghosh.company.utils.KeyValuePair;
 
 
 public class IntentResult {
@@ -36,6 +35,7 @@ public class IntentResult {
 	private String						sessionId;
 
 	
+	// The sequencing of the lines below is VERY importante.
 	public IntentResult(IntentRequest request, Session session) {
 		this.name = request.getIntent().getName();
 		this.slotValues = (AllSlotValues) session.getAttribute(InterfaceIntent.ATTR_ALL_SLOT_VALUES);
@@ -43,6 +43,7 @@ public class IntentResult {
 		
 		this.intentSlotMap = new HashMap<>();
 		IntentUtils.getSlotsFromIntent(request, this);
+		IntentUtils.getCompanyOrSymbol(this);
 		
 		this.symbolsByExceptionSet = new HashMap<>();
 		this.symbolsWithNullQuotes = new HashSet<>();
@@ -119,11 +120,6 @@ public class IntentResult {
 	}
 
 
-	public Map<String, Object> getInputMap() {
-		return inputMap;
-	}
-
-
 	public AllSlotValues getSlotValues() {
 		return slotValues;
 	}
@@ -144,5 +140,10 @@ public class IntentResult {
 	}
 	public void setThrown(Throwable thrown) {
 		this.thrown = thrown;
+	}
+
+
+	public Map<String, String> getIntentSlotMap() {
+		return intentSlotMap;
 	}
 }

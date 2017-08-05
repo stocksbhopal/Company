@@ -12,6 +12,7 @@ import javax.persistence.NoResultException;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.db.model.CompanyNamePrefix;
 import com.sanjoyghosh.company.earnings.intent.AllSlotValues;
+import com.sanjoyghosh.company.earnings.intent.IntentResult;
 
 public class CompanyJPA {
 	
@@ -85,45 +86,41 @@ public class CompanyJPA {
 	}
 
 	
-	public static Company fetchCompanyByNameOrSymbol(EntityManager em, AllSlotValues slotValues) {
+	public static Company fetchCompanyByNameOrSymbol(EntityManager em, IntentResult result) {
+		AllSlotValues slotValues = result.getSlotValues();		
 		String cs = slotValues.getCompanyOrSymbol();
 		String css = slotValues.getCompanyOrSymbolSpelt();
 
-		if (cs != null) {
+		Company company = slotValues.getCompany();
+		
+		if (company == null && cs != null) {
 			List<CompanyNamePrefix> cnpList = fetchCompanyListByNamePrefix(em, cs);
 			if (cnpList != null && cnpList.size() > 0) {
 				if (cnpList.size() > 1) {
 					logger.log(Level.WARNING, "Found more than 1 company for: " + cs);
 				}
-				return cnpList.get(0).getCompany();
+				company = cnpList.get(0).getCompany();
+			}
+			else {
+				company = fetchCompanyBySymbol(em, cs);
 			}
 		}
 		
-		if (cs != null) {
-			Company company = fetchCompanyBySymbol(em, cs);
-			if (company != null) {
-				return company;
-			}
-		}
-		
-		if (css != null) {
-			Company company = fetchCompanyBySymbol(em, css);
-			if (company != null) {
-				return company;
-			}
-		}
-		
-		if (css != null) {
-			List<CompanyNamePrefix> cnpList = fetchCompanyListByNamePrefix(em, css);
-			if (cnpList != null && cnpList.size() > 0) {
-				if (cnpList.size() > 1) {
-					logger.log(Level.WARNING, "Found more than 1 company for: " + cs);
+		if (company == null && css != null) {
+			company = fetchCompanyBySymbol(em, css);
+			if (company == null) {
+				List<CompanyNamePrefix> cnpList = fetchCompanyListByNamePrefix(em, css);
+				if (cnpList != null && cnpList.size() > 0) {
+					if (cnpList.size() > 1) {
+						logger.log(Level.WARNING, "Found more than 1 company for: " + css);
+					}
+					company = cnpList.get(0).getCompany();
 				}
-				return cnpList.get(0).getCompany();
 			}
 		}
 		
-		return null;
+		slotValues.setCompany(company);
+		return company;
 	}
 	
 	

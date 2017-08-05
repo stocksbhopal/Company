@@ -57,50 +57,51 @@ public class IntentGetStockPrice implements InterfaceIntent {
     }
     
     
-    private SpeechletResponse respondWithPrice(EntityManager em, IntentResult intentResult, IntentRequest request, Session session) {
+    private SpeechletResponse respondWithPrice(EntityManager em, IntentResult result, IntentRequest request, Session session) {
     	String error = "";
     	Exception exception = null;
 		Company company = null;
 		CompanyNamePrefix companyNamePrefix = null;
-		String intentName = intentResult.getName();
-		AllSlotValues slotValues = intentResult.getSlotValues();
+		String intentName = result.getName();
+		AllSlotValues slotValues = result.getSlotValues();
+		
 		try {			
-			company = CompanyJPA.fetchCompanyByNameOrSymbol(em, slotValues);
+			company = CompanyJPA.fetchCompanyByNameOrSymbol(em, result);
 			if (company != null) {
 				String symbol = company.getSymbol();
-				intentResult.setResponse(symbol);
+				result.setResponse(symbol);
 				if (symbol.equals("DJIA") || symbol.equals("IXIC") || symbol.equals("GSPC")) {
 					NasdaqIndexes indexes = NasdaqIndexesReader.readNasdaqIndexes();
 					if (indexes != null) {
 						NasdaqRealtimeQuote quote = symbol.equals("DJIA") ? indexes.getDjiaQuote() : symbol.equals("IXIC") ? indexes.getIxicQuote() : indexes.getGspcQuote();
-						intentResult.setResult(RESULT_SUCCESS);
+						result.setResult(RESULT_SUCCESS);
 						return makeTellResponse(quote, null, company, slotValues, request, session);
 					}
 					else {
-						intentResult.setResult(RESULT_ERROR_NO_QUOTE);
+						result.setResult(RESULT_ERROR_NO_QUOTE);
 						error = intentName + " found no quote for index named " + company.getName();						
 					}
 				}
 				else {
 					NasdaqRealtimeQuote quote = NasdaqRealtimeQuoteReader.fetchNasdaqStockSummary(company.getSymbol());
 					if (quote != null) {
-						intentResult.setResult(RESULT_SUCCESS);
+						result.setResult(RESULT_SUCCESS);
 						return makeTellResponse(quote, companyNamePrefix, company, slotValues, request, session);
 					}
 					else {
-						intentResult.setResult(RESULT_ERROR_NO_QUOTE);
+						result.setResult(RESULT_ERROR_NO_QUOTE);
 						error = intentName + " found no quote for company named " + company.getName();
 					}
 				}
 			}
 			else {
-				intentResult.setResult(RESULT_ERROR_NO_COMPANY);
+				result.setResult(RESULT_ERROR_NO_COMPANY);
 				error = intentName + " found no company or symbol:" + slotValues;
 			}
 		}
 		catch (Exception e) {
 			exception = e;
-			intentResult.setResult(RESULT_ERROR_EXCEPTION);
+			result.setResult(RESULT_ERROR_EXCEPTION);
 		}
 		logger.log(Level.SEVERE, error, exception);
 
@@ -111,15 +112,15 @@ public class IntentGetStockPrice implements InterfaceIntent {
     
 	
 	@Override
-	public SpeechletResponse onIntent(IntentRequest request, Session session, IntentResult intentResult) throws SpeechletException {
+	public SpeechletResponse onIntent(IntentRequest request, Session session, IntentResult result) throws SpeechletException {
 		EntityManager em = null;
 		try {
 			em = JPAHelper.getEntityManager();
-			if (!IntentUtils.getCompanyOrSymbol(intentResult)) {	
-				return IntentUtils.respondWithQuestion(intentResult, session, "Price of ", "the price.");
+			if (!IntentUtils.getCompanyOrSymbol(result)) {	
+				return IntentUtils.respondWithQuestion(result, session, "Price of ", "the price.");
 			}
 			else {
-				return respondWithPrice(em, intentResult, request, session);
+				return respondWithPrice(em, result, request, session);
 			}
 		}
 		finally {

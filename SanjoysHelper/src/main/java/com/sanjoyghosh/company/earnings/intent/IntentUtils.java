@@ -2,15 +2,11 @@ package com.sanjoyghosh.company.earnings.intent;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.amazon.speech.slu.Intent;
 import com.amazon.speech.slu.Slot;
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.Session;
@@ -18,10 +14,7 @@ import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.amazon.speech.ui.Reprompt;
 import com.amazon.speech.ui.SsmlOutputSpeech;
-import com.sanjoyghosh.company.logs.CloudWatchLogger;
-import com.sanjoyghosh.company.logs.CloudWatchLoggerIntentResult;
 import com.sanjoyghosh.company.utils.AlexaDateUtils;
-import com.sanjoyghosh.company.utils.KeyValuePair;
 import com.sanjoyghosh.company.utils.LocalDateRange;
 
 public class IntentUtils {
@@ -35,34 +28,37 @@ public class IntentUtils {
 			String value = entry.getValue().getValue();
 			value = value == null ? null : value.trim();
 			if (value != null && value.length() > 0) {
-				result.getInputMap().put(key, value);
+				result.getIntentSlotMap().put(key, value);
 			}
 		}
 	}
 	
 
 	public static LocalDateRange getDateRange(IntentResult result) {
-		Slot slot = intent.getSlot(InterfaceIntent.SLOT_DATE);
-		if (slot == null) {
-			logSlotValue(intent.getName(), InterfaceIntent.SLOT_DATE, "NO_VALUE");
-			return null;
-		}
-		String dateStr = slot.getValue();
-		if (dateStr == null || dateStr.trim().length() == 0) {
-			logSlotValue(intent.getName(), InterfaceIntent.SLOT_DATE, "NULL_OR_EMPTY:SET_TO_TODAY");
-			LocalDate localDate = LocalDate.now(ZoneId.of("America/New_York"));
-			LocalDateRange dateRange = new LocalDateRange(localDate, localDate, 1);
-			return dateRange;
+		if (result.getSlotValues().getLocalDateRange() != null) {
+			return result.getSlotValues().getLocalDateRange();
 		}
 		
-		logSlotValue(intent.getName(), InterfaceIntent.SLOT_DATE, dateStr);
-		LocalDateRange localDateRange = AlexaDateUtils.getLocalDateRange(dateStr);
+		String dateRangeStr = result.getIntentSlotMap().get(InterfaceIntent.SLOT_DATE);
+		if (dateRangeStr == null) {
+			return null;
+		}
+
+		LocalDateRange localDateRange = null;
+		if (dateRangeStr == null || dateRangeStr.trim().length() == 0) {
+			LocalDate localDate = LocalDate.now(ZoneId.of("America/New_York"));
+			localDateRange = new LocalDateRange(localDate, localDate, 1);
+		}
+		else {
+			localDateRange = AlexaDateUtils.getLocalDateRange(dateRangeStr);
+		}
+		result.getSlotValues().setLocalDateRange(localDateRange);
 		return localDateRange;
 	}
 
 	
-	public static LocalDateRange getValidDateRange(IntentRequest request) {
-		LocalDateRange localDateRange = getDateRange(request);
+	public static LocalDateRange getValidDateRange(IntentResult result) {
+		LocalDateRange localDateRange = getDateRange(result);
 		// Alexa Date is local US date, whereas EC2 date is UTC date.
 		// And so Alexa Date can be up to 1 day behind EC2 date.
 		if (localDateRange.getEndDate().isBefore(LocalDate.now().minusDays(31L))) {
@@ -114,20 +110,16 @@ public class IntentUtils {
 	}
 	
 
-    public static boolean getCompanyOrSymbol(IntentResult intentResult) {
-    	AllSlotValues slotValues = intentResult.getSlotValues();
-    	
-    	String symbol = intentResult.getInputMap().get(InterfaceIntent.SLOT_COMPANY);
-    	if (symbol != null) {
-    		slotValues.setCompanyOrSymbol(symbol);
-    		slotValues.setCompanyOrSymbolSpelt("");
+    public static boolean getCompanyOrSymbol(IntentResult result) {
+    	if (result.getSlotValues().getCompany() != null) {
     		return true;
     	}
     	
-    	String companyOrSymbol = intentResult.getInputMap().get(InterfaceIntent.SLOT_COMPANY);
+    	String companyOrSymbol = result.getIntentSlotMap().get(InterfaceIntent.SLOT_COMPANY);
     	if (companyOrSymbol == null) {
     		return false;
     	}
+    	
     	// Take the apostrophe out for McDonald's and Dick's Sporting Goods
     	companyOrSymbol = removeTrailingWord(companyOrSymbol.trim().replaceAll("'", "")).trim();
     	
@@ -138,8 +130,8 @@ public class IntentUtils {
     	}
     	companyOrSymbolSpelt = companyOrSymbolSpelt.trim();
 
-    	slotValues.setCompanyOrSymbol(companyOrSymbol);
-    	slotValues.setCompanyOrSymbolSpelt(companyOrSymbolSpelt);
+    	result.getSlotValues().setCompanyOrSymbol(companyOrSymbol);
+    	result.getSlotValues().setCompanyOrSymbolSpelt(companyOrSymbolSpelt);
        	return true;
     }
     
@@ -148,12 +140,8 @@ public class IntentUtils {
     	if (result.getSlotValues().getQuantity() != null) {
     		return true;
     	}
-    	if (result.getInputMap().get(InterfaceIntent.SLOT_QUANTITY) == null) {
-    		return false;
-    	}
     	
-    	String quantityStr = null;
-    	quantityStr = result.getInputMap().get(InterfaceIntent.SLOT_QUANTITY);
+    	String quantityStr = result.getIntentSlotMap().get(InterfaceIntent.SLOT_QUANTITY);    	
     	if (quantityStr == null) {
     		return false;
     	}
@@ -194,7 +182,7 @@ public class IntentUtils {
 	public static SpeechletResponse makeAskResponse(IntentResult result, Session session, String question, String reprompt) {
 		logger.log(Level.INFO, result.getName() + ": " + question + "; " + reprompt);
 		
-		for (Map.Entry<String, Object> entry : result.getInputMap().entrySet()) {
+		for (Map.Entry<String, String> entry : result.getIntentSlotMap().entrySet()) {
 			session.setAttribute(entry.getKey(), entry.getValue());
 		}
 		session.setAttribute(InterfaceIntent.ATTR_LAST_INTENT, result.getName());
