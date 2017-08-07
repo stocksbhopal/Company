@@ -116,12 +116,7 @@ public class IntentGetStockPrice implements InterfaceIntent {
 		EntityManager em = null;
 		try {
 			em = JPAHelper.getEntityManager();
-			if (!IntentUtils.getCompanyOrSymbol(result)) {	
-				return IntentUtils.respondWithQuestion(result, session, "Price of ", "the price.");
-			}
-			else {
-				return respondWithPrice(em, result, request, session);
-			}
+			return respondWithPrice(em, result, request, session);
 		}
 		finally {
 			if (em != null) {

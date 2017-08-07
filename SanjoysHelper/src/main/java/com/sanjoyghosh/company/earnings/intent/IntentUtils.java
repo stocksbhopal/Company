@@ -7,13 +7,19 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.persistence.EntityManager;
+
 import com.amazon.speech.slu.Slot;
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.Session;
 import com.amazon.speech.speechlet.SpeechletResponse;
+import com.amazon.speech.ui.OutputSpeech;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.amazon.speech.ui.Reprompt;
 import com.amazon.speech.ui.SsmlOutputSpeech;
+import com.sanjoyghosh.company.db.CompanyJPA;
+import com.sanjoyghosh.company.db.JPAHelper;
+import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.utils.AlexaDateUtils;
 import com.sanjoyghosh.company.utils.LocalDateRange;
 
@@ -110,14 +116,14 @@ public class IntentUtils {
 	}
 	
 
-    public static boolean getCompanyOrSymbol(IntentResult result) {
+    public static Company getCompany(IntentResult result) {
     	if (result.getSlotValues().getCompany() != null) {
-    		return true;
+    		return null;
     	}
     	
     	String companyOrSymbol = result.getIntentSlotMap().get(InterfaceIntent.SLOT_COMPANY);
     	if (companyOrSymbol == null) {
-    		return false;
+    		return null;
     	}
     	
     	// Take the apostrophe out for McDonald's and Dick's Sporting Goods
@@ -132,7 +138,19 @@ public class IntentUtils {
 
     	result.getSlotValues().setCompanyOrSymbol(companyOrSymbol);
     	result.getSlotValues().setCompanyOrSymbolSpelt(companyOrSymbolSpelt);
-       	return true;
+    	
+		EntityManager em = null;
+		try {
+			em = JPAHelper.getEntityManager();
+			CompanyJPA.fetchCompanyByNameOrSymbol(em, result);
+		}
+		finally {
+			if (em != null) {
+				em.close();
+			}
+		}
+
+       	return result.getSlotValues().getCompany();
     }
     
     
@@ -179,17 +197,22 @@ public class IntentUtils {
     }
 
 
-	public static SpeechletResponse makeAskResponse(IntentResult result, Session session, String question, String reprompt) {
-		logger.log(Level.INFO, result.getName() + ": " + question + "; " + reprompt);
-		
+	public static SpeechletResponse makeAskResponse(IntentResult result, Session session, String reprompt) {
 		for (Map.Entry<String, String> entry : result.getIntentSlotMap().entrySet()) {
 			session.setAttribute(entry.getKey(), entry.getValue());
 		}
 		session.setAttribute(InterfaceIntent.ATTR_LAST_INTENT, result.getName());
 		session.setAttribute(InterfaceIntent.ATTR_ALL_SLOT_VALUES,  result.getSlotValues());
 
-		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
-		outputSpeech.setText(question);
+		OutputSpeech outputSpeech = null;
+    	if (result.isSsml()) {
+    		outputSpeech = new SsmlOutputSpeech();
+    		((SsmlOutputSpeech) outputSpeech).setSsml(result.getSpeech());
+    	}
+    	else {
+			outputSpeech = new PlainTextOutputSpeech();
+			((PlainTextOutputSpeech) outputSpeech).setText(result.getSpeech());
+    	}
 
 		Reprompt prompt = new Reprompt();
 		PlainTextOutputSpeech promptSpeech = new PlainTextOutputSpeech();

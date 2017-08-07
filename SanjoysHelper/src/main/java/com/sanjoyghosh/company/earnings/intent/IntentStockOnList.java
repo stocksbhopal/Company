@@ -46,7 +46,7 @@ public class IntentStockOnList implements InterfaceIntent {
     		!intentName.equals(InterfaceIntent.INTENT_CLEAR_STOCKS_ON_LIST);
     	String alexaUserId = session.getUser().getUserId();
 
-    	boolean hasCompanyOrSymbol = IntentUtils.getCompanyOrSymbol(intentResult);
+    	Company company = IntentUtils.getCompany(intentResult);
     	boolean hasQuantity = IntentUtils.getQuantity(request, session, slotValues);
     	if (!hasCompanyOrSymbol && needsCompany) {
     		return IntentUtils.makeTellResponse(alexaUserId, intentName, RESULT_ERROR_MISSING_COMPANY, slotValues, "Sorry, we need a company name or ticker symbol.");

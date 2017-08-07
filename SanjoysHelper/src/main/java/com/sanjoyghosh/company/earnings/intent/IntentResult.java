@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.Session;
@@ -13,7 +12,7 @@ import com.amazon.speech.speechlet.Session;
 
 public class IntentResult {
 
-    private static final Logger logger = Logger.getLogger(IntentResult.class.getName());
+//    private static final Logger logger = Logger.getLogger(IntentResult.class.getName());
     
 
 	private String						name;
@@ -43,7 +42,7 @@ public class IntentResult {
 		
 		this.intentSlotMap = new HashMap<>();
 		IntentUtils.getSlotsFromIntent(request, this);
-		IntentUtils.getCompanyOrSymbol(this);
+		IntentUtils.getCompany(this);
 		
 		this.symbolsByExceptionSet = new HashMap<>();
 		this.symbolsWithNullQuotes = new HashSet<>();

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.Session;
@@ -13,45 +12,36 @@ import com.amazon.speech.speechlet.SpeechletResponse;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.source.reuters.ReutersCompanyNewsItem;
 import com.sanjoyghosh.company.source.reuters.ReutersCompanyNewsReader;
-import com.sanjoyghosh.company.utils.CompanyUtils;
 import com.sanjoyghosh.company.utils.LocalDateRange;
 import com.sanjoyghosh.company.utils.StringUtils;
 
 public class IntentGetCompanyNews implements InterfaceIntent {
 
-    private static final Logger logger = Logger.getLogger(IntentGetCompanyNews.class.getName());
+//    private static final Logger logger = Logger.getLogger(IntentGetCompanyNews.class.getName());
 
 	@Override
-	public SpeechletResponse onIntent(IntentRequest request, Session session, IntentResult intentResult) throws SpeechletException {
-		String intentName = intentResult.getName();
-		AllSlotValues slotValues = intentResult.getSlotValues();
+	public SpeechletResponse onIntent(IntentRequest request, Session session, IntentResult result) throws SpeechletException {
+		String intentName = result.getName();
+		AllSlotValues slotValues = result.getSlotValues();
+		Company company = slotValues.getCompany();
 		
-		if (!IntentUtils.getCompanyOrSymbol(intentResult)) {
-			if (intentName.equals(InterfaceIntent.INTENT_GET_COMPANY_HEADLINES)) {
-				return IntentUtils.respondWithQuestion(intentResult, session, "Headlines for ", " the headlines.");
-			}
-			else {
-				return IntentUtils.respondWithQuestion(intentResult, session, "News for ", " the news.");				
-			}
-		}
-		
-		logger.info("Company ASR: " + slotValues);
-		Company company = CompanyUtils.getCompany(slotValues);
 		if (company == null) {
-			return IntentUtils.makeTellResponse(intentResult, "Sorry, could not find a company named " + slotValues.toString());
+			result.setSpeech(false, "Sorry, could not find a company named " + slotValues.toString());
+			return IntentUtils.makeTellResponse(result);
 		}
 		
-		LocalDateRange dateRange = IntentUtils.getDateRange(request);
+		LocalDateRange dateRange = IntentUtils.getDateRange(result);
 		LocalDate localDate = dateRange == null ? LocalDate.now() : dateRange.getStartDate();
 		List<ReutersCompanyNewsItem> newsItems = null;
 		try {
 			newsItems = ReutersCompanyNewsReader.readReutersCompanyNews(company, localDate);
 		} 
 		catch (IOException e) {
-			return IntentUtils.makeTellResponse(session.getUser().getUserId(), intentName, 0, slotValues, 
-				"Exception in reading News for " + company.getName(), e);
+			result.setSpeech(false, "Exception in reading News for " + company.getName());
+			result.setThrown(e);
+			return IntentUtils.makeTellResponse(result);
 		}
-		intentResult.setResult(newsItems.size());
+		result.setResult(newsItems.size());
 		
 		boolean isSsml = false;
 		String speechText = "";
@@ -82,6 +72,8 @@ public class IntentGetCompanyNews implements InterfaceIntent {
 				speechText = StringUtils.formatForSSML(summaryList);
 			}
 		}
-		return IntentUtils.makeTellResponse(session.getUser().getUserId(), intentName, newsItems.size(), slotValues, isSsml, speechText);
+		result.setResult(newsItems.size());
+		result.setSpeech(isSsml, speechText);
+		return IntentUtils.makeTellResponse(result);
 	}
 }
