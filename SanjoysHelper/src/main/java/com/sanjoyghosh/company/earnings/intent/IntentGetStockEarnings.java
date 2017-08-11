@@ -82,17 +82,17 @@ public class IntentGetStockEarnings implements InterfaceIntent {
     
     
 	@Override
-	public SpeechletResponse onIntent(IntentRequest request, Session session, IntentResult intentResult) throws SpeechletException {
+	public SpeechletResponse onIntent(IntentRequest request, Session session, IntentResult result) throws SpeechletException {
 		SpeechletResponse response = null;
 		EntityManager em = null;
 		try {
 			em = JPAHelper.getEntityManager();
-			LocalDateRange dateRange = IntentUtils.getValidDateRange(request);
+			LocalDateRange dateRange = IntentUtils.getValidDateRange(result);
 			if (dateRange == null) {
-				response = respondToInvalidTimeFrame(request, session, intentResult);
+				response = respondToInvalidTimeFrame(request, session, result);
 			}
 			else {
-				response = respondWithEarningsInfo(em, request, session, dateRange, intentResult);
+				response = respondWithEarningsInfo(em, request, session, dateRange, result);
 			}
 			return response;
 		}

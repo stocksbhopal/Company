@@ -24,35 +24,35 @@ public class IntentTodayOnList implements InterfaceIntent {
 	
 
 	@Override
-	public SpeechletResponse onIntent(IntentRequest request, Session session, IntentResult intentResult)
+	public SpeechletResponse onIntent(IntentRequest request, Session session, IntentResult result)
 			throws SpeechletException {
 		String intentName = request.getIntent().getName();
 		String alexaUserId = session.getUser().getUserId();
 
 		AllSlotValues slotValues = new AllSlotValues();
-		boolean hasQuantity = IntentUtils.getQuantity(request, session, slotValues);
+		boolean hasQuantity = IntentUtils.getQuantity(result);
 		int numResults = (int) (hasQuantity ? slotValues.getQuantity() : DEFAULT_NUM_RESULTS);
 
 		EntityManager em = null;
 		try {
 			em = JPAHelper.getEntityManager();
 			if (intentName.equals(InterfaceIntent.INTENT_UPDATE_PRICES_ON_LIST)) {
-				return processUpdatePricesOnList(em, alexaUserId, intentName, intentResult);
+				return processUpdatePricesOnList(em, alexaUserId, intentName, result);
 			}
 			if (intentName.equals(InterfaceIntent.INTENT_TODAY_PERFORMANCE)) {
-				return processTodayPerformance(em, alexaUserId, intentName, intentResult, -1, false, false);
+				return processTodayPerformance(em, alexaUserId, intentName, result, -1, false, false);
 			}
 			if (intentName.equals(InterfaceIntent.INTENT_TODAY_TOP_GAINERS_DOLLARS)) {
-				return processTodayPerformance(em, alexaUserId, intentName, intentResult, numResults, true, true);
+				return processTodayPerformance(em, alexaUserId, intentName, result, numResults, true, true);
 			}
 			if (intentName.equals(InterfaceIntent.INTENT_TODAY_TOP_GAINERS_PERCENTAGE)) {
-				return processTodayPerformance(em, alexaUserId, intentName, intentResult, numResults, false, true);
+				return processTodayPerformance(em, alexaUserId, intentName, result, numResults, false, true);
 			}
 			if (intentName.equals(InterfaceIntent.INTENT_TODAY_TOP_LOSERS_DOLLARS)) {
-				return processTodayPerformance(em, alexaUserId, intentName, intentResult, numResults, true, false);
+				return processTodayPerformance(em, alexaUserId, intentName, result, numResults, true, false);
 			}
 			if (intentName.equals(InterfaceIntent.INTENT_TODAY_TOP_LOSERS_PERCENTAGE)) {
-				return processTodayPerformance(em, alexaUserId, intentName, intentResult, numResults, false, false);
+				return processTodayPerformance(em, alexaUserId, intentName, result, numResults, false, false);
 			}
 		} finally {
 			if (em != null) {
@@ -60,12 +60,13 @@ public class IntentTodayOnList implements InterfaceIntent {
 			}
 		}
 
-		return IntentUtils.makeTellResponse(alexaUserId, intentName, RESULT_ERROR_BAD_INTENT, slotValues, "Sorry "
-				+ getClass().getName() + " does not know what to do with intent: " + request.getIntent().getName());
+		result.setResult(RESULT_ERROR_BAD_INTENT);
+		result.setSpeech(false, "Sorry " + getClass().getName() + " does not know what to do with intent: " + request.getIntent().getName());
+		return IntentUtils.makeTellResponse(result);
 	}
 
 
-	private SpeechletResponse processUpdatePricesOnList(EntityManager em, String alexaUserId, String intentName, IntentResult intentResult) {
+	private SpeechletResponse processUpdatePricesOnList(EntityManager em, String alexaUserId, String intentName, IntentResult result) {
 		String speechText = "";
 
 		Portfolio portfolio = PortfolioJPA.fetchPortfolio(em, PortfolioJPA.MY_PORTFOLIO_NAME, alexaUserId);
@@ -76,7 +77,9 @@ public class IntentTodayOnList implements InterfaceIntent {
 			speechText = "Your prices are already up to date. ";
 		}
 
-		return IntentUtils.makeTellResponse(alexaUserId, intentName, RESULT_SUCCESS, String.valueOf(0), null, speechText);
+		result.setResponse(String.valueOf(0));
+		result.setSpeech(false, speechText);
+		return IntentUtils.makeTellResponse(result);
 	}
 
 
@@ -85,7 +88,7 @@ public class IntentTodayOnList implements InterfaceIntent {
 	 * @param em
 	 * @param alexaUserId
 	 * @param intentName
-	 * @param intentResult
+	 * @param result
 	 * @param numResults
 	 *            -1 is for TodayPerformance. 1+ for everything else.
 	 * @param sortByValueChange
@@ -96,7 +99,7 @@ public class IntentTodayOnList implements InterfaceIntent {
 	 * @return
 	 */
 	private SpeechletResponse processTodayPerformance(EntityManager em, String alexaUserId, String intentName,
-		IntentResult intentResult, int numResults, boolean sortByValueChange, boolean showGainers) {
+		IntentResult result, int numResults, boolean sortByValueChange, boolean showGainers) {
 
 		String speechText = "";
 		List<PortfolioItemData> portfolioItemDatas = PortfolioJPA.fetchPortfolioItemDataWithPrices(em, PortfolioJPA.MY_PORTFOLIO_NAME, alexaUserId);
@@ -147,6 +150,8 @@ public class IntentTodayOnList implements InterfaceIntent {
 			}
 		}
 
-		return IntentUtils.makeTellResponse(alexaUserId, intentName, RESULT_SUCCESS, String.valueOf(0), null, speechText);
+		result.setResponse(String.valueOf(0));
+		result.setSpeech(false, speechText);
+		return IntentUtils.makeTellResponse(result);
 	}
 }

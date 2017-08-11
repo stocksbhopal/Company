@@ -1,18 +1,24 @@
 package com.sanjoyghosh.company.earnings.intent;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.Session;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sanjoyghosh.company.db.model.IntentResultLog;
 
 
 public class IntentResult {
 
-//    private static final Logger logger = Logger.getLogger(IntentResult.class.getName());
+    private static final Logger logger = Logger.getLogger(IntentResult.class.getName());
     
 
 	private String						name;
@@ -37,12 +43,23 @@ public class IntentResult {
 	// The sequencing of the lines below is VERY importante.
 	public IntentResult(IntentRequest request, Session session) {
 		this.name = request.getIntent().getName();
-		this.slotValues = (AllSlotValues) session.getAttribute(InterfaceIntent.ATTR_ALL_SLOT_VALUES);
+    	boolean isConfirmation = name.equals("AMAZON.YesIntent") || name.equals("AMAZON.NoIntent");
+
+		Map<Object, Object> slots = (Map<Object, Object>) session.getAttribute(InterfaceIntent.ATTR_ALL_SLOT_VALUES);
+		if (slots != null) {
+			for (Map.Entry<Object, Object> entry : slots.entrySet()) {
+				logger.info("Entry: " + entry.getKey() + "    Value: " + entry.getValue());
+			}
+		}
+//		this.slotValues = (AllSlotValues) session.getAttribute(InterfaceIntent.ATTR_ALL_SLOT_VALUES);
 		this.slotValues = slotValues == null ? new AllSlotValues() : slotValues;
-		
+    	this.slotValues.setConfirmation(isConfirmation);
+    			
 		this.intentSlotMap = new HashMap<>();
 		IntentUtils.getSlotsFromIntent(request, this);
 		IntentUtils.getCompany(this);
+		IntentUtils.getQuantity(this);
+		IntentUtils.getDateRange(this);
 		
 		this.symbolsByExceptionSet = new HashMap<>();
 		this.symbolsWithNullQuotes = new HashSet<>();
@@ -144,5 +161,45 @@ public class IntentResult {
 
 	public Map<String, String> getIntentSlotMap() {
 		return intentSlotMap;
+	}
+	
+	
+	public boolean isConfirmation() {
+		return slotValues.isConfirmation();
+	}
+	
+	
+	public boolean isYesIntent() {
+		return name == null ? false : name.equals("AMAZON.YesIntent");
+	}
+	
+	
+	private String listToJson() {
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			String json = mapper.writeValueAsString(intentSlotMap);
+			return json;
+		} 
+		catch (JsonProcessingException e) {
+			logger.log(Level.SEVERE, "Cannot serialize JSON", e);
+			return null;
+		}
+	}
+
+	
+	public IntentResultLog toIntentResultLog() {
+		IntentResultLog intentResultlog = new IntentResultLog();
+		
+		intentResultlog.setAlexaUserId(alexaUserId);
+		intentResultlog.setEventTime(new Timestamp(eventTime.getTime()));
+		intentResultlog.setExecTimeMilliSecs(execTimeMilliSecs);
+		intentResultlog.setName(name);
+		intentResultlog.setResult(result);
+		intentResultlog.setResponse(response);
+		intentResultlog.setSessionId(sessionId);
+		intentResultlog.setAttributes("filler");
+		intentResultlog.setSlots(listToJson());
+		
+		return intentResultlog;
 	}
 }

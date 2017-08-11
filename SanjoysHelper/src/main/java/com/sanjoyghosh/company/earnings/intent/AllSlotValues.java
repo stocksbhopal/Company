@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.utils.KeyValuePair;
 import com.sanjoyghosh.company.utils.LocalDateRange;
@@ -20,29 +19,26 @@ public class AllSlotValues implements Serializable {
 	private Company			company;
 	private Double			quantity;
 	private LocalDateRange	localDateRange;
+	private boolean			isConfirmation;
 	
 	
 	public AllSlotValues() {
 	}
 
 
-	@JsonProperty("cs")
 	public String getCompanyOrSymbol() {
 		return companyOrSymbol;
 	}
 
-	@JsonProperty("cs")
 	public void setCompanyOrSymbol(String companyOrSymbol) {
 		this.companyOrSymbol = companyOrSymbol;
 	}
 
 
-	@JsonProperty("css")
 	public String getCompanyOrSymbolSpelt() {
 		return companyOrSymbolSpelt;
 	}
 
-	@JsonProperty("css")
 	public void setCompanyOrSymbolSpelt(String companyOrSymbolSpelt) {
 		this.companyOrSymbolSpelt = companyOrSymbolSpelt;
 	}
@@ -89,11 +85,9 @@ public class AllSlotValues implements Serializable {
 	}
 
 
-	@JsonProperty("q")
 	public Double getQuantity() {
 		return quantity;
 	}
-	@JsonProperty("q")
 	public void setQuantity(Double quantity) {
 		this.quantity = quantity;
 	}
@@ -112,5 +106,13 @@ public class AllSlotValues implements Serializable {
 	}
 	public void setLocalDateRange(LocalDateRange localDateRange) {
 		this.localDateRange = localDateRange;
+	}
+
+
+	public boolean isConfirmation() {
+		return isConfirmation;
+	}
+	public void setConfirmation(boolean isConfirmation) {
+		this.isConfirmation = isConfirmation;
 	}
 }
