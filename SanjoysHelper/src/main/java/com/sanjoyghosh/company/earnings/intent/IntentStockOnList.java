@@ -16,6 +16,7 @@ import com.sanjoyghosh.company.db.PortfolioJPA;
 import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.db.model.Portfolio;
 import com.sanjoyghosh.company.db.model.PortfolioItem;
+import com.sanjoyghosh.company.utils.StringUtils;
 
 public class IntentStockOnList implements InterfaceIntent {
 
@@ -50,8 +51,7 @@ public class IntentStockOnList implements InterfaceIntent {
     		return IntentUtils.makeTellResponse(result);
     	}
     	
-    	Double quantity = result.getSlotValues().getQuantity();
-    	if (needsQuantity && quantity == null) {
+    	if (needsQuantity && result.getSlotValues().getQuantity() == null) {
     		result.setResult(RESULT_ERROR_MISSING_QUANTITY);
     		result.setSpeech(false, "Sorry, we need to know the number of shares");
     		return IntentUtils.makeTellResponse(result);	
@@ -206,7 +206,7 @@ public class IntentStockOnList implements InterfaceIntent {
 			return IntentUtils.makeTellResponse(result);
 		}
 
-		double quantity = result.getSlotValues().getQuantity();
+		int quantity = StringUtils.roundToInt(result.getSlotValues().getQuantity());
 		if (result.isConfirmation()) {
 			if (result.isYesIntent()) {
 				try {					
@@ -264,7 +264,7 @@ public class IntentStockOnList implements InterfaceIntent {
 
 	private SpeechletResponse createStockOnList(EntityManager em, IntentResult result) {
 		Company company = result.getSlotValues().getCompany();
-		double quantity = result.getSlotValues().getQuantity();
+		int quantity = StringUtils.roundToInt(result.getSlotValues().getQuantity());
 		
 		Portfolio portfolio = PortfolioJPA.fetchOrCreatePortfolio(em, result.getAlexaUserId());
 		PortfolioItem portfolioItem = portfolio.getPortfolioItemBySymbol(company.getSymbol());

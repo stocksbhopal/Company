@@ -274,6 +274,12 @@ public class StringUtils {
 		return valueStr;
 	}
 	
+	
+	public static int roundToInt(double value) {
+		long valueLong = Math.round(value);
+		return (int) valueLong;
+	}
+	
 
 	private static Pattern CapitalPrefixPattern = Pattern.compile("([0-9A-Z -]+)-");
 	public static String cleanForSSML(String value) {
