@@ -33,10 +33,9 @@ public class IntentStockOnList implements InterfaceIntent {
     
     @Override
 	public SpeechletResponse onIntent(IntentRequest request, Session session, IntentResult result) throws SpeechletException {
-    	String realIntentName = result.getName();
     	AllSlotValues slotValues = result.getSlotValues();
     	
-    	realIntentName = result.isConfirmation() ? (String)session.getAttribute(InterfaceIntent.ATTR_LAST_INTENT) : realIntentName;
+    	String realIntentName = result.isConfirmation() ? result.getLastIntentName() : result.getName();
     	boolean needsQuantity = 
     		realIntentName.equals(InterfaceIntent.INTENT_CREATE_STOCK_ON_LIST) ||
     		realIntentName.equals(InterfaceIntent.INTENT_UPDATE_STOCK_ON_LIST);
@@ -133,8 +132,6 @@ public class IntentStockOnList implements InterfaceIntent {
 			}
 		}
 		else {
-			session.setAttribute(InterfaceIntent.ATTR_LAST_INTENT, result.getName());
-			
 			String text = "Please confirm that you want to remove the shares of " + company.getName() + " from your list.";
 			result.setSpeech(false, text);
 			return IntentUtils.makeAskResponse(result, session, text);			
@@ -143,7 +140,6 @@ public class IntentStockOnList implements InterfaceIntent {
 
 
 	private SpeechletResponse clearStocksOnList(EntityManager em, Session session, IntentResult result) {
-		String intentName = result.getName();
 		String alexaUserId = result.getAlexaUserId();
 		
 		Portfolio portfolio = PortfolioJPA.fetchPortfolio(em, PortfolioJPA.MY_PORTFOLIO_NAME, alexaUserId);
@@ -183,8 +179,6 @@ public class IntentStockOnList implements InterfaceIntent {
 			}
 		}
 		else {
-			session.setAttribute(InterfaceIntent.ATTR_LAST_INTENT, intentName);
-			
 			String promptText = "Please confirm that you want to clear all stocks on your list.";
 			result.setSpeech(false, promptText);
 			return IntentUtils.makeAskResponse(result, session, promptText);						
@@ -235,8 +229,6 @@ public class IntentStockOnList implements InterfaceIntent {
 			}
 		}
 		else {
-			session.setAttribute(InterfaceIntent.ATTR_LAST_INTENT, result.getName());
-
 			String speechText = "Please confirm that you want " + quantity + " shares of " + company.getName() + " on your list.";
 			result.setSpeech(false, speechText);
 			return IntentUtils.makeAskResponse(result, session, speechText);			

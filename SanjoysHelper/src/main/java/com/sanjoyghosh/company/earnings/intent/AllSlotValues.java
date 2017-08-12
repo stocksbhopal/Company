@@ -19,11 +19,9 @@ public class AllSlotValues implements Serializable {
 	private Company			company;
 	private Double			quantity;
 	private LocalDateRange	localDateRange;
-	private boolean			isConfirmation;
 	
 	
-	public AllSlotValues() {
-	}
+	public AllSlotValues() {}
 
 
 	public String getCompanyOrSymbol() {
@@ -43,7 +41,6 @@ public class AllSlotValues implements Serializable {
 		this.companyOrSymbolSpelt = companyOrSymbolSpelt;
 	}
 
-	
 	
 	public boolean isEmpty() {
 		return (companyOrSymbol == null || companyOrSymbol.length() == 0) && (companyOrSymbolSpelt == null || companyOrSymbolSpelt.length() == 0);
@@ -106,13 +103,5 @@ public class AllSlotValues implements Serializable {
 	}
 	public void setLocalDateRange(LocalDateRange localDateRange) {
 		this.localDateRange = localDateRange;
-	}
-
-
-	public boolean isConfirmation() {
-		return isConfirmation;
-	}
-	public void setConfirmation(boolean isConfirmation) {
-		this.isConfirmation = isConfirmation;
 	}
 }

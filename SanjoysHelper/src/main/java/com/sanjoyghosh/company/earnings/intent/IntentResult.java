@@ -22,6 +22,7 @@ public class IntentResult {
     
 
 	private String						name;
+	private String						lastIntentName;
 	private AllSlotValues				slotValues;
 	private Map<String, String> 		intentSlotMap;
 	
@@ -43,23 +44,18 @@ public class IntentResult {
 	// The sequencing of the lines below is VERY importante.
 	public IntentResult(IntentRequest request, Session session) {
 		this.name = request.getIntent().getName();
-    	boolean isConfirmation = name.equals("AMAZON.YesIntent") || name.equals("AMAZON.NoIntent");
+    	this.slotValues = new AllSlotValues();
 
-		Map<Object, Object> slots = (Map<Object, Object>) session.getAttribute(InterfaceIntent.ATTR_ALL_SLOT_VALUES);
-		if (slots != null) {
-			for (Map.Entry<Object, Object> entry : slots.entrySet()) {
-				logger.info("Entry: " + entry.getKey() + "    Value: " + entry.getValue());
-			}
-		}
-//		this.slotValues = (AllSlotValues) session.getAttribute(InterfaceIntent.ATTR_ALL_SLOT_VALUES);
-		this.slotValues = slotValues == null ? new AllSlotValues() : slotValues;
-    	this.slotValues.setConfirmation(isConfirmation);
-    			
 		this.intentSlotMap = new HashMap<>();
 		IntentUtils.getSlotsFromIntent(request, this);
+		IntentUtils.getSlotsFromSession(session, this);
 		IntentUtils.getCompany(this);
 		IntentUtils.getQuantity(this);
 		IntentUtils.getDateRange(this);
+		
+		if (isConfirmation()) {
+			lastIntentName = session.getAttribute(InterfaceIntent.ATTR_LAST_INTENT).toString();
+		}
 		
 		this.symbolsByExceptionSet = new HashMap<>();
 		this.symbolsWithNullQuotes = new HashSet<>();
@@ -165,7 +161,7 @@ public class IntentResult {
 	
 	
 	public boolean isConfirmation() {
-		return slotValues.isConfirmation();
+		return name == null ? false : name.equals("AMAZON.YesIntent") || name.equals("AMAZON.NoIntent");
 	}
 	
 	
@@ -201,5 +197,10 @@ public class IntentResult {
 		intentResultlog.setSlots(listToJson());
 		
 		return intentResultlog;
+	}
+
+
+	public String getLastIntentName() {
+		return lastIntentName;
 	}
 }

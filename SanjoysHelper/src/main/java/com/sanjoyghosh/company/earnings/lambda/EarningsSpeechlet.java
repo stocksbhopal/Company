@@ -5,8 +5,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.persistence.PersistenceException;
-
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.LaunchRequest;
 import com.amazon.speech.speechlet.Session;
@@ -77,7 +75,7 @@ public class EarningsSpeechlet implements Speechlet  {
 	
 	// This method also throws lots of RuntimeExceptions such as SQLException.
 	// If there is a RuntimeException this will be tried again.
-	private SpeechletResponse tryOnIntent(IntentRequest request, Session session, IntentResult intentResult) throws SpeechletException {
+	private SpeechletResponse tryOnIntent(IntentRequest request, Session session, IntentResult result) throws SpeechletException {
 		String intentName = request.getIntent().getName();
 		
 		if (intentName.equals(InterfaceIntent.INTENT_AMAZON_HELP_INTENT)) {
@@ -88,18 +86,17 @@ public class EarningsSpeechlet implements Speechlet  {
 			intentName.equals(InterfaceIntent.INTENT_AMAZON_NO_INTENT) ||
 			intentName.equals(InterfaceIntent.INTENT_MISSING_COMPANY)) {
 
-			String lastIntentName = (String) session.getAttribute(InterfaceIntent.ATTR_LAST_INTENT);
-			if (lastIntentName != null) {
-				InterfaceIntent interfaceIntent = intentInterfaceByIntentNameMap.get(lastIntentName);
+			if (result.getLastIntentName() != null) {
+				InterfaceIntent interfaceIntent = intentInterfaceByIntentNameMap.get(result.getLastIntentName());
 				if (interfaceIntent != null) {
-					return interfaceIntent.onIntent(request, session, intentResult);
+					return interfaceIntent.onIntent(request, session, result);
 				}				
 			}
 		}
 
 		InterfaceIntent interfaceIntent = intentInterfaceByIntentNameMap.get(intentName);
 		if (interfaceIntent != null) {
-			return interfaceIntent.onIntent(request, session, intentResult);
+			return interfaceIntent.onIntent(request, session, result);
 		}
 
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
@@ -116,15 +113,11 @@ public class EarningsSpeechlet implements Speechlet  {
 				try {
 					return tryOnIntent(request, session, intentResult);
 				}
-				catch (PersistenceException e) {
+				catch (Throwable	 e) {
 					logger.log(Level.SEVERE, "PersistenceException in EarningsSpeechlet.onIntent(), retries:" + retries, e);
 					Thread.sleep(10);
 				}
 			}
-		}
-		catch (SpeechletException e) {
-			logger.log(Level.SEVERE, "SpeechletException in EarningsSpeechlet.onIntent()", e);
-			throw e;
 		}
 		catch (Throwable e) {
 			logger.log(Level.SEVERE, "Throwable in EarningsSpeechlet.onIntent()", e);

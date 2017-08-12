@@ -40,6 +40,18 @@ public class IntentUtils {
 	}
 	
 
+    public static void getSlotsFromSession(Session session, IntentResult result) {
+		for (Entry<String, Object> entry : session.getAttributes().entrySet()) {
+			String key = entry.getKey();
+			String value = entry.getValue().toString();
+			value = value == null ? null : value.trim();
+			if (value != null && value.length() > 0) {
+				result.getIntentSlotMap().put(key, value);
+			}
+		}
+	}
+
+    
 	public static LocalDateRange getDateRange(IntentResult result) {
 		if (result.getSlotValues().getLocalDateRange() != null) {
 			return result.getSlotValues().getLocalDateRange();
@@ -199,10 +211,11 @@ public class IntentUtils {
 
 	public static SpeechletResponse makeAskResponse(IntentResult result, Session session, String reprompt) {
 		for (Map.Entry<String, String> entry : result.getIntentSlotMap().entrySet()) {
-			session.setAttribute(entry.getKey(), entry.getValue());
+			if (entry.getValue() != null) {
+				session.setAttribute(entry.getKey(), entry.getValue());
+			}
 		}
 		session.setAttribute(InterfaceIntent.ATTR_LAST_INTENT, result.getName());
-		session.setAttribute(InterfaceIntent.ATTR_ALL_SLOT_VALUES,  result.getSlotValues());
 
 		OutputSpeech outputSpeech = null;
     	if (result.isSsml()) {
