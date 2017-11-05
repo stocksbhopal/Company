@@ -1,0 +1,6 @@
+eclipse.preferences.version=1
+gwtMavenModuleName=com.sanjoyghosh.company.gwt.CompanyGWT
+gwtMavenModuleShortName=CompanyGWT
+lastWarOutDir=/Users/sanjoyghosh/Company/CompanyGWT/target/CompanyGWT-1.0-SNAPSHOT
+warSrcDir=src/main/webapp
+warSrcDirIsOutput=false
