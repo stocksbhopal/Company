@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.sanjoyghosh.company</groupId>
 	<artifactId>EarningsWebApp</artifactId>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<version>1.0-SNAPSHOT</version>
 	<name>com.sanjoyghosh.company.EarningsWebApp</name>
 
