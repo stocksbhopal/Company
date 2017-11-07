@@ -91,6 +91,12 @@
 			<artifactId>aws-java-sdk</artifactId>
 			<version>1.11.158</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/software.amazon.ion/ion-java -->
+		<dependency>
+			<groupId>software.amazon.ion</groupId>
+			<artifactId>ion-java</artifactId>
+			<version>1.0.3</version>
+		</dependency>
 	</dependencies>
 
 	<build>

@@ -86,6 +86,12 @@
 			<artifactId>freemarker</artifactId>
 			<version>2.3.26-incubating</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/software.amazon.ion/ion-java -->
+		<dependency>
+			<groupId>software.amazon.ion</groupId>
+			<artifactId>ion-java</artifactId>
+			<version>1.0.3</version>
+		</dependency>
 	</dependencies>
 
 	<build>
