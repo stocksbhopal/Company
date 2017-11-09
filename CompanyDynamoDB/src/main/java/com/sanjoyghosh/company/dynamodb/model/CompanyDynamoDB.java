@@ -18,6 +18,9 @@ public class CompanyDynamoDB {
 	@DynamoDBAttribute(attributeName="IPOYear")
 	private Integer	ipoYear;
 	
+	@DynamoDBAttribute(attributeName="Exchange")
+	private String	exchange;
+	
 	@DynamoDBAttribute(attributeName="Sector")
 	private String	sector;
 	
@@ -68,5 +71,12 @@ public class CompanyDynamoDB {
 	}
 	public void setVersion(Integer version) {
 		this.version = version;
+	}
+	
+	public String getExchange() {
+		return exchange;
+	}
+	public void setExchange(String exchange) {
+		this.exchange = exchange;
 	}
 }

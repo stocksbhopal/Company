@@ -1,58 +1,75 @@
 package com.sanjoyghosh.company.dynamodb.nasdaq;
 
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 
+import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsyncClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.sanjoyghosh.company.dynamodb.model.CompanyDynamoDB;
 
 public class NasdaqCompanyListDynamoDBReader {
 
 	public NasdaqCompanyListDynamoDBReader() {}
 		
 	
-	private void readCompanyListFile(File companyListFile, String exchange, EntityManager entityManager) throws IOException {
+	private void readCompanyListFile(String fileName, String exchange, DynamoDBMapper mapper) {
 		Reader reader = null;
 		try {
 			int count = 0;
-			reader = new FileReader(companyListFile);
+			List<CompanyDynamoDB> companyList = new ArrayList<CompanyDynamoDB>();
+			reader = new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream(fileName));
 			Iterable<CSVRecord> records = CSVFormat.EXCEL.withHeader().parse(reader);
 			for (CSVRecord record : records) {
+
 				String symbol = record.get("Symbol").trim();
 				if ((symbol.indexOf('^') >= 0) || (symbol.indexOf('.') >= 0)) {
 					continue;
 				}
 
-				String sector = record.get("Sector").trim();
 				String name = record.get("Name").trim();
-				String ipoYearStr = record.get("IPOyear").trim();
-				String industry = record.get("Industry").trim();
 				// To drop entries like Wells Fargo Advantage Funds - Wells Fargo Global Dividend Opportunity Fund (EOD).
 				if (name.endsWith(" Fund") || name.indexOf(" Fund ") >= 0 || name.indexOf(" Funds, ") >= 0) {
 					continue;
 				}
+
+				String sector = record.get("Sector").trim();
+				String ipoYearStr = record.get("IPOyear").trim();
+				String industry = record.get("industry").trim();
 				
-				CompanyStage company = new CompanyStage();
+				CompanyDynamoDB company = new CompanyDynamoDB();
 				company.setExchange(exchange);
 				company.setIndustry(industry);
 				company.setIpoYear(ipoYearStr.startsWith("n/a") ? null : Integer.parseInt(ipoYearStr));
 				company.setName(name);
 				company.setSector(sector);
 				company.setSymbol(symbol);
+				companyList.add(company);
 				
-				entityManager.persist(company);
+				if (companyList.size() % 10000 == 0) {
+					List<DynamoDBMapper.FailedBatch> failedList = mapper.batchSave(companyList);
+					if (failedList.size() > 0) {
+						System.err.println("Failed to BatchSave() Company Records");
+						failedList.get(0).getException().printStackTrace();
+						System.exit(-1);
+					}
+					companyList.clear();
+				}
 				
 				count++;
 				System.out.println("Done " + symbol + ", " + count + " of " + exchange);
 			}
+		} 
+		catch (IOException e) {
+			e.printStackTrace();
 		}
 		finally {
 			if (reader != null) {
@@ -67,48 +84,16 @@ public class NasdaqCompanyListDynamoDBReader {
 	}
 	
 	
-	private void readAllCompanyListFiles(EntityManager entityManager) {
-		File nasdaqCompanyListFile = new File("/Users/sanjoyghosh/Downloads/nasdaqcompanylist.csv");
-		if (nasdaqCompanyListFile.exists()) {
-			entityManager.getTransaction().begin();
-			try {
-				entityManager.createQuery("DELETE FROM CompanyStage WHERE exchange = 'nasdaq'").executeUpdate();
-				readCompanyListFile(nasdaqCompanyListFile, "nasdaq", entityManager);
-				entityManager.getTransaction().commit();
-			} 
-			catch (Exception e) {
-				e.printStackTrace();
-				if (entityManager.getTransaction().isActive()) {
-					entityManager.getTransaction().rollback();
-				}
-			}
-		}
-
-		File nyseCompanyListFile = new File("/Users/sanjoyghosh/Downloads/nysecompanylist.csv");
-		if (nyseCompanyListFile.exists()) {
-			entityManager.getTransaction().begin();
-			try {
-				entityManager.createQuery("DELETE FROM CompanyStage WHERE exchange = 'nyse'").executeUpdate();
-				readCompanyListFile(nyseCompanyListFile, "nyse", entityManager);
-				entityManager.getTransaction().commit();
-			} 
-			catch (Exception e) {
-				e.printStackTrace();
-				if (entityManager.getTransaction().isActive()) {
-					entityManager.getTransaction().rollback();
-				}
-			}
-		}
-	}
-	
-	
 	public static void main(String[] args) {
-		AmazonDynamoDB dynamoDB = AmazonDynamoDBClientBuilder.standard().withRegion(Regions.US_EAST_1).build();
+		AmazonDynamoDB dynamoDB = AmazonDynamoDBClientBuilder.standard()
+			.withCredentials(new ProfileCredentialsProvider())
+			.withRegion(Regions.US_EAST_1).build();
 		DynamoDBMapper mapper = new DynamoDBMapper(dynamoDB);
 		
 		try {
 			NasdaqCompanyListDynamoDBReader reader = new NasdaqCompanyListDynamoDBReader();
-			reader.readAllCompanyListFiles(entityManager);		
+			reader.readCompanyListFile("nasdaqcompanylist.csv", "nasdaq", mapper);		
+			reader.readCompanyListFile("nysecompanylist.csv", "nyse", mapper);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
