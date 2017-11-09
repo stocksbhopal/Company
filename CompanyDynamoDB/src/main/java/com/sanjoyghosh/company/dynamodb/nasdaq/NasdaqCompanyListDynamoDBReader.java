@@ -14,7 +14,7 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.sanjoyghosh.company.dynamodb.model.CompanyDynamoDB;
+import com.sanjoyghosh.company.dynamodb.model.Company;
 
 public class NasdaqCompanyListDynamoDBReader {
 
@@ -24,12 +24,14 @@ public class NasdaqCompanyListDynamoDBReader {
 	private void readCompanyListFile(String fileName, String exchange, DynamoDBMapper mapper) {
 		Reader reader = null;
 		try {
-			int count = 0;
-			List<CompanyDynamoDB> companyList = new ArrayList<CompanyDynamoDB>();
+			int saveCount = 0;
+			int totalCount = 0;
+			List<Company> companyList = new ArrayList<Company>();
 			reader = new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream(fileName));
 			Iterable<CSVRecord> records = CSVFormat.EXCEL.withHeader().parse(reader);
 			for (CSVRecord record : records) {
-
+				totalCount++;
+				
 				String symbol = record.get("Symbol").trim();
 				if ((symbol.indexOf('^') >= 0) || (symbol.indexOf('.') >= 0)) {
 					continue;
@@ -45,7 +47,7 @@ public class NasdaqCompanyListDynamoDBReader {
 				String ipoYearStr = record.get("IPOyear").trim();
 				String industry = record.get("industry").trim();
 				
-				CompanyDynamoDB company = new CompanyDynamoDB();
+				Company company = new Company();
 				company.setExchange(exchange);
 				company.setIndustry(industry);
 				company.setIpoYear(ipoYearStr.startsWith("n/a") ? null : Integer.parseInt(ipoYearStr));
@@ -53,19 +55,15 @@ public class NasdaqCompanyListDynamoDBReader {
 				company.setSector(sector);
 				company.setSymbol(symbol);
 				companyList.add(company);
-				
-				if (companyList.size() % 10000 == 0) {
-					List<DynamoDBMapper.FailedBatch> failedList = mapper.batchSave(companyList);
-					if (failedList.size() > 0) {
-						System.err.println("Failed to BatchSave() Company Records");
-						failedList.get(0).getException().printStackTrace();
-						System.exit(-1);
-					}
-					companyList.clear();
-				}
-				
-				count++;
-				System.out.println("Done " + symbol + ", " + count + " of " + exchange);
+								
+				saveCount++;
+				System.out.println("Done " + symbol + ", " + saveCount + ", " + totalCount + " of " + exchange);
+			}
+			
+			List<DynamoDBMapper.FailedBatch> failedList = mapper.batchSave(companyList);
+			if (failedList.size() > 0) {
+				System.err.println("Failed to BatchSave() Company Records");
+				failedList.get(0).getException().printStackTrace();
 			}
 		} 
 		catch (IOException e) {
