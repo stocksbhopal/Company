@@ -30,13 +30,20 @@ public class NasdaqCompanyListDynamoDBReader {
 			Iterable<CSVRecord> records = CSVFormat.EXCEL.withHeader().parse(reader);
 			for (CSVRecord record : records) {
 				String symbol = record.get("Symbol").trim();
+				String name = record.get("Name").trim();
+
 				if ((symbol.indexOf('^') >= 0) || (symbol.indexOf('.') >= 0)) {
+					System.err.println("DISCARD_symbol: " + exchange + " " + symbol + " " + name);
 					continue;
 				}
 
-				String name = record.get("Name").trim();
 				// To drop entries like Wells Fargo Advantage Funds - Wells Fargo Global Dividend Opportunity Fund (EOD).
 				if (name.endsWith(" Fund") || name.indexOf(" Fund ") >= 0 || name.indexOf(" Funds, ") >= 0) {
+					System.err.println("DISCARD_fund: " + exchange + " " + symbol + " " + name);
+					continue;
+				}
+				if (name.endsWith(" ETF")) {
+					System.err.println("DISCARD_etf: " + exchange + " " + symbol + " " + name);
 					continue;
 				}
 				
@@ -44,8 +51,10 @@ public class NasdaqCompanyListDynamoDBReader {
 				// The first entry in the spreadsheet is the main company.
 				// Ignore the following ones.
 				if (companyNames.contains(name)) {
+					System.err.println("DISCARD_repeat: " + exchange + " " + symbol + " " + name);
 					continue;
 				}
+				
 				companyNames.add(name);
 
 				String sector = record.get("Sector").trim();
@@ -95,15 +104,15 @@ public class NasdaqCompanyListDynamoDBReader {
 
 			long startTime = System.currentTimeMillis();
 			System.err.println("Before DynamoDB Save");
-			List<DynamoDBMapper.FailedBatch> failedList = mapper.batchSave(companyList);
+//			List<DynamoDBMapper.FailedBatch> failedList = mapper.batchSave(companyList);
 			
 			long endTime = System.currentTimeMillis();
 			System.err.println("After DynamoDB Save: " + (endTime - startTime) + " msecs");
 			
-			if (failedList.size() > 0) {
-				System.err.println("Failed to BatchSave() Company Records");
-				failedList.get(0).getException().printStackTrace();
-			}
+//			if (failedList.size() > 0) {
+//				System.err.println("Failed to BatchSave() Company Records");
+//				failedList.get(0).getException().printStackTrace();
+//			}
 		}
 		catch (Exception e) {
 			e.printStackTrace();

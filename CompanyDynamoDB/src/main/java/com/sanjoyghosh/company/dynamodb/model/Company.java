@@ -14,6 +14,9 @@ public class Company {
 
 	@DynamoDBRangeKey(attributeName="Name")
 	private String	name;
+	
+	@DynamoDBAttribute(attributeName="nameStripped")
+	private String	nameStripped;
 
 	@DynamoDBAttribute(attributeName="IPOYear")
 	private Integer	ipoYear;
@@ -78,5 +81,11 @@ public class Company {
 	}
 	public void setExchange(String exchange) {
 		this.exchange = exchange;
+	}
+	public String getNameStripped() {
+		return nameStripped;
+	}
+	public void setNameStripped(String nameStripped) {
+		this.nameStripped = nameStripped;
 	}
 }
