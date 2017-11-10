@@ -12,6 +12,7 @@ public class CompanyNameMatcher {
 		CompanyStopWords.add("Co".toLowerCase());
 		CompanyStopWords.add("Co.".toLowerCase());
 		CompanyStopWords.add("Co.,".toLowerCase());
+		CompanyStopWords.add("Companies".toLowerCase());
 		CompanyStopWords.add("Company".toLowerCase());
 		CompanyStopWords.add("Company,".toLowerCase());
 		CompanyStopWords.add("Corp".toLowerCase());
