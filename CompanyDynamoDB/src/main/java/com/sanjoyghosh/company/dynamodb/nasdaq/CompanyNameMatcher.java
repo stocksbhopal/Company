@@ -1,7 +1,14 @@
 package com.sanjoyghosh.company.dynamodb.nasdaq;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import com.sanjoyghosh.company.dynamodb.model.Company;
+import com.sanjoyghosh.company.dynamodb.model.CompanyNameMatch;
 
 public class CompanyNameMatcher {
 
@@ -37,7 +44,6 @@ public class CompanyNameMatcher {
 		CompanyStopWords.add("SA".toLowerCase());
 		CompanyStopWords.add("(The)".toLowerCase());
 	}
-
 	
 	public static String stripStopWordsFromName(String name) {
 		if (name == null || name.trim().length() == 0) {
@@ -77,5 +83,64 @@ public class CompanyNameMatcher {
 		name = name.endsWith("and") ? name.substring(0,  name.length() - "and".length()).trim() : name;
 		
 		return name;
+	}
+	
+	
+	private static final Map<String, List<Company>> companyListByNameMap = new HashMap<>();
+	
+	// Assume that the name is already trimmed and lower-cased.
+	public static void processStrippedName(String name, Company company) {
+		if (name == null || name.trim().length() == 0) {
+			return;
+		}
+		
+		String[] pieces = name.split(" ");
+		String partialName = "";
+		for (int i = 0; i < pieces.length; i++) {
+			partialName = partialName + " " + pieces[i];
+			partialName = partialName.trim();
+			
+			List<Company> companyList = companyListByNameMap.get(partialName);
+			if (companyList == null) {
+				companyList = new ArrayList<>();
+				companyListByNameMap.put(partialName, companyList);
+			}
+			companyList.add(company);
+		}
+	}
+	
+	
+	private static final Map<String, Company> companyByNameMap = new HashMap<>();
+	
+	public static void assignNameToCompany(List<CompanyNameMatch> companyNameMatchList) {
+		for (Map.Entry<String, List<Company>> entry : companyListByNameMap.entrySet()) {
+			String namePrefix = entry.getKey();
+			
+			Company company = null;
+			List<Company> companyList = entry.getValue();
+			if (companyList.size() == 1) {
+				company = companyList.get(0);
+			}
+			else {
+				for (Company companyTemp : companyList) {
+					if (companyTemp.getNameStripped().equals(namePrefix)) {
+						company = companyTemp;
+						break;
+					}
+				}
+			}
+			
+			if (company != null) {
+				companyByNameMap.put(namePrefix, company);
+				
+				CompanyNameMatch nameMatch = new CompanyNameMatch();
+				nameMatch.setNamePrefix(namePrefix);
+				nameMatch.setSymbol(company.getSymbol());
+				companyNameMatchList.add(nameMatch);
+				
+				System.out.println("ADD: " + namePrefix + ": " + company.getSymbol());
+			}
+		}
+		return;
 	}
 }

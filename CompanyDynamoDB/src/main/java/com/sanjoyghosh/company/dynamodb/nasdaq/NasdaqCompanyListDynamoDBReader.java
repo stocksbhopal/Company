@@ -17,6 +17,7 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.sanjoyghosh.company.dynamodb.model.Company;
+import com.sanjoyghosh.company.dynamodb.model.CompanyNameMatch;
 
 public class NasdaqCompanyListDynamoDBReader {
 
@@ -31,19 +32,20 @@ public class NasdaqCompanyListDynamoDBReader {
 			for (CSVRecord record : records) {
 				String symbol = record.get("Symbol").trim();
 				String name = record.get("Name").trim();
+				String nameStripped = CompanyNameMatcher.stripStopWordsFromName(name);
 
 				if ((symbol.indexOf('^') >= 0) || (symbol.indexOf('.') >= 0)) {
-					System.err.println("DISCARD_symbol: " + exchange + " " + symbol + " " + name);
+					System.err.println("DISCARD_symbol: " + exchange + ": " + symbol + ": " + nameStripped + ": " + name);
 					continue;
 				}
 
 				// To drop entries like Wells Fargo Advantage Funds - Wells Fargo Global Dividend Opportunity Fund (EOD).
 				if (name.endsWith(" Fund") || name.indexOf(" Fund ") >= 0 || name.indexOf(" Funds, ") >= 0) {
-					System.err.println("DISCARD_fund: " + exchange + " " + symbol + " " + name);
+					System.err.println("DISCARD_fund: " + exchange + ": " + symbol + ": " + nameStripped + ": " + name);
 					continue;
 				}
 				if (name.endsWith(" ETF")) {
-					System.err.println("DISCARD_etf: " + exchange + " " + symbol + " " + name);
+					System.err.println("DISCARD_etf: " + exchange + ": " + symbol + ": " + nameStripped + ": " + name);
 					continue;
 				}
 				
@@ -51,7 +53,7 @@ public class NasdaqCompanyListDynamoDBReader {
 				// The first entry in the spreadsheet is the main company.
 				// Ignore the following ones.
 				if (companyNames.contains(name)) {
-					System.err.println("DISCARD_repeat: " + exchange + " " + symbol + " " + name);
+					System.err.println("DISCARD_repeat: " + ": " + symbol + ": " + nameStripped + ": " + name);
 					continue;
 				}
 				
@@ -66,11 +68,13 @@ public class NasdaqCompanyListDynamoDBReader {
 				company.setIndustry(industry);
 				company.setIpoYear(ipoYearStr.startsWith("n/a") ? null : Integer.parseInt(ipoYearStr));
 				company.setName(name);
+				company.setNameStripped(nameStripped);
 				company.setSector(sector);
 				company.setSymbol(symbol);
 				companyList.add(company);
-								
-				System.out.println(CompanyNameMatcher.stripStopWordsFromName(name) + "  $" + symbol + "$  " + name);
+				
+				CompanyNameMatcher.processStrippedName(nameStripped, company);
+				System.out.println(symbol + ": " + nameStripped + ": " + name);
 			}
 		} 
 		catch (IOException e) {
@@ -94,25 +98,37 @@ public class NasdaqCompanyListDynamoDBReader {
 			.withCredentials(new ProfileCredentialsProvider())
 			.withRegion(Regions.US_EAST_1).build();
 		DynamoDBMapper mapper = new DynamoDBMapper(dynamoDB);
+		
 		List<Company> companyList = new ArrayList<Company>();
 		Set<String> companyNames = new HashSet<>();
+		List<CompanyNameMatch> companyNameMatchList = new ArrayList<>();
 		
 		try {
 			NasdaqCompanyListDynamoDBReader reader = new NasdaqCompanyListDynamoDBReader();
+			
 			reader.readCompanyListFile("nasdaqcompanylist.csv", "nasdaq", companyList, companyNames);		
 			reader.readCompanyListFile("nysecompanylist.csv", "nyse", companyList, companyNames);
+			CompanyNameMatcher.assignNameToCompany(companyNameMatchList);
 
 			long startTime = System.currentTimeMillis();
-			System.err.println("Before DynamoDB Save");
-//			List<DynamoDBMapper.FailedBatch> failedList = mapper.batchSave(companyList);
-			
+			System.err.println("Before DynamoDB Company Save");
+			List<DynamoDBMapper.FailedBatch> failedList = mapper.batchSave(companyList);
 			long endTime = System.currentTimeMillis();
-			System.err.println("After DynamoDB Save: " + (endTime - startTime) + " msecs");
-			
-//			if (failedList.size() > 0) {
-//				System.err.println("Failed to BatchSave() Company Records");
-//				failedList.get(0).getException().printStackTrace();
-//			}
+			System.err.println("After DynamoDB Company Save: " + (endTime - startTime) + " msecs");
+			if (failedList.size() > 0) {
+				System.err.println("Failed to BatchSave() Company Records");
+				failedList.get(0).getException().printStackTrace();
+			}
+
+			startTime = System.currentTimeMillis();
+			System.err.println("Before DynamoDB CompanyNameMatch Save");
+			failedList = mapper.batchSave(companyNameMatchList);
+			endTime = System.currentTimeMillis();
+			System.err.println("After DynamoDB CompanyNameMatch Save: " + (endTime - startTime) + " msecs");
+			if (failedList.size() > 0) {
+				System.err.println("Failed to BatchSave() CompanyNameMatch Records");
+				failedList.get(0).getException().printStackTrace();
+			}
 		}
 		catch (Exception e) {
 			e.printStackTrace();
