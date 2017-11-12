@@ -19,6 +19,7 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.sanjoyghosh.company.dynamodb.CompanyDynamoDB;
+import com.sanjoyghosh.company.dynamodb.helper.CompanyNameMatcher;
 import com.sanjoyghosh.company.dynamodb.model.Company;
 import com.sanjoyghosh.company.dynamodb.model.CompanyNameMatch;
 

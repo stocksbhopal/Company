@@ -1,4 +1,4 @@
-package com.sanjoyghosh.company.dynamodb.nasdaq;
+package com.sanjoyghosh.company.dynamodb.helper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
