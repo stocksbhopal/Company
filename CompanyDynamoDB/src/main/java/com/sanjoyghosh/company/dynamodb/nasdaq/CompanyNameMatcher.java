@@ -89,11 +89,9 @@ public class CompanyNameMatcher {
 	private static final Map<String, List<Company>> companyListByNameMap = new HashMap<>();
 	
 	// Assume that the name is already trimmed and lower-cased.
+	// The given name may be different from the actual name of the company
+	// when we add popular names for companies.  Such as Google for Alphabet.
 	public static void processStrippedName(String name, Company company) {
-		if (name == null || name.trim().length() == 0) {
-			return;
-		}
-		
 		String[] pieces = name.split(" ");
 		String partialName = "";
 		for (int i = 0; i < pieces.length; i++) {
@@ -112,7 +110,7 @@ public class CompanyNameMatcher {
 	
 	private static final Map<String, Company> companyByNameMap = new HashMap<>();
 	
-	public static void assignNameToCompany(List<CompanyNameMatch> companyNameMatchList) {
+	public static void assignNamePrefixToCompany(List<CompanyNameMatch> companyNameMatchList) {
 		for (Map.Entry<String, List<Company>> entry : companyListByNameMap.entrySet()) {
 			String namePrefix = entry.getKey();
 			
