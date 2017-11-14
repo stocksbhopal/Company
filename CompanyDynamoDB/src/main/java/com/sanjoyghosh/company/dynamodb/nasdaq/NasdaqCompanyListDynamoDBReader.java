@@ -21,7 +21,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.sanjoyghosh.company.dynamodb.CompanyDynamoDB;
 import com.sanjoyghosh.company.dynamodb.helper.CompanyNameMatcher;
 import com.sanjoyghosh.company.dynamodb.model.Company;
-import com.sanjoyghosh.company.dynamodb.model.CompanyNameMatch;
+import com.sanjoyghosh.company.dynamodb.model.CompanyName;
 
 public class NasdaqCompanyListDynamoDBReader {
 
@@ -31,7 +31,7 @@ public class NasdaqCompanyListDynamoDBReader {
 	private List<Company>			companyList = new ArrayList<Company>();
 	private Set<String>				companyNames = new HashSet<>();
 	private Map<String, Company>		companyBySymbolMap = new HashMap<>();
-	private List<CompanyNameMatch>	companyNameMatchList = new ArrayList<>();
+	private List<CompanyName>	companyNameList = new ArrayList<>();
 
 	
 	private void readCompanyListFile(String fileName, String exchange) throws IOException {
@@ -193,7 +193,7 @@ public class NasdaqCompanyListDynamoDBReader {
 		addTheStockIndexes();
 		addPopularCompanyNames();
 		
-		CompanyNameMatcher.assignNamePrefixToCompany(companyNameMatchList);
+		CompanyNameMatcher.assignNamePrefixToCompany(companyNameList);
 	}
 	
 	
@@ -211,12 +211,12 @@ public class NasdaqCompanyListDynamoDBReader {
 		}
 
 		startTime = System.currentTimeMillis();
-		System.err.println("Before DynamoDB CompanyNameMatch Save");
-		failedList = mapper.batchSave(companyNameMatchList);
+		System.err.println("Before DynamoDB CompanyName Save");
+		failedList = mapper.batchSave(companyNameList);
 		endTime = System.currentTimeMillis();
-		System.err.println("After DynamoDB CompanyNameMatch Save: " + (endTime - startTime) + " msecs");
+		System.err.println("After DynamoDB CompanyName Save: " + (endTime - startTime) + " msecs");
 		if (failedList.size() > 0) {
-			System.err.println("Failed to BatchSave() CompanyNameMatch Records");
+			System.err.println("Failed to BatchSave() CompanyName Records");
 			failedList.get(0).getException().printStackTrace();
 		}
 	}

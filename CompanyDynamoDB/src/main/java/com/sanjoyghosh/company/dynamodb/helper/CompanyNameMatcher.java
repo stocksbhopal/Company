@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.sanjoyghosh.company.dynamodb.model.Company;
-import com.sanjoyghosh.company.dynamodb.model.CompanyNameMatch;
+import com.sanjoyghosh.company.dynamodb.model.CompanyName;
 
 public class CompanyNameMatcher {
 
@@ -110,7 +110,7 @@ public class CompanyNameMatcher {
 	
 	private static final Map<String, Company> companyByNameMap = new HashMap<>();
 	
-	public static void assignNamePrefixToCompany(List<CompanyNameMatch> companyNameMatchList) {
+	public static void assignNamePrefixToCompany(List<CompanyName> companyNameList) {
 		for (Map.Entry<String, List<Company>> entry : companyListByNameMap.entrySet()) {
 			String namePrefix = entry.getKey();
 			
@@ -131,10 +131,10 @@ public class CompanyNameMatcher {
 			if (company != null) {
 				companyByNameMap.put(namePrefix, company);
 				
-				CompanyNameMatch nameMatch = new CompanyNameMatch();
+				CompanyName nameMatch = new CompanyName();
 				nameMatch.setNamePrefix(namePrefix);
 				nameMatch.setSymbol(company.getSymbol());
-				companyNameMatchList.add(nameMatch);
+				companyNameList.add(nameMatch);
 				
 				System.out.println("ADD: " + namePrefix + ": " + company.getSymbol());
 			}

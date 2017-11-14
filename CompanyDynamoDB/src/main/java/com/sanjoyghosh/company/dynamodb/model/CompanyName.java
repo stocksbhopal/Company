@@ -4,8 +4,8 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 
-@DynamoDBTable(tableName="CompanyNameMatch")
-public class CompanyNameMatch {
+@DynamoDBTable(tableName="CompanyName")
+public class CompanyName {
 
 	@DynamoDBHashKey(attributeName="NamePrefix")
 	private String	namePrefix;

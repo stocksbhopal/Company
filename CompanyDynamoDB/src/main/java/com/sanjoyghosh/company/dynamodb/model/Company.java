@@ -7,7 +7,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBVersionAttribute;
 
 @DynamoDBTable(tableName="Company")
-public class Company {
+public class Company implements Comparable<Company> {
 
 	@DynamoDBHashKey(attributeName="Symbol")
 	private String	symbol;
@@ -87,5 +87,17 @@ public class Company {
 	}
 	public void setNameStripped(String nameStripped) {
 		this.nameStripped = nameStripped;
+	}
+	
+	@Override
+	public int compareTo(Company o) {
+		return symbol.compareTo(o.symbol);
+	}
+
+	@Override
+	public String toString() {
+		return "Company [symbol=" + symbol + ", name=" + name + ", nameStripped=" + nameStripped + ", ipoYear="
+				+ ipoYear + ", exchange=" + exchange + ", sector=" + sector + ", industry=" + industry + ", version="
+				+ version + "]";
 	}
 }
