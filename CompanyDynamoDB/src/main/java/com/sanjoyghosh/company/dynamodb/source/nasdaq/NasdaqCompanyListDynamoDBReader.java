@@ -1,4 +1,4 @@
-package com.sanjoyghosh.company.dynamodb.nasdaq;
+package com.sanjoyghosh.company.dynamodb.source.nasdaq;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,10 +13,6 @@ import java.util.Set;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 
-import com.amazonaws.auth.profile.ProfileCredentialsProvider;
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.sanjoyghosh.company.dynamodb.CompanyDynamoDB;
 import com.sanjoyghosh.company.dynamodb.helper.CompanyNameMatcher;

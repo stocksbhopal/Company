@@ -1,4 +1,4 @@
-package com.sanjoyghosh.company.dynamodb.nasdaq;
+package com.sanjoyghosh.company.dynamodb.source.nasdaq;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -67,7 +67,7 @@ public class NasdaqEarningsCalendarDynamoDBReader {
 		    			    			    		
 		    		EarningsDate earningsDate = new EarningsDate();
 		    		earningsDate.setSymbol(symbol);
-		    		earningsDate.setDate(dateStr);
+		    		earningsDate.setDate(date);
 		    		earningsDate.setBeforeMarketOrAfterMarket(amBm);	
 		    		
 		    		earningsDateList.add(earningsDate);
