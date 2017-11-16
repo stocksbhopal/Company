@@ -1,4 +1,4 @@
-package com.sanjoyghosh.company.dynamodb.source.fidelity;
+package com.sanjoyghosh.company.dynamodb.source.merrilllynch;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -16,32 +16,30 @@ import com.sanjoyghosh.company.dynamodb.helper.CompanyMatcher;
 import com.sanjoyghosh.company.dynamodb.model.Portfolio;
 import com.sanjoyghosh.company.utils.Constants;
 
-
-public class FidelityPortfolioDynamoDBReader {	
-	
+public class MerrillLynchPortfolioDynamoDBReader {
+		
 	private String			alexaUserId;
-	private String			fidelityFileName;
+	private String			merrillLynchFileName;
 	private LocalDate		addDate;
 	private List<Portfolio>	portfolioList = new ArrayList<>();
 	
 	
-	public FidelityPortfolioDynamoDBReader(String alexaUserId, String fidelityFileName) {
+	public MerrillLynchPortfolioDynamoDBReader(String alexaUserId, String merrillLynchFileName) {
 		this.alexaUserId = alexaUserId;
-		this.fidelityFileName = fidelityFileName;
-		this.addDate = LocalDate.now();
+		this.merrillLynchFileName = merrillLynchFileName;
 	}
+	
 
-
-	public void readFidelityHoldingsFiles() throws IOException {
+	public void readMerrillLynchHoldingsFile() throws IOException {
 		Reader reader = null;
 		try {
-			reader = new FileReader(fidelityFileName);
+			reader = new FileReader(merrillLynchFileName);
 			Iterable<CSVRecord> records = CSVFormat.EXCEL.withHeader().parse(reader);
 			for (CSVRecord record : records) {
-				if (record.size() == 14) {
-					String symbol = record.get("Symbol");
-					System.out.println("FIDELITY Symbol: " + symbol);
-				    Double quantity = Double.parseDouble(record.get("Quantity").trim());
+				if (record.size() == 16) {
+				    String symbol = record.get("Symbol").trim();
+					System.out.println("MERRILL Symbol: " + symbol);
+				    Double quantity = Double.parseDouble(record.get("Quantity").replaceAll(",", "").trim());
 				    
 				    Portfolio portfolio = new Portfolio();
 				    portfolio.setAlexaUserId(alexaUserId);
@@ -66,7 +64,7 @@ public class FidelityPortfolioDynamoDBReader {
 		}
 	}
 	
-
+	
 	private void writePortfolioList() {
 		DynamoDBMapper mapper = CompanyDynamoDB.getDynamoDBMapper();
 					
@@ -84,10 +82,10 @@ public class FidelityPortfolioDynamoDBReader {
 	
 	public static void main(String[] args) {
 		String alexaUserId = Constants.MY_ALEXA_USER_ID;
-		String fidelityFileName = "/Users/sanjoyg/Downloads/Portfolio_Position_Nov-15-2017.csv";
-		FidelityPortfolioDynamoDBReader reader = new FidelityPortfolioDynamoDBReader(alexaUserId, fidelityFileName);
+		String merrillLynchFileName= "/Users/sanjoyg/Downloads/Holdings_11152017.csv";
+		MerrillLynchPortfolioDynamoDBReader reader = new MerrillLynchPortfolioDynamoDBReader(alexaUserId, merrillLynchFileName);
 		try {
-			reader.readFidelityHoldingsFiles();
+			reader.readMerrillLynchHoldingsFile();
 			reader.writePortfolioList();
 		} 
 		catch (Throwable e) {
