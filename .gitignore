@@ -30,3 +30,15 @@ Company/sql/Untitled.sql
 
 Company/Company-0.0.1-SNAPSHOT-jar-with-dependencies.jar
 /target/
+
+Company/.classpath
+
+Company/.classpath
+
+CompanyDynamoDB/.classpath
+
+CompanyGWT/.classpath
+
+CompanyUtils/.classpath
+
+SanjoysHelper/.classpath
