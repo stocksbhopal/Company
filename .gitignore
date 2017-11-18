@@ -6,6 +6,7 @@
 # Package Files #
 *.war
 *.ear
+.classpath
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
@@ -31,14 +32,3 @@ Company/sql/Untitled.sql
 Company/Company-0.0.1-SNAPSHOT-jar-with-dependencies.jar
 /target/
 
-Company/.classpath
-
-Company/.classpath
-
-CompanyDynamoDB/.classpath
-
-CompanyGWT/.classpath
-
-CompanyUtils/.classpath
-
-SanjoysHelper/.classpath
