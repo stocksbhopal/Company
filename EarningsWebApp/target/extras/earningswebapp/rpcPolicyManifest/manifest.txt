@@ -1,3 +1,0 @@
-# Module earningswebapp
-# RPC service class, partial path of RPC policy file
-com.sanjoyghosh.company.client.GreetingService, 0A5C7A702D97473A34D55A2CA12AF871.gwt.rpc

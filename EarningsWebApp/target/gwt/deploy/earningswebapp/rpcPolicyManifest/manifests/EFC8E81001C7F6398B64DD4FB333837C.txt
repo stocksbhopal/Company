@@ -1,2 +1,0 @@
-serviceClass: com.sanjoyghosh.company.client.GreetingService
-path: 0A5C7A702D97473A34D55A2CA12AF871.gwt.rpc
