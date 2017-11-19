@@ -18,12 +18,12 @@ import com.sanjoyghosh.company.helper.intent.IntentGetCompanyNews;
 import com.sanjoyghosh.company.helper.intent.IntentGetStockEarnings;
 import com.sanjoyghosh.company.helper.intent.IntentGetStockPrice;
 import com.sanjoyghosh.company.helper.intent.IntentResult;
+import com.sanjoyghosh.company.helper.intent.IntentResultLogger;
 import com.sanjoyghosh.company.helper.intent.IntentStockOnList;
 import com.sanjoyghosh.company.helper.intent.IntentStopCancel;
 import com.sanjoyghosh.company.helper.intent.IntentTodayOnList;
 import com.sanjoyghosh.company.helper.intent.InterfaceIntent;
 import com.sanjoyghosh.company.helper.intent.LaunchFinanceHelper;
-import com.sanjoyghosh.company.logs.IntentResultLogger;
 
 public class EarningsSpeechlet implements Speechlet  {
 
