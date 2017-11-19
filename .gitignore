@@ -1,11 +1,8 @@
-*.class
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
 
 # Package Files #
 *.war
 *.ear
+*.class
 .classpath
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
@@ -16,19 +13,12 @@ hs_err_pid*
 *.original
 
 *.lst
-
 *.properties
 
-Company/target/
-
-alexa-skills-kit-java/
-
-.DS_Store
-
-EarningsLambda/src/META-INF/persistence.xml
-
 Company/sql/Untitled.sql
-
 Company/Company-0.0.1-SNAPSHOT-jar-with-dependencies.jar
-/target/
+
+**/target
+**/bin
+**/.DS_Store
 
