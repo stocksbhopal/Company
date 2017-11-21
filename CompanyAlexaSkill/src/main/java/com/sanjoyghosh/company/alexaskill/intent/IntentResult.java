@@ -13,7 +13,6 @@ import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.Session;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sanjoyghosh.company.db.model.IntentResultLog;
 
 
 public class IntentResult {
@@ -21,30 +20,30 @@ public class IntentResult {
     private static final Logger logger = Logger.getLogger(IntentResult.class.getName());
     
 
-	private String						name;
-	private String						lastIntentName;
-	private AllSlotValues				slotValues;
+	private String					name;
+	private String					lastIntentName;
+	private AllSlotValues			slotValues;
 	private Map<String, String> 		intentSlotMap;
 	
-	private boolean						isSsml;
-	private String						speech;
-	private Throwable					thrown;
+	private boolean					isSsml;
+	private String					speech;
+	private Throwable				thrown;
 	
 	private Map<String, Set<String>>	symbolsByExceptionSet;
 	private Set	<String>				symbolsWithNullQuotes;
 	
-	private int							execTimeMilliSecs;
-	private int							result;
-	private String						response;
+	private int						execTimeMilliSecs;
+	private int						result;
+	private String					response;
 	private Date						eventTime;
-	private String						alexaUserId;
-	private String						sessionId;
+	private String					alexaUserId;
+	private String					sessionId;
 
 	
-	// The sequencing of the lines below is VERY importante.
+	// The sequencing of the lines below is VERY important.
 	public IntentResult(IntentRequest request, Session session) {
 		this.name = request.getIntent().getName();
-    	this.slotValues = new AllSlotValues();
+		this.slotValues = new AllSlotValues();
 
 		this.intentSlotMap = new HashMap<>();
 		IntentUtils.getSlotsFromIntent(request, this);
