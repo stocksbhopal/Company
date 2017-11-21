@@ -7,8 +7,6 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.persistence.EntityManager;
-
 import com.amazon.speech.slu.Slot;
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.Session;
@@ -17,9 +15,7 @@ import com.amazon.speech.ui.OutputSpeech;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.amazon.speech.ui.Reprompt;
 import com.amazon.speech.ui.SsmlOutputSpeech;
-import com.sanjoyghosh.company.db.CompanyJPA;
-import com.sanjoyghosh.company.db.JPAHelper;
-import com.sanjoyghosh.company.db.model.Company;
+import com.sanjoyghosh.company.dynamodb.model.Company;
 import com.sanjoyghosh.company.utils.AlexaDateUtils;
 import com.sanjoyghosh.company.utils.LocalDateRange;
 

@@ -11,7 +11,7 @@ import com.amazon.speech.speechlet.SpeechletException;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.sanjoyghosh.company.alexaskill.source.reuters.ReutersCompanyNewsItem;
 import com.sanjoyghosh.company.alexaskill.source.reuters.ReutersCompanyNewsReader;
-import com.sanjoyghosh.company.db.model.Company;
+import com.sanjoyghosh.company.dynamodb.model.Company;
 import com.sanjoyghosh.company.utils.LocalDateRange;
 import com.sanjoyghosh.company.utils.StringUtils;
 

@@ -11,7 +11,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.sanjoyghosh.company.db.model.Company;
+import com.sanjoyghosh.company.dynamodb.model.Company;
 import com.sanjoyghosh.company.utils.JsoupUtils;
 import com.sanjoyghosh.company.utils.LocalDateUtils;
 import com.sanjoyghosh.company.utils.Utils;
@@ -27,6 +27,19 @@ public class ReutersCompanyNewsReader {
 		return item;
 	}
 	
+	public static String toReutersSymbol(Company company) {
+		if (company == null) {
+			return null;
+		}
+		if (company.getExchange().equals("nasdaq")) {
+			return company.getSymbol() + "." + "O";
+		}
+		else if (company.getExchange().equals("nyse")) {
+			return company.getSymbol() + "." + "N";
+		}
+		return null;
+	}
+	
 	public static List<ReutersCompanyNewsItem> readReutersCompanyNews(Company company, LocalDate localDate) throws IOException {
 //		https://www.reuters.com/finance/stocks/companyNews?symbol=IBM.N&date=07232017
 //		https://www.google.com/finance/company_news?q=NASDAQ%3AAMZN&startdate=2017-7-22&enddate=2017-8-01
@@ -34,7 +47,7 @@ public class ReutersCompanyNewsReader {
 		Set<String> headlineSet = new HashSet<>();
 		List<ReutersCompanyNewsItem> newsItems = new ArrayList<>();
 		
-		String companyNewUrl = "https://www.reuters.com/finance/stocks/companyNews?symbol=" + Utils.toReutersSymbol(company) + 
+		String companyNewUrl = "https://www.reuters.com/finance/stocks/companyNews?symbol=" + toReutersSymbol(company) + 
 			"&date=" + LocalDateUtils.toReutersDateString(localDate);
 		Document doc = JsoupUtils.fetchDocument(companyNewUrl);
 		Elements divsCompanyNews = doc.select("div[id=companyNews]");

@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sanjoyghosh.company.db.model.Company;
+import com.sanjoyghosh.company.dynamodb.model.Company;
 import com.sanjoyghosh.company.utils.KeyValuePair;
 import com.sanjoyghosh.company.utils.LocalDateRange;
 

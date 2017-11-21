@@ -5,17 +5,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.persistence.EntityManager;
-
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.Session;
 import com.amazon.speech.speechlet.SpeechletException;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.amazon.speech.ui.Reprompt;
-import com.sanjoyghosh.company.db.JPAHelper;
-import com.sanjoyghosh.company.db.PortfolioItemData;
-import com.sanjoyghosh.company.db.PortfolioJPA;
 import com.sanjoyghosh.company.utils.LocalDateRange;
 
 public class IntentGetStockEarnings implements InterfaceIntent {

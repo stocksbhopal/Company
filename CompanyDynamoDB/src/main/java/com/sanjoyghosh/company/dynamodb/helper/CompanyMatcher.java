@@ -41,6 +41,13 @@ public class CompanyMatcher {
 		return companyBySymbolMap.get(symbol);
 	}
 	
+	
+	public static String getCompanyNameBySymbol(String symbol) {
+		Company company = companyBySymbolMap.get(symbol);
+		String name = company != null ? company.getSymbol() : "NO_COMPANY_FOR_SYMBOL_" + symbol;
+		return name;
+	}
+	
 
 	public static void main(String[] args) {
 		CompanyMatcher.init();
