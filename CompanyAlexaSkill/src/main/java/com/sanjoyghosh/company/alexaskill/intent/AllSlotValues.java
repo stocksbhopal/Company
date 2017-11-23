@@ -13,7 +13,7 @@ public class AllSlotValues implements Serializable {
 	private static final long serialVersionUID = -9192678317968989774L;
 
 	
-	private String			companyOrSymbol;		// Prefix of the name of the company or the ticker symbol.
+	private String			companyOrSymbol;			// Prefix of the name of the company or the ticker symbol.
 	private String			companyOrSymbolSpelt;	// Prefix of the name of the company or the ticker symbol spelt by letter.
 	
 	private Company			company;

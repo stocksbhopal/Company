@@ -16,8 +16,8 @@ import com.sanjoyghosh.company.alexaskill.source.nasdaq.NasdaqRealtimeQuote;
 import com.sanjoyghosh.company.alexaskill.source.nasdaq.NasdaqRealtimeQuoteReader;
 import com.sanjoyghosh.company.db.CompanyJPA;
 import com.sanjoyghosh.company.db.JPAHelper;
-import com.sanjoyghosh.company.db.model.Company;
 import com.sanjoyghosh.company.db.model.CompanyNamePrefix;
+import com.sanjoyghosh.company.dynamodb.model.Company;
 import com.sanjoyghosh.company.utils.StringUtils;
 
 public class IntentGetStockPrice implements InterfaceIntent {

@@ -13,6 +13,7 @@ import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.Session;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sanjoyghosh.company.dynamodb.model.IntentResultLog;
 
 
 public class IntentResult {

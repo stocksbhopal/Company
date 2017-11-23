@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 
 import com.sanjoyghosh.company.db.JPAHelper;
-import com.sanjoyghosh.company.earnings.intent.IntentResult;
 
 public class IntentResultLogger {
 

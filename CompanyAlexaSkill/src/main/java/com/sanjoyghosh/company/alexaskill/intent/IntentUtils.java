@@ -15,6 +15,7 @@ import com.amazon.speech.ui.OutputSpeech;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.amazon.speech.ui.Reprompt;
 import com.amazon.speech.ui.SsmlOutputSpeech;
+import com.sanjoyghosh.company.dynamodb.helper.CompanyNameMatcher;
 import com.sanjoyghosh.company.dynamodb.model.Company;
 import com.sanjoyghosh.company.utils.AlexaDateUtils;
 import com.sanjoyghosh.company.utils.LocalDateRange;
@@ -85,80 +86,23 @@ public class IntentUtils {
 	}
 	
 	
-	private static String removeTrailingWord(String name) {
-		if (name == null || name.length() == 0) {
-			return name;
-		}
-		
-		String nameLower = name.toLowerCase().trim();
-		if (nameLower.endsWith("inc")) {
-			return name.substring(0, name.length() - "inc".length()).trim();
-		}
-		if (nameLower.endsWith("corporation")) {
-			return name.substring(0, name.length() - "corporation".length()).trim();
-		}
-		if (nameLower.endsWith("ink")) {
-			return name.substring(0, name.length() - "ink".length()).trim();
-		}
-		if (nameLower.endsWith("stock")) {
-			return name.substring(0, name.length() - "stock".length()).trim();
-		}
-		if (nameLower.endsWith("stocks")) {
-			return name.substring(0, name.length() - "stocks".length()).trim();
-			
-		}
-		if (nameLower.endsWith("share")) {
-			return name.substring(0, name.length() - "share".length()).trim();
-			
-		}
-		if (nameLower.endsWith("shares")) {
-			return name.substring(0, name.length() - "shares".length()).trim();			
-		}
-		if (nameLower.endsWith("headlines")) {
-			return name.substring(0, name.length() - "headlines".length()).trim();			
-		}
-		if (nameLower.endsWith("news")) {
-			return name.substring(0, name.length() - "news".length()).trim();			
-		}
-		return name;
-	}
-	
-
-    public static Company getCompany(IntentResult result) {
-    	if (result.getSlotValues().getCompany() != null) {
-    		return null;
-    	}
-    	
-    	String companyOrSymbol = result.getIntentSlotMap().get(InterfaceIntent.SLOT_COMPANY);
-    	if (companyOrSymbol == null) {
-    		return null;
-    	}
-    	
-    	// Take the apostrophe out for McDonald's and Dick's Sporting Goods
-    	companyOrSymbol = removeTrailingWord(companyOrSymbol.trim().replaceAll("'", "")).trim();
-    	
-    	String companyOrSymbolSpelt = "";
-    	String[] pieces = companyOrSymbol.split(" ");
-    	for (String piece : pieces) {
-    		companyOrSymbolSpelt += piece.charAt(0);
-    	}
-    	companyOrSymbolSpelt = companyOrSymbolSpelt.trim();
-
-    	result.getSlotValues().setCompanyOrSymbol(companyOrSymbol);
-    	result.getSlotValues().setCompanyOrSymbolSpelt(companyOrSymbolSpelt);
-    	
-		EntityManager em = null;
-		try {
-			em = JPAHelper.getEntityManager();
-			CompanyJPA.fetchCompanyByNameOrSymbol(em, result);
-		}
-		finally {
-			if (em != null) {
-				em.close();
-			}
-		}
-
-       	return result.getSlotValues().getCompany();
+	public static Company getCompany(IntentResult result) {
+	    	if (result.getSlotValues().getCompany() != null) {
+	    		return null;
+	    	}
+	    	
+	    	String companyOrSymbol = result.getIntentSlotMap().get(InterfaceIntent.SLOT_COMPANY);
+	    	if (companyOrSymbol == null || companyOrSymbol.trim().length() == 0) {
+	    		return null;
+	    	}
+	    	
+	    	result.getSlotValues().setCompanyOrSymbol(companyOrSymbol);
+	    	result.getSlotValues().setCompanyOrSymbolSpelt(CompanyNameMatcher.getSymbolSpelt(companyOrSymbol));
+	    	
+	    Company company = CompanyNameMatcher.getCompanyByNameOrSymbol(companyOrSymbol);
+	    result.getSlotValues().setCompany(company);
+	    
+	    return company;
     }
     
     

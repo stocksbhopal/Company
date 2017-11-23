@@ -141,4 +141,42 @@ public class CompanyNameMatcher {
 		}
 		return;
 	}
+	
+	
+	public static String getSymbolSpelt(String symbolSpelt) {
+		String symbol = "";
+		String[] pieces = symbolSpelt.split(" ");
+		for (String piece : pieces) {
+			symbol += piece.charAt(0);
+		}
+		symbol = symbol.trim().toUpperCase();
+		return symbol;
+	}
+	
+	
+	public static Company getCompanyByNameOrSymbol(String companyOrSymbol) {
+    		companyOrSymbol = stripStopWordsFromName(companyOrSymbol);
+    		Company company = CompanyMatcher.getCompanyBySymbol(companyOrSymbol);
+    		if (company != null) {
+    			return company;
+    		}
+    		
+    		company = companyByNameMap.get(companyOrSymbol.toLowerCase());
+    		if (company != null) {
+    			return company;
+    		}
+    		
+    		String symbolSpelt = getSymbolSpelt(companyOrSymbol);
+    		company = CompanyMatcher.getCompanyBySymbol(symbolSpelt);
+    		if (company != null) {
+    			return company;
+    		}
+    		
+    		company = companyByNameMap.get(symbolSpelt.toLowerCase());
+    		if (company != null) {
+    			return company;
+    		}
+    		
+    		return null;
+	}
 }

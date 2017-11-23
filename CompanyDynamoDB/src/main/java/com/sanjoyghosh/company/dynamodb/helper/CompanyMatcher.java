@@ -38,12 +38,12 @@ public class CompanyMatcher {
 		if (companyBySymbolMap == null) {
 			init();
 		}
-		return companyBySymbolMap.get(symbol);
+		return companyBySymbolMap.get(symbol.toUpperCase());
 	}
 	
 	
 	public static String getCompanyNameBySymbol(String symbol) {
-		Company company = companyBySymbolMap.get(symbol);
+		Company company = getCompanyBySymbol(symbol);
 		String name = company != null ? company.getSymbol() : "NO_COMPANY_FOR_SYMBOL_" + symbol;
 		return name;
 	}

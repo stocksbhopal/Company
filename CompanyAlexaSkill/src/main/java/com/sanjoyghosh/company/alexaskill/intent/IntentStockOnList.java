@@ -13,9 +13,9 @@ import com.amazon.speech.speechlet.SpeechletException;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.PortfolioJPA;
-import com.sanjoyghosh.company.db.model.Company;
-import com.sanjoyghosh.company.db.model.Portfolio;
 import com.sanjoyghosh.company.db.model.PortfolioItem;
+import com.sanjoyghosh.company.dynamodb.model.Company;
+import com.sanjoyghosh.company.dynamodb.model.Portfolio;
 import com.sanjoyghosh.company.utils.StringUtils;
 
 public class IntentStockOnList implements InterfaceIntent {

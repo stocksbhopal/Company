@@ -14,7 +14,6 @@ import org.jsoup.select.Elements;
 import com.sanjoyghosh.company.dynamodb.model.Company;
 import com.sanjoyghosh.company.utils.JsoupUtils;
 import com.sanjoyghosh.company.utils.LocalDateUtils;
-import com.sanjoyghosh.company.utils.Utils;
 
 public class ReutersCompanyNewsReader {
 

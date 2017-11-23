@@ -9,9 +9,8 @@ import com.amazon.speech.speechlet.Session;
 import com.amazon.speech.speechlet.SpeechletException;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.sanjoyghosh.company.db.JPAHelper;
-import com.sanjoyghosh.company.db.PortfolioItemData;
 import com.sanjoyghosh.company.db.PortfolioJPA;
-import com.sanjoyghosh.company.db.model.Portfolio;
+import com.sanjoyghosh.company.dynamodb.model.Portfolio;
 
 public class IntentTodayOnList implements InterfaceIntent {
 
