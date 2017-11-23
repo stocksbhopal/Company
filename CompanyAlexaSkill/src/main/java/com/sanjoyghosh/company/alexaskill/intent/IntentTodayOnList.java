@@ -2,14 +2,11 @@ package com.sanjoyghosh.company.alexaskill.intent;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
-
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.Session;
 import com.amazon.speech.speechlet.SpeechletException;
 import com.amazon.speech.speechlet.SpeechletResponse;
-import com.sanjoyghosh.company.db.JPAHelper;
-import com.sanjoyghosh.company.db.PortfolioJPA;
+import com.sanjoyghosh.company.dynamodb.helper.PortfolioMatcher;
 import com.sanjoyghosh.company.dynamodb.model.Portfolio;
 
 public class IntentTodayOnList implements InterfaceIntent {
@@ -32,31 +29,23 @@ public class IntentTodayOnList implements InterfaceIntent {
 		boolean hasQuantity = IntentUtils.getQuantity(result);
 		int numResults = (int) (hasQuantity ? slotValues.getQuantity() : DEFAULT_NUM_RESULTS);
 
-		EntityManager em = null;
-		try {
-			em = JPAHelper.getEntityManager();
-			if (intentName.equals(InterfaceIntent.INTENT_UPDATE_PRICES_ON_LIST)) {
-				return processUpdatePricesOnList(em, alexaUserId, intentName, result);
-			}
-			if (intentName.equals(InterfaceIntent.INTENT_TODAY_PERFORMANCE)) {
-				return processTodayPerformance(em, alexaUserId, intentName, result, -1, false, false);
-			}
-			if (intentName.equals(InterfaceIntent.INTENT_TODAY_TOP_GAINERS_DOLLARS)) {
-				return processTodayPerformance(em, alexaUserId, intentName, result, numResults, true, true);
-			}
-			if (intentName.equals(InterfaceIntent.INTENT_TODAY_TOP_GAINERS_PERCENTAGE)) {
-				return processTodayPerformance(em, alexaUserId, intentName, result, numResults, false, true);
-			}
-			if (intentName.equals(InterfaceIntent.INTENT_TODAY_TOP_LOSERS_DOLLARS)) {
-				return processTodayPerformance(em, alexaUserId, intentName, result, numResults, true, false);
-			}
-			if (intentName.equals(InterfaceIntent.INTENT_TODAY_TOP_LOSERS_PERCENTAGE)) {
-				return processTodayPerformance(em, alexaUserId, intentName, result, numResults, false, false);
-			}
-		} finally {
-			if (em != null) {
-				em.close();
-			}
+		if (intentName.equals(InterfaceIntent.INTENT_UPDATE_PRICES_ON_LIST)) {
+			return processUpdatePricesOnList(alexaUserId, intentName, result);
+		}
+		if (intentName.equals(InterfaceIntent.INTENT_TODAY_PERFORMANCE)) {
+			return processTodayPerformance(alexaUserId, intentName, result, -1, false, false);
+		}
+		if (intentName.equals(InterfaceIntent.INTENT_TODAY_TOP_GAINERS_DOLLARS)) {
+			return processTodayPerformance(alexaUserId, intentName, result, numResults, true, true);
+		}
+		if (intentName.equals(InterfaceIntent.INTENT_TODAY_TOP_GAINERS_PERCENTAGE)) {
+			return processTodayPerformance(alexaUserId, intentName, result, numResults, false, true);
+		}
+		if (intentName.equals(InterfaceIntent.INTENT_TODAY_TOP_LOSERS_DOLLARS)) {
+			return processTodayPerformance(alexaUserId, intentName, result, numResults, true, false);
+		}
+		if (intentName.equals(InterfaceIntent.INTENT_TODAY_TOP_LOSERS_PERCENTAGE)) {
+			return processTodayPerformance(alexaUserId, intentName, result, numResults, false, false);
 		}
 
 		result.setResult(RESULT_ERROR_BAD_INTENT);
@@ -65,11 +54,11 @@ public class IntentTodayOnList implements InterfaceIntent {
 	}
 
 
-	private SpeechletResponse processUpdatePricesOnList(EntityManager em, String alexaUserId, String intentName, IntentResult result) {
+	private SpeechletResponse processUpdatePricesOnList(String alexaUserId, String intentName, IntentResult result) {
 		String speechText = "";
 
-		Portfolio portfolio = PortfolioJPA.fetchPortfolio(em, PortfolioJPA.MY_PORTFOLIO_NAME, alexaUserId);
-		if (portfolio == null || portfolio.isEmpty()) {
+		List<Portfolio> portfolioList = PortfolioMatcher.getPortfolioForAlexaUser(alexaUserId);
+		if (portfolioList == null || portfolioList.isEmpty()) {
 			speechText = "Sorry, you do not yet have a list of stocks.";
 		} 
 		else {
@@ -97,15 +86,17 @@ public class IntentTodayOnList implements InterfaceIntent {
 	 *            true for showing gainers. false for showing losers.
 	 * @return
 	 */
-	private SpeechletResponse processTodayPerformance(EntityManager em, String alexaUserId, String intentName,
+	private SpeechletResponse processTodayPerformance(String alexaUserId, String intentName,
 		IntentResult result, int numResults, boolean sortByValueChange, boolean showGainers) {
 
 		String speechText = "";
-		List<PortfolioItemData> portfolioItemDatas = PortfolioJPA.fetchPortfolioItemDataWithPrices(em, PortfolioJPA.MY_PORTFOLIO_NAME, alexaUserId);
-		if (portfolioItemDatas == null || portfolioItemDatas.isEmpty()) {
+		List<Portfolio> portfolioList = PortfolioMatcher.getPortfolioForAlexaUser(alexaUserId);
+		if (portfolioList == null || portfolioList.isEmpty()) {
 			speechText = "Sorry, you do not yet have a list of stocks.";
 		} 
 		else {
+			List<PortfolioItemData> portfolioItemDatas = PortfolioUtils.getPortfolioItemListValueChange(portfolioList, result);
+			
 			int numGainers = 0;
 			int numLosers = 0;
 			double netValueChange = 0.00D;

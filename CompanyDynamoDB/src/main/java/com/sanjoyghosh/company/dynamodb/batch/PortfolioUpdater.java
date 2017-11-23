@@ -8,9 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.sanjoyghosh.company.dynamodb.CompanyDynamoDB;
+import com.sanjoyghosh.company.dynamodb.helper.PortfolioMatcher;
 import com.sanjoyghosh.company.dynamodb.model.Portfolio;
 import com.sanjoyghosh.company.dynamodb.source.fidelity.FidelityPortfolioDynamoDBReader;
 import com.sanjoyghosh.company.dynamodb.source.merrilllynch.MerrillLynchPortfolioDynamoDBReader;
@@ -52,12 +51,7 @@ public class PortfolioUpdater {
 		startTime = System.currentTimeMillis();
 		System.err.println("Before DynamoDB Portfolio Old Delete");
 		{
-			HashMap<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
-			eav.put(":val1", new AttributeValue().withS(Constants.MY_ALEXA_USER_ID));
-			DynamoDBQueryExpression<Portfolio> queryExpression = new DynamoDBQueryExpression<Portfolio>()
-				.withKeyConditionExpression("AlexaUserId = :val1")
-				.withExpressionAttributeValues(eav);
-			List<Portfolio> oldPortfolioList = dynamoDBMapper.query(Portfolio.class, queryExpression);
+			List<Portfolio> oldPortfolioList = PortfolioMatcher.getPortfolioForAlexaUser(Constants.MY_ALEXA_USER_ID);
 			dynamoDBMapper.batchDelete(oldPortfolioList);
 		}
 		endTime = System.currentTimeMillis();

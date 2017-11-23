@@ -19,7 +19,7 @@ public class PortfolioUtils {
 
     
     public static double getNetValueChange(List<PortfolioItemData> portfolioItemDataList, IntentResult intentResult) {
-    	double valueChange = 0.00;
+    		double valueChange = 0.00;
 		for (PortfolioItemData portfolioItemData : portfolioItemDataList) {
 			String symbol = portfolioItemData.getSymbol();
 			NasdaqRealtimeQuote quote = null;
