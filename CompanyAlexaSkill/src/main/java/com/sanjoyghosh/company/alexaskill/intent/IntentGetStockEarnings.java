@@ -21,7 +21,7 @@ public class IntentGetStockEarnings implements InterfaceIntent {
 	public static final int RESULT_ERROR_INVALID_DATE_RANGE = -1;
     
     
-    private SpeechletResponse respondWithEarningsInfo(EntityManager em, IntentRequest request, Session session, LocalDateRange dateRange, IntentResult intentResult) {
+    private SpeechletResponse respondWithEarningsInfo(IntentRequest request, Session session, LocalDateRange dateRange, IntentResult intentResult) {
 		String speech = "";
 		List<PortfolioItemData> portfolioItemDataList = PortfolioJPA.fetchPortfolioItemDataWithEarnings(
 			em, PortfolioJPA.MY_PORTFOLIO_NAME, session.getUser().getUserId(), dateRange.getStartDate(), dateRange.getEndDate());
@@ -79,22 +79,13 @@ public class IntentGetStockEarnings implements InterfaceIntent {
 	@Override
 	public SpeechletResponse onIntent(IntentRequest request, Session session, IntentResult result) throws SpeechletException {
 		SpeechletResponse response = null;
-		EntityManager em = null;
-		try {
-			em = JPAHelper.getEntityManager();
-			LocalDateRange dateRange = IntentUtils.getValidDateRange(result);
-			if (dateRange == null) {
-				response = respondToInvalidTimeFrame(request, session, result);
-			}
-			else {
-				response = respondWithEarningsInfo(em, request, session, dateRange, result);
-			}
-			return response;
+		LocalDateRange dateRange = IntentUtils.getValidDateRange(result);
+		if (dateRange == null) {
+			response = respondToInvalidTimeFrame(request, session, result);
 		}
-		finally {
-			if (em != null) {
-				em.close();
-			}
+		else {
+			response = respondWithEarningsInfo(request, session, dateRange, result);
 		}
+		return response;
 	}
 }

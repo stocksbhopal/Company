@@ -7,9 +7,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.persistence.EntityManager;
-
-import com.sanjoyghosh.company.db.JPAHelper;
+import com.sanjoyghosh.company.dynamodb.CompanyDynamoDB;
+import com.sanjoyghosh.company.dynamodb.model.IntentResultLog;
 
 public class IntentResultLogger {
 
@@ -47,6 +46,7 @@ public class IntentResultLogger {
 	
 		
 	// This method is only invoked from the Timer thread.
+	@SuppressWarnings("unchecked")
 	public void flushLogEventList() {
 		synchronized (this) {
 			useLogEventListOne = !useLogEventListOne;			
@@ -55,26 +55,15 @@ public class IntentResultLogger {
 		// Log the list that is NOT pointed to by useLogEventListOne.
 		List<IntentResult> intentResultList = useLogEventListOne ? intentResultListTwo : intentResultListOne;
 		if (intentResultList.size() > 0) {
-			
-			EntityManager em = null;
+			List<IntentResultLog> intentResultLogList = new ArrayList<>();
+			for (IntentResult intentResult : intentResultList) {
+				intentResultLogList.add(intentResult.toIntentResultLog());
+			}
 			try {
-				em = JPAHelper.getEntityManager();
-				em.getTransaction().begin();
-				for (IntentResult intentResult : intentResultList) {
-					em.persist(intentResult.toIntentResultLog());
-				}
-				em.getTransaction().commit();
-			}
-			catch (Throwable e) {
-				if (em.getTransaction().isActive()) {
-					em.getTransaction().rollback();
-				}
-				logger.log(Level.SEVERE, "Exception persisting DB Logs", e);
-			}
-			finally {
-				if (em != null) {
-					em.close();
-				}
+				CompanyDynamoDB.batchSaveDynamoDB((Iterable<Object>) intentResultLogList.iterator(), "IntentResultLog");
+			} 
+			catch (Exception e) {
+				e.printStackTrace();
 			}
 			intentResultList.clear();
 		}

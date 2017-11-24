@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.sanjoyghosh.company.dynamodb.CompanyDynamoDB;
 import com.sanjoyghosh.company.dynamodb.helper.PortfolioMatcher;
 import com.sanjoyghosh.company.dynamodb.model.Portfolio;
@@ -43,32 +42,11 @@ public class PortfolioUpdater {
 	}
 	
 	
+	@SuppressWarnings("unchecked")
 	private void updatePortfolio() throws Exception {
-		DynamoDBMapper dynamoDBMapper = CompanyDynamoDB.getDynamoDBMapper();
-		long startTime = System.currentTimeMillis();
-		long endTime = System.currentTimeMillis();
-		
-		startTime = System.currentTimeMillis();
-		System.err.println("Before DynamoDB Portfolio Old Delete");
-		{
-			List<Portfolio> oldPortfolioList = PortfolioMatcher.getPortfolioForAlexaUser(Constants.MY_ALEXA_USER_ID);
-			dynamoDBMapper.batchDelete(oldPortfolioList);
-		}
-		endTime = System.currentTimeMillis();
-		System.err.println("After DynamoDB Portfolio Old Delete: " + (endTime - startTime) + " msecs");
-		
-		startTime = System.currentTimeMillis();
-		System.err.println("Before DynamoDB Portfolio Save");
-		{
-			
-			List<DynamoDBMapper.FailedBatch> failedList = dynamoDBMapper.batchSave(portfolioMap.values());
-			if (failedList.size() > 0) {
-				System.err.println("Failed to batchSave() Portfolio Records");
-				throw failedList.get(0).getException();
-			}
-		}
-		endTime = System.currentTimeMillis();
-		System.err.println("After DynamoDB Portfolio Save: " + (endTime - startTime) + " msecs");
+		List<Portfolio> oldPortfolioList = PortfolioMatcher.getPortfolioForAlexaUser(Constants.MY_ALEXA_USER_ID);
+		CompanyDynamoDB.batchDeleteDynamoDB((Iterable<Object>) oldPortfolioList.iterator(), "Portfolio");
+		CompanyDynamoDB.batchSaveDynamoDB((Iterable<Object>) portfolioMap.values().iterator(), "Portfolio");
 	}
 	
 	
