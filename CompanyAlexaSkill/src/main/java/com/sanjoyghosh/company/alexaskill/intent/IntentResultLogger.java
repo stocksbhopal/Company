@@ -46,7 +46,6 @@ public class IntentResultLogger {
 	
 		
 	// This method is only invoked from the Timer thread.
-	@SuppressWarnings("unchecked")
 	public void flushLogEventList() {
 		synchronized (this) {
 			useLogEventListOne = !useLogEventListOne;			

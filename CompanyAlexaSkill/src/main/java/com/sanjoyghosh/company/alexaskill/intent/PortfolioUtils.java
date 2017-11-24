@@ -20,8 +20,9 @@ public class PortfolioUtils {
     private static final Logger logger = Logger.getLogger(IntentGetStockPrice.class.getName());
 
     
-    public static Portfolio getPortfolio(String alexaUserId, String symbol) {
-    		CompanyDynamoDB.getDynamoDBMapper();
+    public static Portfolio getPortfolioItem(String alexaUserId, String symbol) {
+    		Portfolio portfolio = CompanyDynamoDB.getDynamoDBMapper().load(Portfolio.class, alexaUserId, symbol);
+    		return portfolio;
     }
     
     
@@ -93,5 +94,11 @@ public class PortfolioUtils {
 
 	public static List<PortfolioItemData> fetchPortfolioItemDataWithEarnings(String alexaUserId, LocalDate startDate, LocalDate endDate) {
 		return null;
+	}
+
+
+	public static void removePortfolioItem(Portfolio portfolioItem) {
+		// TODO Auto-generated method stub
+		
 	}
 }

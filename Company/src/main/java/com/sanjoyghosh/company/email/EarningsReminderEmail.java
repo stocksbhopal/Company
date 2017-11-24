@@ -49,7 +49,8 @@ public class EarningsReminderEmail {
      *      the credentials file in your source directory.
      */
 
-    public static void main(String[] args) throws IOException {
+    @SuppressWarnings("deprecation")
+	public static void main(String[] args) throws IOException {
 
         // Construct an object to contain the recipient address.
         Destination destination = new Destination().withToAddresses(new String[]{TO});
@@ -88,7 +89,7 @@ public class EarningsReminderEmail {
             }
 
             // Instantiate an Amazon SES client, which will make the service call with the supplied AWS credentials.
-            AmazonSimpleEmailServiceClient client = new AmazonSimpleEmailServiceClient(credentials);
+			AmazonSimpleEmailServiceClient client = new AmazonSimpleEmailServiceClient(credentials);
 
             // Choose the AWS region of the Amazon SES endpoint you want to connect to. Note that your production
             // access status, sending limits, and Amazon SES identity-related settings are specific to a given

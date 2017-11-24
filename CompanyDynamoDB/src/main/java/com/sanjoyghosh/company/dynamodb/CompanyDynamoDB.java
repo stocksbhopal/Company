@@ -69,4 +69,9 @@ public class CompanyDynamoDB {
 		long endTime = System.currentTimeMillis();
 		System.out.println("After DynamoDB Batch Delete: " + objectName + ", Time: " + (endTime - startTime) + " msecs");
 	}
+
+	
+	public static void saveObject(Object object) {
+		dynamoDBMapper.save(object);
+	}
 }

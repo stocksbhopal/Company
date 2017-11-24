@@ -127,6 +127,13 @@ public class IntentUtils {
 	    	return null;
     }
     
+    
+    public static int getQuantityInt(IntentResult result) {
+    		Double quantity = getQuantity(result);
+    		int quantityInt = quantity == null ? 0 : quantity.intValue();
+    		return quantityInt;
+    }
+    
 
     public static SpeechletResponse makeTellResponse(IntentResult result) {
 	    	if (result.getThrown() == null) {
