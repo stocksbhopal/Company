@@ -106,46 +106,46 @@ public class IntentUtils {
     }
     
     
-    public static boolean getQuantity(IntentResult result) {
-    	if (result.getSlotValues().getQuantity() != null) {
-    		return true;
-    	}
-    	
-    	String quantityStr = result.getIntentSlotMap().get(InterfaceIntent.SLOT_QUANTITY);    	
-    	if (quantityStr == null) {
-    		return false;
-    	}
-    	
-    	try {
-    		double quantity = Double.parseDouble(quantityStr);
-    		result.getSlotValues().setQuantity(quantity);
-    		return true;
-    	}
-    	catch (Exception e) {
-    		logger.log(Level.SEVERE, result.getName() + " given bad value for quantity: " + quantityStr, e);
-    	}
-    	return false;
+    public static Double getQuantity(IntentResult result) {
+	    	if (result.getSlotValues().getQuantity() != null) {
+	    		return result.getSlotValues().getQuantity();
+	    	}
+	    	
+	    	String quantityStr = result.getIntentSlotMap().get(InterfaceIntent.SLOT_QUANTITY);    	
+	    	if (quantityStr == null) {
+	    		return result.getSlotValues().getQuantity();
+	    	}
+	    	
+	    	try {
+	    		double quantity = Double.parseDouble(quantityStr);
+	    		result.getSlotValues().setQuantity(quantity);
+	    		return quantity;
+	    	}
+	    	catch (Exception e) {
+	    		logger.log(Level.SEVERE, result.getName() + " given bad value for quantity: " + quantityStr, e);
+	    	}
+	    	return null;
     }
     
 
     public static SpeechletResponse makeTellResponse(IntentResult result) {
-    	if (result.getThrown() == null) {
-			logger.log(Level.INFO, result.getName() + ": " + result.getSpeech());
-    	}
-    	else {
-    		logger.log(Level.SEVERE, result.getName() + ": " + result.getSpeech(), result.getThrown());
-    	}
+	    	if (result.getThrown() == null) {
+				logger.log(Level.INFO, result.getName() + ": " + result.getSpeech());
+	    	}
+	    	else {
+	    		logger.log(Level.SEVERE, result.getName() + ": " + result.getSpeech(), result.getThrown());
+	    	}
 
-    	if (result.isSsml()) {
-    		SsmlOutputSpeech outputSpeech = new SsmlOutputSpeech();
-    		outputSpeech.setSsml(result.getSpeech());
-    		return SpeechletResponse.newTellResponse(outputSpeech);
-    	}
-    	else {
-			PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
-			outputSpeech.setText(result.getSpeech());
-			return SpeechletResponse.newTellResponse(outputSpeech);	
-    	}
+	    	if (result.isSsml()) {
+	    		SsmlOutputSpeech outputSpeech = new SsmlOutputSpeech();
+	    		outputSpeech.setSsml(result.getSpeech());
+	    		return SpeechletResponse.newTellResponse(outputSpeech);
+	    	}
+	    	else {
+				PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
+				outputSpeech.setText(result.getSpeech());
+				return SpeechletResponse.newTellResponse(outputSpeech);	
+	    	}
     }
 
 
@@ -158,14 +158,14 @@ public class IntentUtils {
 		session.setAttribute(InterfaceIntent.ATTR_LAST_INTENT, result.getName());
 
 		OutputSpeech outputSpeech = null;
-    	if (result.isSsml()) {
-    		outputSpeech = new SsmlOutputSpeech();
-    		((SsmlOutputSpeech) outputSpeech).setSsml(result.getSpeech());
-    	}
-    	else {
-			outputSpeech = new PlainTextOutputSpeech();
-			((PlainTextOutputSpeech) outputSpeech).setText(result.getSpeech());
-    	}
+	    	if (result.isSsml()) {
+	    		outputSpeech = new SsmlOutputSpeech();
+	    		((SsmlOutputSpeech) outputSpeech).setSsml(result.getSpeech());
+	    	}
+	    	else {
+				outputSpeech = new PlainTextOutputSpeech();
+				((PlainTextOutputSpeech) outputSpeech).setText(result.getSpeech());
+	    	}
 
 		Reprompt prompt = new Reprompt();
 		PlainTextOutputSpeech promptSpeech = new PlainTextOutputSpeech();

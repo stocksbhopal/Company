@@ -20,14 +20,12 @@ public class IntentTodayOnList implements InterfaceIntent {
 	
 
 	@Override
-	public SpeechletResponse onIntent(IntentRequest request, Session session, IntentResult result)
-			throws SpeechletException {
+	public SpeechletResponse onIntent(IntentRequest request, Session session, IntentResult result) throws SpeechletException {
 		String intentName = request.getIntent().getName();
 		String alexaUserId = session.getUser().getUserId();
 
-		AllSlotValues slotValues = new AllSlotValues();
-		boolean hasQuantity = IntentUtils.getQuantity(result);
-		int numResults = (int) (hasQuantity ? slotValues.getQuantity() : DEFAULT_NUM_RESULTS);
+		Double quantity = IntentUtils.getQuantity(result);
+		int numResults = (int) (quantity != null ? quantity : DEFAULT_NUM_RESULTS);
 
 		if (intentName.equals(InterfaceIntent.INTENT_UPDATE_PRICES_ON_LIST)) {
 			return processUpdatePricesOnList(alexaUserId, intentName, result);

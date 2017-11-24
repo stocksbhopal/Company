@@ -14,6 +14,7 @@ import com.amazon.speech.speechlet.SpeechletResponse;
 import com.sanjoyghosh.company.db.JPAHelper;
 import com.sanjoyghosh.company.db.PortfolioJPA;
 import com.sanjoyghosh.company.db.model.PortfolioItem;
+import com.sanjoyghosh.company.dynamodb.helper.PortfolioMatcher;
 import com.sanjoyghosh.company.dynamodb.model.Company;
 import com.sanjoyghosh.company.dynamodb.model.Portfolio;
 import com.sanjoyghosh.company.utils.StringUtils;
@@ -33,72 +34,63 @@ public class IntentStockOnList implements InterfaceIntent {
     
     @Override
 	public SpeechletResponse onIntent(IntentRequest request, Session session, IntentResult result) throws SpeechletException {
-    	AllSlotValues slotValues = result.getSlotValues();
+	    	AllSlotValues slotValues = result.getSlotValues();
+	    	
+	    	String realIntentName = result.isConfirmation() ? result.getLastIntentName() : result.getName();
+	    	boolean needsQuantity = 
+	    		realIntentName.equals(InterfaceIntent.INTENT_CREATE_STOCK_ON_LIST) ||
+	    		realIntentName.equals(InterfaceIntent.INTENT_UPDATE_STOCK_ON_LIST);
+	    	boolean needsCompany = 
+	    		!realIntentName.equals(InterfaceIntent.INTENT_LIST_STOCKS_ON_LIST) && 
+	    		!realIntentName.equals(InterfaceIntent.INTENT_CLEAR_STOCKS_ON_LIST);
+	    	
+	    	Company company = IntentUtils.getCompany(result);
+	    	if (needsCompany && company == null) {
+	    		result.setResult(RESULT_ERROR_MISSING_COMPANY);
+	    		result.setSpeech(false, "Sorry, no company found named: " + slotValues);
+	    		return IntentUtils.makeTellResponse(result);
+	    	}
+	    	
+	    	Double quantity = IntentUtils.getQuantity(result);
+	    	if (needsQuantity && quantity == null) {
+	    		result.setResult(RESULT_ERROR_MISSING_QUANTITY);
+	    		result.setSpeech(false, "Sorry, we need to know the number of shares");
+	    		return IntentUtils.makeTellResponse(result);	
+	    	}
     	
-    	String realIntentName = result.isConfirmation() ? result.getLastIntentName() : result.getName();
-    	boolean needsQuantity = 
-    		realIntentName.equals(InterfaceIntent.INTENT_CREATE_STOCK_ON_LIST) ||
-    		realIntentName.equals(InterfaceIntent.INTENT_UPDATE_STOCK_ON_LIST);
-    	boolean needsCompany = 
-    		!realIntentName.equals(InterfaceIntent.INTENT_LIST_STOCKS_ON_LIST) && 
-    		!realIntentName.equals(InterfaceIntent.INTENT_CLEAR_STOCKS_ON_LIST);
-    	
-    	Company company = result.getSlotValues().getCompany();
-    	if (needsCompany && company == null) {
-    		result.setResult(RESULT_ERROR_MISSING_COMPANY);
-    		result.setSpeech(false, "Sorry, no company found named: " + slotValues);
-    		return IntentUtils.makeTellResponse(result);
-    	}
-    	
-    	if (needsQuantity && result.getSlotValues().getQuantity() == null) {
-    		result.setResult(RESULT_ERROR_MISSING_QUANTITY);
-    		result.setSpeech(false, "Sorry, we need to know the number of shares");
-    		return IntentUtils.makeTellResponse(result);	
-    	}
-    	
-		EntityManager em = null;
-		try {	
-			em = JPAHelper.getEntityManager();
-			
-			if (realIntentName.equals(InterfaceIntent.INTENT_CREATE_STOCK_ON_LIST)) {
-				return createStockOnList(em, result);
-			}
-			if (realIntentName.equals(InterfaceIntent.INTENT_READ_STOCK_ON_LIST)) {
-				return readStockOnList(em, result);
-			}
-			// intentName might have been changed for AMAZON.YesIntent and AMAZON.NoIntent.  So get it from the request.
-			if (realIntentName.equals(InterfaceIntent.INTENT_UPDATE_STOCK_ON_LIST)) {
-				return updateStockOnList(em, session, result);
-			}
-			if (realIntentName.equals(InterfaceIntent.INTENT_DELETE_STOCK_ON_LIST)) {
-				return deleteStockOnList(em, session, result);
-			}
-			if (realIntentName.equals(InterfaceIntent.INTENT_LIST_STOCKS_ON_LIST)) {
-				return listStocksOnList(em, result);
-			}
-			// intentName might have been changed for AMAZON.YesIntent and AMAZON.NoIntent.  So get it from the request.
-			if (realIntentName.equals(InterfaceIntent.INTENT_CLEAR_STOCKS_ON_LIST)) {
-				return clearStocksOnList(em, session, result);
-			}
+		if (realIntentName.equals(InterfaceIntent.INTENT_CREATE_STOCK_ON_LIST)) {
+			return createStockOnList(result);
 		}
-		finally {
-			if (em != null) {
-				em.close();
-			}
+		if (realIntentName.equals(InterfaceIntent.INTENT_READ_STOCK_ON_LIST)) {
+			return readStockOnList(result);
+		}
+		// intentName might have been changed for AMAZON.YesIntent and AMAZON.NoIntent.  So get it from the request.
+		if (realIntentName.equals(InterfaceIntent.INTENT_UPDATE_STOCK_ON_LIST)) {
+			return updateStockOnList(session, result);
+		}
+		if (realIntentName.equals(InterfaceIntent.INTENT_DELETE_STOCK_ON_LIST)) {
+			return deleteStockOnList(session, result);
+		}
+		if (realIntentName.equals(InterfaceIntent.INTENT_LIST_STOCKS_ON_LIST)) {
+			return listStocksOnList(result);
+		}
+		// intentName might have been changed for AMAZON.YesIntent and AMAZON.NoIntent.  So get it from the request.
+		if (realIntentName.equals(InterfaceIntent.INTENT_CLEAR_STOCKS_ON_LIST)) {
+			return clearStocksOnList(session, result);
 		}
 		
 		return null;
 	}
 
 
-	private SpeechletResponse deleteStockOnList(EntityManager em, Session session, IntentResult result) {
-		Portfolio portfolio = PortfolioJPA.fetchPortfolio(em, PortfolioJPA.MY_PORTFOLIO_NAME, result.getAlexaUserId());
-		if (portfolio == null) {
+	private SpeechletResponse deleteStockOnList(Session session, IntentResult result) {
+		List<Portfolio> portfolioList = PortfolioMatcher.getPortfolioForAlexaUser(result.getAlexaUserId());
+		if (portfolioList == null || portfolioList.isEmpty()) {
 			result.setSpeech(false, "Sorry, you do not yet have a list of stocks.");
 			return IntentUtils.makeTellResponse(result);
 		}
 		
-		Company company = result.getSlotValues().getCompany();
+		Company company = IntentUtils.getCompany(result);
 		PortfolioItem portfolioItem = portfolio.getPortfolioItemBySymbol(company.getSymbol());
 		if (portfolioItem == null) {
 			result.setSpeech(false, "You have no shares of " + company.getName() + " on your list.");

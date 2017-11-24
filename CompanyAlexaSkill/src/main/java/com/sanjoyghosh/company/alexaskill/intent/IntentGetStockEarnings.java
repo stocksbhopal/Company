@@ -23,8 +23,8 @@ public class IntentGetStockEarnings implements InterfaceIntent {
     
     private SpeechletResponse respondWithEarningsInfo(IntentRequest request, Session session, LocalDateRange dateRange, IntentResult intentResult) {
 		String speech = "";
-		List<PortfolioItemData> portfolioItemDataList = PortfolioJPA.fetchPortfolioItemDataWithEarnings(
-			em, PortfolioJPA.MY_PORTFOLIO_NAME, session.getUser().getUserId(), dateRange.getStartDate(), dateRange.getEndDate());
+		List<PortfolioItemData> portfolioItemDataList = PortfolioUtils.fetchPortfolioItemDataWithEarnings(
+			session.getUser().getUserId(), dateRange.getStartDate(), dateRange.getEndDate());
 		if (portfolioItemDataList == null || portfolioItemDataList.size() == 0) {
 			speech = "Sorry you don't have any stocks with earnings " + dateRange.toAlexaString() + ".";
 		}

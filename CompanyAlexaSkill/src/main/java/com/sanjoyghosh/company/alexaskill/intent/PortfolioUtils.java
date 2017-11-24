@@ -1,6 +1,7 @@
 package com.sanjoyghosh.company.alexaskill.intent;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -10,6 +11,7 @@ import java.util.logging.Logger;
 
 import com.sanjoyghosh.company.alexaskill.source.nasdaq.NasdaqRealtimeQuote;
 import com.sanjoyghosh.company.alexaskill.source.nasdaq.NasdaqRealtimeQuoteReader;
+import com.sanjoyghosh.company.dynamodb.CompanyDynamoDB;
 import com.sanjoyghosh.company.dynamodb.helper.CompanyMatcher;
 import com.sanjoyghosh.company.dynamodb.model.Portfolio;
 
@@ -18,32 +20,16 @@ public class PortfolioUtils {
     private static final Logger logger = Logger.getLogger(IntentGetStockPrice.class.getName());
 
     
+    public static Portfolio getPortfolio(String alexaUserId, String symbol) {
+    		CompanyDynamoDB.getDynamoDBMapper();
+    }
+    
+    
     public static double getNetValueChange(List<PortfolioItemData> portfolioItemDataList, IntentResult intentResult) {
     		double valueChange = 0.00;
 		for (PortfolioItemData portfolioItemData : portfolioItemDataList) {
-			String symbol = portfolioItemData.getSymbol();
-			NasdaqRealtimeQuote quote = null;
-			try {
-				quote = NasdaqRealtimeQuoteReader.fetchNasdaqStockSummary(portfolioItemData.getSymbol());
-			} 
-			catch (IOException e) {
-				intentResult.addSymbolWithException(symbol, e);
-				logger.log(Level.SEVERE, "Exception in reading Nasdaq quote for " + symbol, e);
-			}
-			
-			if (quote == null) {
-				intentResult.addNullQuoteSymbol(symbol);
-				logger.log(Level.SEVERE, "Null quote read from Nasdaq for " + symbol);
-			}
-			else {
-				portfolioItemData.setPrice(quote.getPrice());
-				portfolioItemData.setPriceChange(quote.getPriceChange());
-				portfolioItemData.setPriceChangePercent(quote.getPriceChangePercent());
-				portfolioItemData.setValueChangeDollars(portfolioItemData.getQuantity() * quote.getPriceChange());
-				valueChange += portfolioItemData.getValueChangeDollars();
-			}
-		}
-		
+			valueChange += portfolioItemData.getValueChangeDollars();
+		}	
 		return valueChange;
     }
 
@@ -84,7 +70,6 @@ public class PortfolioUtils {
     
    
     /**
-     * 
      * @param portfolioItemDataList
      * @param sortByValueChange True if sort by valueChange.  False if sort by priceChangePercent.
      * @param sortAscending  True if sort ascending.  False if sort descending.
@@ -104,4 +89,9 @@ public class PortfolioUtils {
 			}
 		});
     }
+
+
+	public static List<PortfolioItemData> fetchPortfolioItemDataWithEarnings(String alexaUserId, LocalDate startDate, LocalDate endDate) {
+		return null;
+	}
 }
