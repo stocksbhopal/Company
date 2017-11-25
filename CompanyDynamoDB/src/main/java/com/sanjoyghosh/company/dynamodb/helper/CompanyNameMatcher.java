@@ -17,7 +17,8 @@ import com.sanjoyghosh.company.dynamodb.model.CompanyName;
 
 public class CompanyNameMatcher {
 
-	private static Map<String, Company> companyByNameMap;
+//	private static final Logger			logger = Logger.getLogger("CompanyNameMatcher");
+	private static Map<String, Company>	companyByNameMap;
 
 	public static void init() {
 		companyByNameMap = new HashMap<>();
@@ -185,18 +186,19 @@ public class CompanyNameMatcher {
 		}
 		
     		companyOrSymbol = stripStopWordsFromName(companyOrSymbol);
-    		Company company = CompanyMatcher.getCompanyBySymbol(companyOrSymbol);
-    		if (company != null) {
-    			return company;
-    		}
-    		
-    		company = companyByNameMap.get(companyOrSymbol.toLowerCase());
-    		if (company != null) {
-    			return company;
-    		}
-    		
     		String symbolSpelt = getSymbolSpelt(companyOrSymbol);
+
+    		Company company = companyByNameMap.get(companyOrSymbol.toLowerCase());
+    		if (company != null) {
+    			return company;
+    		}
+
     		company = CompanyMatcher.getCompanyBySymbol(symbolSpelt);
+    		if (company != null) {
+    			return company;
+    		}
+
+    		company = CompanyMatcher.getCompanyBySymbol(companyOrSymbol);
     		if (company != null) {
     			return company;
     		}

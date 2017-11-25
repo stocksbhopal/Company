@@ -88,7 +88,7 @@ public class IntentUtils {
 	
 	public static Company getCompany(IntentResult result) {
 	    	if (result.getSlotValues().getCompany() != null) {
-	    		return null;
+	    		return result.getSlotValues().getCompany();
 	    	}
 	    	
 	    	String companyOrSymbol = result.getIntentSlotMap().get(InterfaceIntent.SLOT_COMPANY);

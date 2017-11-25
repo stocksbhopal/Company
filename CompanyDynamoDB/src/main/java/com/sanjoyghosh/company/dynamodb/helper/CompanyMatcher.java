@@ -14,6 +14,8 @@ import com.sanjoyghosh.company.dynamodb.model.Company;
 	
 public class CompanyMatcher {
 
+//	private static final Logger 			logger = Logger.getLogger("CompanyMatcher");
+	
 	private static List<Company> 		companyList;
 	private static Map<String, Company>	companyBySymbolMap;
 	
@@ -38,7 +40,8 @@ public class CompanyMatcher {
 		if (companyBySymbolMap == null) {
 			init();
 		}
-		return companyBySymbolMap.get(symbol.toUpperCase());
+		Company company = companyBySymbolMap.get(symbol.toUpperCase());
+		return company;
 	}
 	
 	
