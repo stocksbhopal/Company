@@ -7,11 +7,38 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.model.ScanRequest;
+import com.amazonaws.services.dynamodbv2.model.ScanResult;
+import com.sanjoyghosh.company.dynamodb.CompanyDynamoDB;
 import com.sanjoyghosh.company.dynamodb.model.Company;
 import com.sanjoyghosh.company.dynamodb.model.CompanyName;
 
 public class CompanyNameMatcher {
 
+	private static Map<String, Company> companyByNameMap;
+
+	public static void init() {
+		companyByNameMap = new HashMap<>();
+		
+		AmazonDynamoDB amazonDynamoDB = CompanyDynamoDB.getAmazonDynamoDB();
+		ScanRequest scanRequest = new ScanRequest().withTableName("CompanyName");
+		ScanResult scanResult = amazonDynamoDB.scan(scanRequest);
+		
+		DynamoDBMapper dynamoDBMapper = CompanyDynamoDB.getDynamoDBMapper();
+		List<CompanyName> companyNameList = dynamoDBMapper.marshallIntoObjects(CompanyName.class, scanResult.getItems());
+		
+		companyByNameMap = new HashMap<>();
+		for (CompanyName companyName : companyNameList) {
+			Company company = CompanyMatcher.getCompanyBySymbol(companyName.getSymbol());
+			if (company != null) {
+				companyByNameMap.put(companyName.getNamePrefix(), company);
+			}
+		}
+	}
+
+	
 	private static final Set<String> CompanyStopWords = new HashSet<>();
 	static {
 		CompanyStopWords.add("A".toLowerCase());
@@ -87,7 +114,6 @@ public class CompanyNameMatcher {
 	
 	
 	private static final Map<String, List<Company>> companyListByNameMap = new HashMap<>();
-	
 	// Assume that the name is already trimmed and lower-cased.
 	// The given name may be different from the actual name of the company
 	// when we add popular names for companies.  Such as Google for Alphabet.
@@ -108,9 +134,8 @@ public class CompanyNameMatcher {
 	}
 	
 	
-	private static final Map<String, Company> companyByNameMap = new HashMap<>();
-	
 	public static void assignNamePrefixToCompany(List<CompanyName> companyNameList) {
+		companyByNameMap = new HashMap<>();
 		for (Map.Entry<String, List<Company>> entry : companyListByNameMap.entrySet()) {
 			String namePrefix = entry.getKey();
 			
@@ -155,6 +180,10 @@ public class CompanyNameMatcher {
 	
 	
 	public static Company getCompanyByNameOrSymbol(String companyOrSymbol) {
+		if (companyByNameMap == null) {
+			init();
+		}
+		
     		companyOrSymbol = stripStopWordsFromName(companyOrSymbol);
     		Company company = CompanyMatcher.getCompanyBySymbol(companyOrSymbol);
     		if (company != null) {

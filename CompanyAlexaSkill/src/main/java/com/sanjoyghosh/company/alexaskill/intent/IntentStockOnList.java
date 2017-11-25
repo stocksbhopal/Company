@@ -126,7 +126,7 @@ public class IntentStockOnList implements InterfaceIntent {
 		if (result.isConfirmation()) {
 			if (result.isYesIntent()) {
 				try {
-					CompanyDynamoDB.batchDeleteDynamoDB((Iterable<Object>) portfolioList.iterator(), "Portfolio");
+					CompanyDynamoDB.batchDeleteDynamoDB((Iterable) portfolioList, "Portfolio");
 					
 					result.setSpeech(false, "Clearing all stocks from your list.");
 					return IntentUtils.makeTellResponse(result);

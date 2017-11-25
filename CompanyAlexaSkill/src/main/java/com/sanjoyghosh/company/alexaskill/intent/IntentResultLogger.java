@@ -59,7 +59,7 @@ public class IntentResultLogger {
 				intentResultLogList.add(intentResult.toIntentResultLog());
 			}
 			try {
-				CompanyDynamoDB.batchSaveDynamoDB((Iterable<Object>) intentResultLogList.iterator(), "IntentResultLog");
+				CompanyDynamoDB.batchSaveDynamoDB((Iterable) intentResultLogList, "IntentResultLog");
 			} 
 			catch (Exception e) {
 				e.printStackTrace();

@@ -47,9 +47,4 @@ public class CompanyMatcher {
 		String name = company != null ? company.getSymbol() : "NO_COMPANY_FOR_SYMBOL_" + symbol;
 		return name;
 	}
-	
-
-	public static void main(String[] args) {
-		CompanyMatcher.init();
-	}
 }

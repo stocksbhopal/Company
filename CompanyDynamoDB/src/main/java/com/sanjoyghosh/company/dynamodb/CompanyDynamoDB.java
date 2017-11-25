@@ -1,8 +1,10 @@
 package com.sanjoyghosh.company.dynamodb;
 
+import java.io.File;
 import java.util.List;
 
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
+import com.amazonaws.auth.profile.ProfilesConfigFile;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
@@ -14,28 +16,35 @@ public class CompanyDynamoDB {
 	private static DynamoDBMapper	dynamoDBMapper;
 
 	private CompanyDynamoDB() {}
-	
-	public synchronized static DynamoDBMapper getDynamoDBMapper() {
-		if (dynamoDBMapper == null) {
-			amazonDynamoDB = AmazonDynamoDBClientBuilder.standard()
-				.withCredentials(new ProfileCredentialsProvider())
-				.withRegion(Regions.US_EAST_1).build();
-			dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB);
-		}
-		return dynamoDBMapper;
-	}
 
 	
 	public synchronized static AmazonDynamoDB getAmazonDynamoDB() {
 		if (amazonDynamoDB == null) {
-			amazonDynamoDB = AmazonDynamoDBClientBuilder.standard()
-				.withCredentials(new ProfileCredentialsProvider())
-				.withRegion(Regions.US_EAST_1).build();
+			File credentialsFile = new File("/home/ubuntu/credentials");
+			if (credentialsFile.exists() && credentialsFile.isFile()) {
+				amazonDynamoDB = AmazonDynamoDBClientBuilder.standard()
+					.withCredentials(new ProfileCredentialsProvider(new ProfilesConfigFile(credentialsFile), "default"))
+					.withRegion(Regions.US_EAST_1).build();				
+			}
+			else {
+				amazonDynamoDB = AmazonDynamoDBClientBuilder.standard()
+					.withCredentials(new ProfileCredentialsProvider())
+					.withRegion(Regions.US_EAST_1).build();
+			}
 			dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB);
 		}
 		return amazonDynamoDB;
 	}
 	
+
+	public synchronized static DynamoDBMapper getDynamoDBMapper() {
+		if (dynamoDBMapper == null) {
+			amazonDynamoDB = getAmazonDynamoDB();
+			dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB);
+		}
+		return dynamoDBMapper;
+	}
+
 	
 	public static void batchSaveDynamoDB(Iterable<Object> objectIterable, String objectName) throws Exception {
 		if (objectIterable == null) {

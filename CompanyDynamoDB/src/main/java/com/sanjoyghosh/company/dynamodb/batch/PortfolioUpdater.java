@@ -42,11 +42,11 @@ public class PortfolioUpdater {
 	}
 	
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void updatePortfolio() throws Exception {
 		List<Portfolio> oldPortfolioList = PortfolioMatcher.getPortfolioForAlexaUser(Constants.MY_ALEXA_USER_ID);
-		CompanyDynamoDB.batchDeleteDynamoDB((Iterable<Object>) oldPortfolioList.iterator(), "Portfolio");
-		CompanyDynamoDB.batchSaveDynamoDB((Iterable<Object>) portfolioMap.values().iterator(), "Portfolio");
+		CompanyDynamoDB.batchDeleteDynamoDB((Iterable) oldPortfolioList, "Portfolio");
+		CompanyDynamoDB.batchSaveDynamoDB((Iterable) portfolioMap.values(), "Portfolio");
 	}
 	
 	
