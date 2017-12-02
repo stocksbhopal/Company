@@ -46,7 +46,7 @@ public class PortfolioUpdater {
 	private void updatePortfolio() throws Exception {
 		List<Portfolio> oldPortfolioList = PortfolioMatcher.getPortfolioForAlexaUser(Constants.MY_ALEXA_USER_ID);
 		CompanyDynamoDB.batchDeleteDynamoDB((Iterable) oldPortfolioList, "Portfolio");
-		CompanyDynamoDB.batchSaveDynamoDB((Iterable) portfolioMap.values(), "Portfolio");
+		CompanyDynamoDB.batchSaveDynamoDB(portfolioMap.values(), "Portfolio");
 	}
 	
 	

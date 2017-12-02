@@ -46,15 +46,15 @@ public class CompanyDynamoDB {
 	}
 
 	
-	public static void batchSaveDynamoDB(Iterable<Object> objectIterable, String objectName) throws Exception {
-		if (objectIterable == null) {
+	public static <T> void batchSaveDynamoDB(Iterable<T> earningsDateList, String objectName) throws Exception {
+		if (earningsDateList == null) {
 			return;
 		}
 		
 		long startTime = System.currentTimeMillis();
 		System.out.println("Before DynamoDB Batch Save: " + objectName);
 		{
-			List<DynamoDBMapper.FailedBatch> failedList = dynamoDBMapper.batchSave(objectIterable);
+			List<DynamoDBMapper.FailedBatch> failedList = dynamoDBMapper.batchSave(earningsDateList);
 			if (failedList.size() > 0) {
 				System.err.println("Failed DynamoDB Batch Save: " + objectName + ", Size: " + failedList.size());
 				throw failedList.get(0).getException();
@@ -65,7 +65,7 @@ public class CompanyDynamoDB {
 	}
 	
 	
-	public static void batchDeleteDynamoDB(Iterable<Object> objectIterable, String objectName) throws Exception {
+	public static <T> void batchDeleteDynamoDB(Iterable<T> objectIterable, String objectName) throws Exception {
 		long startTime = System.currentTimeMillis();
 		System.out.println("Before DynamoDB Batch Delete: " + objectName);
 		{

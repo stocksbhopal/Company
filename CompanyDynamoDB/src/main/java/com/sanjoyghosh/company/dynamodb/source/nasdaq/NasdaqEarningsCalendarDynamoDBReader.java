@@ -11,7 +11,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.sanjoyghosh.company.dynamodb.CompanyDynamoDB;
 import com.sanjoyghosh.company.dynamodb.helper.CompanyMatcher;
 import com.sanjoyghosh.company.dynamodb.model.Company;
@@ -85,18 +84,8 @@ public class NasdaqEarningsCalendarDynamoDBReader {
 	}
 	
 	
-	private void writeAllEarningsDates() {
-		DynamoDBMapper mapper = CompanyDynamoDB.getDynamoDBMapper();
-					
-		long startTime = System.currentTimeMillis();
-		System.err.println("Before DynamoDB EarningsDate Save");
-		List<DynamoDBMapper.FailedBatch> failedList = mapper.batchSave(earningsDateList);
-		long endTime = System.currentTimeMillis();
-		System.err.println("After DynamoDB EarningsDate Save: " + (endTime - startTime) + " msecs");
-		if (failedList.size() > 0) {
-			System.err.println("Failed to BatchSave() EarningsDate Records");
-			failedList.get(0).getException().printStackTrace();
-		}
+	private void writeAllEarningsDates() throws Exception {
+		CompanyDynamoDB.batchSaveDynamoDB(earningsDateList, "EarningsDate");
 	}
 	
 	
@@ -106,7 +95,7 @@ public class NasdaqEarningsCalendarDynamoDBReader {
 			reader.readEarningsCalendarforMonth();
 			reader.writeAllEarningsDates();
 		} 
-		catch (IOException e) {
+		catch (Throwable e) {
 			e.printStackTrace();
 		}		
 		System.exit(0);
