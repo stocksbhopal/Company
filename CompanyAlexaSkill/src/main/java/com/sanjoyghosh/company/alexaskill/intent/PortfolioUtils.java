@@ -98,7 +98,6 @@ public class PortfolioUtils {
 
 
 	public static void removePortfolioItem(Portfolio portfolioItem) {
-		// TODO Auto-generated method stub
-		
+		CompanyDynamoDB.deleteDynamoDB(portfolioItem);
 	}
 }

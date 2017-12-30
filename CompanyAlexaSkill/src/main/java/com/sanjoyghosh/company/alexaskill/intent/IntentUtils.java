@@ -149,9 +149,9 @@ public class IntentUtils {
 	    		return SpeechletResponse.newTellResponse(outputSpeech);
 	    	}
 	    	else {
-				PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
-				outputSpeech.setText(result.getSpeech());
-				return SpeechletResponse.newTellResponse(outputSpeech);	
+			PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
+			outputSpeech.setText(result.getSpeech());
+			return SpeechletResponse.newTellResponse(outputSpeech);	
 	    	}
     }
 
